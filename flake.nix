@@ -8,7 +8,7 @@
   };
 
   outputs = inputs: {
-    nixosConfigurations.nixos = inputs.nixpkgs.lib.nixosSystem {
+    nixosConfigurations.akiiinixos = inputs.nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
 
       modules = [
