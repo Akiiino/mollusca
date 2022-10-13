@@ -5,7 +5,6 @@
 { config, pkgs, lib, ... }:
 {
   imports = [
-      <nixos-hardware/framework>
       ./hardware-configuration.nix
       ./users/akiiino/user.nix
     ];

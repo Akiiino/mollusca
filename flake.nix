@@ -3,6 +3,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
     home-manager.url = "github:nix-community/home-manager/release-21.05";
     nur.url = github:nix-community/NUR;
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -15,6 +16,7 @@
         ./config/configuration.nix
         inputs.home-manager.nixosModules.home-manager
         inputs.nur.nixosModules.nur
+        inputs.nixos-hardware.nixosModules.framework
         {
           home-manager.useGlobalPkgs = true;
         }
