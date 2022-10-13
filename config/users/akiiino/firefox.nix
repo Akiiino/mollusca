@@ -1,9 +1,9 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, nur, ... }:
 
 {
   programs.firefox = {
     enable = true;
-    extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+    extensions = with nur.repos.rycee.firefox-addons; [
       clearurls
       cookie-autodelete
       keepass-helper
