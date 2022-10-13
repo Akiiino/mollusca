@@ -14,7 +14,7 @@
       modules = [
         ./config/configuration.nix
         inputs.home-manager.nixosModules.home-manager
-        nur.nixosModules.nur
+        inputs.nur.nixosModules.nur
         {
           home-manager.useGlobalPkgs = true;
         }
