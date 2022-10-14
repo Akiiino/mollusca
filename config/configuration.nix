@@ -23,8 +23,6 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  # boot.kernelPackages = pkgs.linuxKernel.packages.linux_5_15;
-  # boot.kernelParams = [ "ipv6.disable=1" ];
 
   networking.hostName = "akiiinixos"; # Define your hostname.
   networking.networkmanager.enable = true;
