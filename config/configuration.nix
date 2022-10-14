@@ -2,26 +2,24 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
-{
-  imports = [
-      ./hardware-configuration.nix
-    ];
+{ config, pkgs, lib, ... }: {
+  imports = [ ./hardware-configuration.nix ];
   nix.package = pkgs.nixUnstable;
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';
 
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "spotify"
-    "spotify-unwrapped"
-    "discord"
-    "steam"
-    "steam-original"
-    "steam-runtime"
-    "obsidian"
-    "slack"
-  ];
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      "spotify"
+      "spotify-unwrapped"
+      "discord"
+      "steam"
+      "steam-original"
+      "steam-runtime"
+      "obsidian"
+      "slack"
+    ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -29,14 +27,13 @@
   # boot.kernelParams = [ "ipv6.disable=1" ];
 
   networking.hostName = "akiiinixos"; # Define your hostname.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-
 
   services.xserver = {
     enable = true;
@@ -49,7 +46,7 @@
     };
   };
 
-  services.printing.enable = true;  # printing
+  services.printing.enable = true; # printing
   # services.fprintd.enable = true;  # fingerprints
 
   # Enable sound.

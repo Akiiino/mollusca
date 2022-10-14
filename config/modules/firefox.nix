@@ -16,9 +16,7 @@
       akiiino = {
         id = 0;
         name = "akiiino";
-        settings = {
-          "browser.startup.homepage" = "about:blank";
-        };
+        settings = { "browser.startup.homepage" = "about:blank"; };
       };
     };
   };

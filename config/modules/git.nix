@@ -3,7 +3,7 @@
 {
   programs.git = {
     enable = true;
-    userName  = "akiiino";
+    userName = "akiiino";
     userEmail = "git@akiiino.me";
   };
 }

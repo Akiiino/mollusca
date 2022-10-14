@@ -27,27 +27,25 @@ with lib.hm.gvariant;
       two-finger-scrolling-enabled = true;
     };
 
-    "org/gnome/desktop/screensaver" = {
-      lock-delay = mkUint32 0;
-    };
+    "org/gnome/desktop/screensaver" = { lock-delay = mkUint32 0; };
 
     "org/gnome/desktop/search-providers" = {
       disabled = [ "org.gnome.clocks.desktop" ];
-      sort-order = [ "org.gnome.Contacts.desktop" "org.gnome.Documents.desktop" "org.gnome.Nautilus.desktop" ];
+      sort-order = [
+        "org.gnome.Contacts.desktop"
+        "org.gnome.Documents.desktop"
+        "org.gnome.Nautilus.desktop"
+      ];
     };
 
-    "org/gnome/desktop/session" = {
-      idle-delay = mkUint32 900;
-    };
+    "org/gnome/desktop/session" = { idle-delay = mkUint32 900; };
 
     "org/gnome/desktop/wm/preferences" = {
       button-layout = "appmenu:minimize,maximize,close";
       focus-mode = "sloppy";
     };
 
-    "org/gnome/desktop/remote-desktop/rdp" = {
-      screen-share-mode = "extend";
-    };
+    "org/gnome/desktop/remote-desktop/rdp" = { screen-share-mode = "extend"; };
 
     "org/gnome/mutter" = {
       attach-modal-dialogs = true;
@@ -62,13 +60,9 @@ with lib.hm.gvariant;
       welcome-dialog-last-shown-version = "41.4";
     };
 
-    "org/gnome/shell/world-clocks" = {
-      locations = "@av []";
-    };
+    "org/gnome/shell/world-clocks" = { locations = "@av []"; };
 
-    "org/gnome/tweaks" = {
-      show-extensions-notice = false;
-    };
+    "org/gnome/tweaks" = { show-extensions-notice = false; };
 
     "org/gtk/settings/file-chooser" = {
       date-format = "regular";
@@ -90,8 +84,6 @@ with lib.hm.gvariant;
       search-filter-time-type = "last_modified";
     };
 
-    "org/gnome/nautilus/list-view" = {
-      use-tree-view = true;
-    };
+    "org/gnome/nautilus/list-view" = { use-tree-view = true; };
   };
 }
