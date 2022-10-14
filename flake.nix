@@ -22,7 +22,7 @@
 
         modules = [
           ./config/configuration.nix
-          ./users/akiiino
+          ./config/users/akiiino
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
