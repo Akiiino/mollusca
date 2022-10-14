@@ -22,9 +22,20 @@
 
         modules = [
           ./config/configuration.nix
+          ./users/akiiino
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.akiiino = { pkgs, nur, ... }: {
+              imports = [
+                ./config/modules/firefox.nix
+                ./config/modules/git.nix
+                ./config/modules/kitty.nix
+                ./config/modules/gnome.nix
+                ./config/users/akiiino/home.nix
+              ];
+            };
           }
           nur.nixosModules.nur
           nixos-hardware.nixosModules.framework
