@@ -3,7 +3,7 @@
 {
   programs.kitty = {
     enable = true;
-    theme = "Gruvbox Light";
+    theme = "Gruvbox Dark";
     font = {
       package = pkgs.iosevka;
       name = "Iosevka Medium Extended";
