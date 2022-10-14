@@ -6,7 +6,7 @@
 {
   imports = [
       ./hardware-configuration.nix
-      ./users/akiiino/user.nix
+      ./users/akiiino/default.nix
     ];
   nix.package = pkgs.nixUnstable;
   nix.extraOptions = ''

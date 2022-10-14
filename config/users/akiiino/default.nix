@@ -9,10 +9,10 @@
 
   home-manager.users.akiiino = { pkgs, nur, ... }: {
     imports = [
-      ./firefox.nix
-      ./git.nix
-      ./kitty.nix
-      ./gnome.nix
+      ../../modules/firefox.nix
+      ../../modules/git.nix
+      ../../modules/kitty.nix
+      ../../modules/gnome.nix
     ];
 
     home.packages = with pkgs; [
