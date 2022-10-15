@@ -88,7 +88,7 @@
 
   programs.adb.enable = true;
 
-  networking.firewall.allowedTCPPorts = [ 3389 5900 ];
+  networking.firewall.allowedTCPPorts = [ 3389 5900 5000 ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
