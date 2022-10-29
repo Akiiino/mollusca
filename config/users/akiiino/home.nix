@@ -12,6 +12,7 @@
     slack
     libreoffice
     shotwell
+    gyre-fonts
   ];
   programs.kakoune.enable = true;
   programs.bash.enable = true;
