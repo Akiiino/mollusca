@@ -25,7 +25,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "akiiinixos"; # Define your hostname.
+  networking.hostName = "gastropod"; # Define your hostname.
   networking.networkmanager.enable = true;
 
   # Set your time zone.

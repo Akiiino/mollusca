@@ -17,7 +17,7 @@
 
   outputs = inputs@{ nixpkgs, home-manager, nur, nixos-hardware, ... }: {
     nixosConfigurations = {
-      akiiinixos = nixpkgs.lib.nixosSystem {
+      gastropod = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 
         modules = [
