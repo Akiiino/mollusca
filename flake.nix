@@ -16,7 +16,7 @@
   };
 
   outputs = inputs@{ nixpkgs, home-manager, nur, nixos-hardware, ... }: {
-    nixosConfigurations = {
+    nixosConfigurations = rec {
       gastropod = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 
@@ -41,6 +41,7 @@
           nixos-hardware.nixosModules.framework
         ];
       };
+      akiiinixos = gastropod;
     };
   };
 }
