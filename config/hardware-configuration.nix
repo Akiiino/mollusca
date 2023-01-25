@@ -1,1 +1,0 @@
-./machines/framework/hardware-configuration.nix

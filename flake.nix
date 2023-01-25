@@ -20,7 +20,7 @@
         system = "x86_64-linux";
 
         modules = [
-          ./config/configuration.nix
+          ./config/machines/gastropod/configuration.nix
           ./config/users/akiiino
           home-manager.nixosModules.home-manager
           {
