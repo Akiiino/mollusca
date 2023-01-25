@@ -7,7 +7,7 @@
 
   boot.cleanTmpDir = true;
   zramSwap.enable = true;
-  networking.hostName = "scallop";
+  networking.hostName = "pecten";
   networking.domain = "";
   services.openssh.enable = true;
   users.users.root.openssh.authorizedKeys.keys = [

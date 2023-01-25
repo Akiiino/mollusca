@@ -40,7 +40,7 @@
           nixos-hardware.nixosModules.framework
         ];
       };
-      scallop = nixpkgs.lib.nixosSystem {
+      pecten = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 
         modules = [
