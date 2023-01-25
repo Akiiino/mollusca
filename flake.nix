@@ -9,7 +9,6 @@
 
     nur = {
       url = "github:nix-community/NUR/master";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
