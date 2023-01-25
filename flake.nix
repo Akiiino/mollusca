@@ -41,6 +41,14 @@
         ];
       };
       akiiinixos = gastropod;
+      scallop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+
+        modules = [
+          ./config/machines/scallop/configuration.nix
+          ./config/users/akiiino
+        ];
+      };
     };
   };
 }
