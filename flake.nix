@@ -40,7 +40,6 @@
           nixos-hardware.nixosModules.framework
         ];
       };
-      akiiinixos = gastropod;
       scallop = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 
