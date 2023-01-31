@@ -2,7 +2,7 @@
   imports = [
     ./hardware-configuration.nix
     ./networking.nix # generated at runtime by nixos-infect
-    
+
   ];
 
   boot.cleanTmpDir = true;
@@ -16,7 +16,5 @@
   security.sudo.wheelNeedsPassword = false;
   system.stateVersion = "22.05";
 
-  environment.systemPackages = with pkgs; [
-      kakoune
-  ];
+  environment.systemPackages = with pkgs; [ kakoune ];
 }

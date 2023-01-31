@@ -7,9 +7,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nur = {
-      url = "github:nix-community/NUR/master";
-    };
+    nur = { url = "github:nix-community/NUR/master"; };
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
