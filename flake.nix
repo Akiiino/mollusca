@@ -6,13 +6,16 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    nur = { url = "github:nix-community/NUR/master"; };
-
+    nur.url = "github:nix-community/NUR/master";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = inputs@{ nixpkgs, home-manager, nur, nixos-hardware, ... }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, nur, nixos-hardware, agenix, ... }: {
     nixosConfigurations = rec {
       gastropod = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -44,7 +47,11 @@
         modules = [
           ./config/machines/scallop/configuration.nix
           ./config/users/akiiino
+          ./secrets/minor_secrets.nix
+          agenix.nixosModules.default
         ];
+
+        specialArgs = { inherit self; };
       };
     };
   };
