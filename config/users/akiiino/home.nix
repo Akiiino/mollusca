@@ -9,7 +9,6 @@
     obsidian
     dolphin-emu
     vlc
-    slack
     libreoffice
     shotwell
     gyre-fonts
