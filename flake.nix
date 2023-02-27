@@ -1,0 +1,59 @@
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    home-manager = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nur.url = "github:nix-community/NUR/master";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+  };
+
+  outputs =
+    inputs@{ self, nixpkgs, home-manager, nur, nixos-hardware, agenix, ... }: {
+      nixosConfigurations = rec {
+        gastropod = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+
+          modules = [
+            ./config/machines/gastropod/configuration.nix
+            ./config/users/akiiino
+            home-manager.nixosModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.akiiino = { pkgs, nur, ... }: {
+                imports = [
+                  ./config/modules/firefox.nix
+                  ./config/modules/git.nix
+                  ./config/modules/kitty.nix
+                  ./config/modules/gnome.nix
+                  ./config/users/akiiino/home.nix
+                ];
+              };
+            }
+            nur.nixosModules.nur
+            nixos-hardware.nixosModules.framework
+          ];
+        };
+        scallop = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+
+          modules = [
+            ./config/machines/scallop/configuration.nix
+            ./config/users/akiiino
+            ./secrets/minor_secrets.nix
+            agenix.nixosModules.default
+          ];
+
+          specialArgs = { inherit self; };
+        };
+      };
+    };
+}
