@@ -1,4 +1,6 @@
-{ self, config, pkgs, ... }: {
+{ self, config, pkgs, ... }: let
+  subdomain = name: name + "." + config.minor_secrets.domain;
+in {
   imports = [
     ./hardware-configuration.nix
     ./networking.nix # generated at runtime by nixos-infect
@@ -23,21 +25,21 @@
   networking.firewall.allowedTCPPorts = [ 80 443 ];
   services.grocy = {
     enable = true;
-    hostName = "test.seashell.social";
+    hostName = subdomain "test";
   };
 
   services.nitter = {
     enable = true;
-    server.hostname = "test2.seashell.social";
+    server.hostname = subdomain "test2";
     server.address = "127.0.0.1";
     server.port = 13735;
     server.https = true;
   };
 
   age.secrets.hetznerAPIKey.file = "${self}/secrets/hetzner.age";
-  security.acme.certs."seashell.social" = {
-    domain = "seashell.social";
-    extraDomainNames = [ "*.seashell.social" ];
+  security.acme.certs."${config.minor_secrets.domain}" = {
+    domain = config.minor_secrets.domain;
+    extraDomainNames = [ (subdomain "*") ];
     dnsProvider = "hetzner";
     credentialsFile = config.age.secrets.hetznerAPIKey.path;
     webroot = null;
@@ -50,20 +52,20 @@
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
     virtualHosts = let
-      seashellSSL = vhost:
+      forceSSL = vhost:
         vhost // {
           enableACME = pkgs.lib.mkForce false;
-          useACMEHost = "seashell.social";
+          useACMEHost = config.minor_secrets.domain;
           forceSSL = true;
         };
     in {
-      "seashell.social" = {
+      "${config.minor_secrets.domain}" = {
         locations."/".extraConfig = "return 404;";
         enableACME = true;
         forceSSL = true;
       };
-      "test.seashell.social" = seashellSSL { };
-      "test2.seashell.social" = seashellSSL {
+      "${subdomain "test"}" = forceSSL { };
+      "${subdomain "test2"}" = forceSSL {
         locations."/" = {
           proxyPass = "http://127.0.0.1:13735";
           proxyWebsockets = true; # needed if you need to use WebSocket
@@ -74,7 +76,7 @@
             "proxy_pass_header Authorization;";
         };
       };
-      "defaultDummy404ssl" = seashellSSL {
+      "defaultDummy404ssl" = forceSSL {
         default = true;
         serverName = "_";
         locations."/".extraConfig = "return 404;";
@@ -85,7 +87,7 @@
   age.secrets.keycloakDBPassword.file = "${self}/secrets/keycloak_db.age";
   services.keycloak = {
     enable = false;
-    settings.hostname = "https://test3.seashell.social/";
+    settings.hostname = "https://" + subdomain "test3";
     database.passwordFile = config.age.secrets.keycloakDBPassword.path;
     settings.https-port = 23571;
   };
