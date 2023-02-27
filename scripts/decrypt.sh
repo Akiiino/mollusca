@@ -4,7 +4,6 @@
 #!registry ssh-to-age github:Mic92/ssh-to-age/9610d46f8f3cf0e7535570573d4f4cae50e5e31b
 #!package nixpkgs#bash
 #!package nixpkgs#coreutils
-#!package nixpkgs#nix
 #!package nixpkgs#git
 #!package nixpkgs#sops
 #!package ssh-to-age#ssh-to-age

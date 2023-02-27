@@ -10,11 +10,10 @@
   networking.hostName = "scallop";
   networking.domain = "";
   services.openssh = {
-      enable = true;
-      settings.PasswordAuthentication = false;
+    enable = true;
+    settings.PasswordAuthentication = false;
   };
   security.sudo.wheelNeedsPassword = false;
-
 
   security.acme.acceptTerms = true;
   security.acme.defaults.email = config.minor_secrets.acme_email;
@@ -38,7 +37,7 @@
   age.secrets.hetznerAPIKey.file = "${self}/secrets/hetzner.age";
   security.acme.certs."seashell.social" = {
     domain = "seashell.social";
-    extraDomainNames = ["*.seashell.social"];
+    extraDomainNames = [ "*.seashell.social" ];
     dnsProvider = "hetzner";
     credentialsFile = config.age.secrets.hetznerAPIKey.path;
     webroot = null;
@@ -51,14 +50,19 @@
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
     virtualHosts = let
-      seashellSSL = vhost: vhost // {enableACME = pkgs.lib.mkForce false; useACMEHost = "seashell.social"; forceSSL = true;};
+      seashellSSL = vhost:
+        vhost // {
+          enableACME = pkgs.lib.mkForce false;
+          useACMEHost = "seashell.social";
+          forceSSL = true;
+        };
     in {
       "seashell.social" = {
         locations."/".extraConfig = "return 404;";
         enableACME = true;
         forceSSL = true;
       };
-      "test.seashell.social" = seashellSSL {};
+      "test.seashell.social" = seashellSSL { };
       "test2.seashell.social" = seashellSSL {
         locations."/" = {
           proxyPass = "http://127.0.0.1:13735";
@@ -67,8 +71,7 @@
             # required when the target is also TLS server with multiple hosts
             "proxy_ssl_server_name on;" +
             # required when the server wants to use HTTP Authentication
-            "proxy_pass_header Authorization;"
-            ;
+            "proxy_pass_header Authorization;";
         };
       };
       "defaultDummy404ssl" = seashellSSL {
