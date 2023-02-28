@@ -13,10 +13,16 @@
 
     nur.url = "github:nix-community/NUR/master";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs =
-    inputs@{ self, nixpkgs, home-manager, nur, nixos-hardware, agenix, ... }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, nur, nixos-hardware, agenix
+    , flake-utils, ... }:
+    flake-utils.lib.eachDefaultSystem (system: {
+      devShell = let pkgs = import nixpkgs { inherit system; };
+      in pkgs.mkShell { packages = with pkgs; [ bash git agebox nixfmt ]; };
+    }) // {
       nixosConfigurations = rec {
         gastropod = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";

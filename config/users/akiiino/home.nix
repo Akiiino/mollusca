@@ -13,6 +13,8 @@
     shotwell
     gyre-fonts
   ];
+  programs.direnv.enable = true;
+  programs.direnv.nix-direnv.enable = true;
   programs.kakoune.enable = true;
   programs.bash.enable = true;
   programs.zsh.enable = true;
