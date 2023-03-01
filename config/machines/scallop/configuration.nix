@@ -25,12 +25,12 @@ in {
   networking.firewall.allowedTCPPorts = [ 80 443 ];
   services.grocy = {
     enable = true;
-    hostName = subdomain "test";
+    hostName = subdomain "grocy";
   };
 
   services.nitter = {
     enable = true;
-    server.hostname = subdomain "test2";
+    server.hostname = subdomain "nitter";
     server.address = "127.0.0.1";
     server.port = 13735;
     server.https = true;
@@ -64,8 +64,8 @@ in {
         enableACME = true;
         forceSSL = true;
       };
-      "${subdomain "test"}" = forceSSL { };
-      "${subdomain "test2"}" = forceSSL {
+      "${config.services.grocy.hostName}" = forceSSL { };
+      "${config.services.nitter.server.hostname}" = forceSSL {
         locations."/" = {
           proxyPass = "http://127.0.0.1:13735";
           proxyWebsockets = true; # needed if you need to use WebSocket
