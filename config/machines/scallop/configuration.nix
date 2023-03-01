@@ -26,6 +26,11 @@ in {
   services.grocy = {
     enable = true;
     hostName = subdomain "grocy";
+    settings = {
+      currency = "EUR";
+      culture = "en_GB";
+      calendar.firstDayOfWeek = 1;
+    };
   };
 
   services.nitter = {
