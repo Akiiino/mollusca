@@ -1,5 +1,5 @@
-{ self, config, pkgs, ... }: let
-  subdomain = name: name + "." + config.minor_secrets.domain;
+{ self, config, pkgs, ... }:
+let subdomain = name: name + "." + config.minor_secrets.domain;
 in {
   imports = [
     ./hardware-configuration.nix
@@ -7,6 +7,7 @@ in {
 
   ];
 
+  nixpkgs.overlays = [ (import "${self}/config/overlays/hydroxide.nix") ];
   boot.cleanTmpDir = true;
   zramSwap.enable = true;
   networking.hostName = "scallop";
@@ -20,12 +21,12 @@ in {
   security.acme.acceptTerms = true;
   security.acme.defaults.email = config.minor_secrets.acme_email;
 
-  environment.systemPackages = with pkgs; [ kakoune ];
+  environment.systemPackages = with pkgs; [ kakoune hydroxide ];
 
   networking.firewall.allowedTCPPorts = [ 80 443 ];
   services.grocy = {
     enable = true;
-    hostName = subdomain "grocy";
+    hostName = subdomain "grocynew";
     settings = {
       currency = "EUR";
       culture = "en_GB";
@@ -39,6 +40,52 @@ in {
     server.address = "127.0.0.1";
     server.port = 13735;
     server.https = true;
+  };
+
+  age.secrets.nextcloudRootPass = {
+    file = "${self}/secrets/nextcloud_root_pass.age";
+    owner = "nextcloud";
+    group = "nextcloud";
+  };
+  services.nextcloud = {
+    enable = true;
+    package = pkgs.nextcloud25;
+    enableBrokenCiphersForSSE = false;
+    hostName = subdomain "nextcloud";
+    https = true;
+    notify_push.enable = false;
+    config = {
+      dbtype = "pgsql";
+      dbuser = "nextcloud";
+      # dbpassFile = "";  # TODO: add
+      dbhost = "/run/postgresql";
+      dbname = "nextcloud";
+      adminuser = "root";
+      adminpassFile = config.age.secrets.nextcloudRootPass.path;
+      defaultPhoneRegion = "DE";
+    };
+    phpOptions = {
+      "opcache.memory_consumption" = "256";
+      "opcache.interned_strings_buffer" = "128";
+    };
+    extraApps = with pkgs.nextcloud25Packages.apps; {
+      inherit polls forms unsplash calendar deck onlyoffice files_texteditor keeweb notes contacts;
+    };
+  };
+
+  services.postgresql = {
+    enable = true;
+    ensureDatabases = [ "nextcloud" ];
+    ensureUsers = [{
+      name = "nextcloud";
+      ensurePermissions."DATABASE nextcloud" = "ALL PRIVILEGES";
+    }];
+  };
+
+  # ensure that postgres is running *before* running the setup
+  systemd.services."nextcloud-setup" = {
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
   };
 
   age.secrets.hetznerAPIKey.file = "${self}/secrets/hetzner.age";
@@ -70,6 +117,7 @@ in {
         forceSSL = true;
       };
       "${config.services.grocy.hostName}" = forceSSL { };
+      "${config.services.nextcloud.hostName}" = forceSSL { };
       "${config.services.nitter.server.hostname}" = forceSSL {
         locations."/" = {
           proxyPass = "http://127.0.0.1:13735";
