@@ -33,7 +33,7 @@
           system = "x86_64-linux";
 
           modules = [
-            "${self}/machines/gastropod/configuration.nix"
+            "${self}/machines/gastropod"
             "${self}/users/akiiino"
             home-manager.nixosModules.home-manager
             {
@@ -57,7 +57,7 @@
           system = "x86_64-linux";
 
           modules = [
-            "${self}/machines/scallop/configuration.nix"
+            "${self}/machines/scallop"
             "${self}/users/akiiino"
             "${self}/secrets/minor_secrets.nix"
             agenix.nixosModules.default
