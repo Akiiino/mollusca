@@ -3,11 +3,10 @@ let subdomain = name: name + "." + config.minor_secrets.domain;
 in {
   imports = [
     ./hardware-configuration.nix
-    ./networking.nix # generated at runtime by nixos-infect
-
+    ./networking.nix
   ];
 
-  nixpkgs.overlays = [ (import "${self}/config/overlays/hydroxide.nix") ];
+  nixpkgs.overlays = [ (import "${self}/overlays/hydroxide.nix") ];
   boot.cleanTmpDir = true;
   zramSwap.enable = true;
   networking.hostName = "scallop";
@@ -82,7 +81,6 @@ in {
     }];
   };
 
-  # ensure that postgres is running *before* running the setup
   systemd.services."nextcloud-setup" = {
     requires = [ "postgresql.service" ];
     after = [ "postgresql.service" ];
@@ -121,11 +119,9 @@ in {
       "${config.services.nitter.server.hostname}" = forceSSL {
         locations."/" = {
           proxyPass = "http://127.0.0.1:13735";
-          proxyWebsockets = true; # needed if you need to use WebSocket
+          proxyWebsockets = true;
           extraConfig =
-            # required when the target is also TLS server with multiple hosts
             "proxy_ssl_server_name on;" +
-            # required when the server wants to use HTTP Authentication
             "proxy_pass_header Authorization;";
         };
       };

@@ -33,19 +33,19 @@
           system = "x86_64-linux";
 
           modules = [
-            ./config/machines/gastropod/configuration.nix
-            ./config/users/akiiino
+            ./machines/gastropod/configuration.nix
+            ./users/akiiino
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.akiiino = { pkgs, nur, ... }: {
                 imports = [
-                  ./config/modules/firefox.nix
-                  ./config/modules/git.nix
-                  ./config/modules/kitty.nix
-                  ./config/modules/gnome.nix
-                  ./config/users/akiiino/home.nix
+                  ./modules/firefox.nix
+                  ./modules/git.nix
+                  ./modules/kitty.nix
+                  ./modules/gnome.nix
+                  ./users/akiiino/home.nix
                 ];
               };
             }
@@ -57,8 +57,8 @@
           system = "x86_64-linux";
 
           modules = [
-            ./config/machines/scallop/configuration.nix
-            ./config/users/akiiino
+            ./machines/scallop/configuration.nix
+            ./users/akiiino
             ./secrets/minor_secrets.nix
             agenix.nixosModules.default
           ];
