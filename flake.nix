@@ -28,7 +28,7 @@
       devShell = let pkgs = import nixpkgs { inherit system; };
       in pkgs.mkShell { packages = with pkgs; [ bash git agebox nixfmt agenix.packages."${system}".default ]; shellHook = ''export AGEBOX_PUBLIC_KEYS="secrets/keys"'';};
     }) // {
-      nixosConfigurations = rec {
+      nixosConfigurations = {
         gastropod = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
 
