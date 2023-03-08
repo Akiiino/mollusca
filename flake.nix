@@ -26,7 +26,18 @@
     , flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system: {
       devShell = let pkgs = import nixpkgs { inherit system; };
-      in pkgs.mkShell { packages = with pkgs; [ bash git agebox nixfmt agenix.packages."${system}".default ]; shellHook = ''export AGEBOX_PUBLIC_KEYS="secrets/keys"'';};
+      in pkgs.mkShell {
+        packages = with pkgs; [
+          bash
+          git
+          agebox
+          nixfmt
+          agenix.packages."${system}".default
+        ];
+        shellHook = ''
+          export AGEBOX_PUBLIC_KEYS="secrets/keys"
+        '';
+      };
     }) // {
       nixosConfigurations = {
         gastropod = nixpkgs.lib.nixosSystem {
