@@ -22,26 +22,7 @@
 
   outputs = inputs@{ self, nixpkgs, home-manager, nur, nixos-hardware, agenix
     , flake-utils, ... }: {
-      devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" ] (system:
-        let pkgs = nixpkgs.legacyPackages.${system};
-        in {
-          default = pkgs.mkShell {
-            packages = with pkgs; [
-              bash
-              git
-              agebox
-              nixfmt
-              agenix.packages."${system}".default
-              (writeShellScriptBin "encrypt" ''
-                exec agebox encrypt --all
-              '')
-              (writeShellScriptBin "decrypt" ''
-                exec agebox decrypt --all
-              '')
-            ];
-            AGEBOX_PUBLIC_KEYS = "secrets/keys";
-          };
-        });
+      devShells = import "${self}/devshell.nix" { inherit nixpkgs inputs; };
       nixosConfigurations = {
         gastropod = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
