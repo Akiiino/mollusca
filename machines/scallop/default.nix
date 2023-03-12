@@ -68,7 +68,7 @@ in {
       "opcache.interned_strings_buffer" = "128";
     };
     extraApps = with pkgs.nextcloud25Packages.apps; {
-      inherit polls forms unsplash calendar deck onlyoffice files_texteditor keeweb notes contacts groupfolders;
+      inherit polls forms unsplash calendar deck onlyoffice files_texteditor keeweb notes contacts groupfolders tasks bookmarks;
     };
   };
 
