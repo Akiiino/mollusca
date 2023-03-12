@@ -6,16 +6,8 @@
       packages = with pkgs; [
         bash
         git
-        agebox
         nixfmt
         inputs.agenix.packages."${system}".default
-        (writeShellScriptBin "encrypt" ''
-          exec agebox encrypt --all
-        '')
-        (writeShellScriptBin "decrypt" ''
-          exec agebox decrypt --all
-        '')
       ];
-      AGEBOX_PUBLIC_KEYS = "secrets/keys";
     };
   }))
