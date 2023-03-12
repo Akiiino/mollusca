@@ -27,7 +27,7 @@
 
   outputs = inputs@{ self, nixpkgs, home-manager, nur, nixos-hardware, agenix
     , flake-utils, ... }: {
-      devShells = import "${self}/devshell.nix" { inherit nixpkgs inputs; };
+      devShells = import "${self}/devshell.nix" { inherit self nixpkgs inputs; };
       nixosConfigurations = {
         gastropod = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
