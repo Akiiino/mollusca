@@ -6,8 +6,12 @@
       packages = with pkgs; [
         bash
         git
+        coreutils
+        diffutils
         nixfmt
-        inputs.agenix.packages."${system}".default
+        sops
+        inputs.ssh-to-age.packages."${system}".ssh-to-age
+        inputs.agenix.packages."${system}".agenix
       ];
     };
   }))
