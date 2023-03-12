@@ -1,17 +1,13 @@
-{
-  self,
-  config,
-  pkgs,
-  ...
-}: let
-  subdomain = name: name + "." + config.minor_secrets.domain;
+{ self, config, pkgs, ... }:
+let subdomain = name: name + "." + config.minor_secrets.domain;
 in {
   imports = [
     ./hardware-configuration.nix
     ./networking.nix
   ];
+  nix.settings.auto-optimise-store = true;
 
-  nixpkgs.overlays = [(import "${self}/overlays/hydroxide.nix")];
+  nixpkgs.overlays = [ (import "${self}/overlays/hydroxide.nix") ];
   boot.cleanTmpDir = true;
   zramSwap.enable = true;
   networking.hostName = "scallop";
@@ -25,9 +21,9 @@ in {
   security.acme.acceptTerms = true;
   security.acme.defaults.email = config.minor_secrets.acme_email;
 
-  environment.systemPackages = with pkgs; [kakoune hydroxide];
+  environment.systemPackages = with pkgs; [ kakoune hydroxide ];
 
-  networking.firewall.allowedTCPPorts = [80 443];
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
   services.grocy = {
     enable = true;
     hostName = subdomain "grocynew";
@@ -79,24 +75,22 @@ in {
 
   services.postgresql = {
     enable = true;
-    ensureDatabases = ["nextcloud"];
-    ensureUsers = [
-      {
-        name = "nextcloud";
-        ensurePermissions."DATABASE nextcloud" = "ALL PRIVILEGES";
-      }
-    ];
+    ensureDatabases = [ "nextcloud" ];
+    ensureUsers = [{
+      name = "nextcloud";
+      ensurePermissions."DATABASE nextcloud" = "ALL PRIVILEGES";
+    }];
   };
 
   systemd.services."nextcloud-setup" = {
-    requires = ["postgresql.service"];
-    after = ["postgresql.service"];
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
   };
 
   age.secrets.hetznerAPIKey.file = "${self}/secrets/hetzner.age";
   security.acme.certs."${config.minor_secrets.domain}" = {
     domain = config.minor_secrets.domain;
-    extraDomainNames = [(subdomain "*")];
+    extraDomainNames = [ (subdomain "*") ];
     dnsProvider = "hetzner";
     credentialsFile = config.age.secrets.hetznerAPIKey.path;
     webroot = null;
@@ -110,8 +104,7 @@ in {
     recommendedTlsSettings = true;
     virtualHosts = let
       forceSSL = vhost:
-        vhost
-        // {
+        vhost // {
           enableACME = pkgs.lib.mkForce false;
           useACMEHost = config.minor_secrets.domain;
           forceSSL = true;
@@ -122,15 +115,15 @@ in {
         enableACME = true;
         forceSSL = true;
       };
-      "${config.services.grocy.hostName}" = forceSSL {};
-      "${config.services.nextcloud.hostName}" = forceSSL {};
+      "${config.services.grocy.hostName}" = forceSSL { };
+      "${config.services.nextcloud.hostName}" = forceSSL { };
       "${config.services.nitter.server.hostname}" = forceSSL {
         locations."/" = {
           proxyPass = "http://127.0.0.1:13735";
           proxyWebsockets = true;
           extraConfig =
-            "proxy_ssl_server_name on;"
-            + "proxy_pass_header Authorization;";
+            "proxy_ssl_server_name on;" +
+            "proxy_pass_header Authorization;";
         };
       };
       "defaultDummy404ssl" = forceSSL {
