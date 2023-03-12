@@ -1,6 +1,10 @@
-{ config, pkgs, lib, nur, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  nur,
+  ...
+}: {
   programs.firefox = {
     enable = true;
     #extensions = with nur.repos.rycee.firefox-addons; [
@@ -16,7 +20,7 @@
       akiiino = {
         id = 0;
         name = "akiiino";
-        settings = { "browser.startup.homepage" = "about:blank"; };
+        settings = {"browser.startup.homepage" = "about:blank";};
       };
     };
   };

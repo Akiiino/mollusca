@@ -1,5 +1,10 @@
-{ config, pkgs, lib, ... }: {
-  imports = [ ./hardware-configuration.nix ];
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
+  imports = [./hardware-configuration.nix];
   nix.package = pkgs.nixUnstable;
   nix.extraOptions = ''
     experimental-features = nix-command flakes
@@ -78,14 +83,14 @@
     gnome.dconf-editor
     gnome.gnome-remote-desktop
   ];
-  environment.gnome.excludePackages = with pkgs; [ gnome-tour ];
+  environment.gnome.excludePackages = with pkgs; [gnome-tour];
 
   programs.steam.enable = true;
   hardware.steam-hardware.enable = true;
 
   programs.adb.enable = true;
 
-  networking.firewall.allowedTCPPorts = [ 3389 5900 5000 ];
+  networking.firewall.allowedTCPPorts = [3389 5900 5000];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -95,4 +100,3 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.05"; # Did you read the comment?
 }
-

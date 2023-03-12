@@ -25,46 +25,64 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, nur, nixos-hardware, agenix
-    , flake-utils, ... }: {
-      devShells = import "${self}/devshell.nix" { inherit self nixpkgs inputs; };
-      nixosConfigurations = {
-        gastropod = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
+  outputs = inputs @ {
+    self,
+    nixpkgs,
+    home-manager,
+    nur,
+    nixos-hardware,
+    agenix,
+    flake-utils,
+    ...
+  }: {
+    devShells = import "${self}/devshell.nix" {inherit self nixpkgs inputs;};
+    formatter = nixpkgs.lib.genAttrs ["x86_64-linux"] (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+        pkgs.alejandra
+    );
+    nixosConfigurations = {
+      gastropod = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
 
-          modules = [
-            "${self}/machines/gastropod"
-            "${self}/users/akiiino"
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.akiiino = { pkgs, nur, ... }: {
-                imports = [
-                  "${self}/modules/firefox.nix"
-                  "${self}/modules/git.nix"
-                  "${self}/modules/kitty.nix"
-                  "${self}/modules/gnome.nix"
-                  "${self}/users/akiiino/home.nix"
-                ];
-              };
-            }
-            nur.nixosModules.nur
-            nixos-hardware.nixosModules.framework
-          ];
-        };
-        scallop = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
+        modules = [
+          "${self}/machines/gastropod"
+          "${self}/users/akiiino"
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.akiiino = {
+              pkgs,
+              nur,
+              ...
+            }: {
+              imports = [
+                "${self}/modules/firefox.nix"
+                "${self}/modules/git.nix"
+                "${self}/modules/kitty.nix"
+                "${self}/modules/gnome.nix"
+                "${self}/users/akiiino/home.nix"
+              ];
+            };
+          }
+          nur.nixosModules.nur
+          nixos-hardware.nixosModules.framework
+        ];
+      };
+      scallop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
 
-          modules = [
-            "${self}/machines/scallop"
-            "${self}/users/akiiino"
-            "${self}/secrets/minor_secrets.nix"
-            agenix.nixosModules.default
-          ];
+        modules = [
+          "${self}/machines/scallop"
+          "${self}/users/akiiino"
+          "${self}/secrets/minor_secrets.nix"
+          agenix.nixosModules.default
+        ];
 
-          specialArgs = { inherit self; };
-        };
+        specialArgs = {inherit self;};
       };
     };
+  };
 }

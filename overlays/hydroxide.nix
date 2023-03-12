@@ -1,5 +1,4 @@
-self: super:
-{
+self: super: {
   hydroxide = super.hydroxide.overrideAttrs (old: {
     src = super.fetchFromGitHub {
       owner = "emersion";
