@@ -17,12 +17,15 @@
     ssh-to-age = {
       url = "github:Mic92/ssh-to-age";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
     };
 
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
   outputs = inputs @ {
@@ -32,57 +35,83 @@
     nur,
     nixos-hardware,
     agenix,
-    flake-utils,
+    flake-parts,
     ...
-  }: {
-    devShells = import "${self}/devshell.nix" {inherit self nixpkgs inputs;};
-    formatter = nixpkgs.lib.genAttrs ["x86_64-linux"] (
-      system: let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in
-        pkgs.alejandra
-    );
-    nixosConfigurations = {
-      gastropod = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-
-        modules = [
-          "${self}/machines/gastropod"
-          "${self}/users/akiiino"
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.akiiino = {
-              pkgs,
-              nur,
-              ...
-            }: {
-              imports = [
-                "${self}/modules/firefox.nix"
-                "${self}/modules/git.nix"
-                "${self}/modules/kitty.nix"
-                "${self}/modules/gnome.nix"
-                "${self}/users/akiiino/home.nix"
-              ];
-            };
-          }
-          nur.nixosModules.nur
-          nixos-hardware.nixosModules.framework
-        ];
-      };
-      scallop = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-
-        modules = [
-          "${self}/machines/scallop"
-          "${self}/users/akiiino"
-          "${self}/secrets/minor_secrets.nix"
-          agenix.nixosModules.default
-        ];
-
-        specialArgs = {inherit self;};
+  }: let
+    commonNixpkgsConfig = {
+      nixpkgs = {
+        config.allowUnfree = true;
+        overlays = [inputs.nur.overlay] ++ (import "${self}/overlays");
       };
     };
-  };
+    commonNixOSModules = [
+      (
+        {nix.registry.nixpkgs.flake = inputs.nixpkgs;}
+        // commonNixpkgsConfig
+      )
+    ];
+    mkHost = {
+      hostname,
+      arch ? "x86_64-linux",
+      disabledModules ? [],
+      customModules ? [],
+    }:
+      inputs.nixpkgs.lib.nixosSystem {
+        system = arch;
+        modules =
+          [
+            "${self}/machines/${hostname}"
+            "${self}/users/akiiino"
+            "${self}/secrets/minor_secrets.nix"
+            agenix.nixosModules.default
+            {disabledModules = disabledModules;}
+          ]
+          ++ commonNixOSModules
+          ++ customModules;
+        specialArgs = {
+          inherit self;
+        };
+      };
+  in
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      flake = {
+        nixosConfigurations = {
+          gastropod = mkHost {
+            hostname = "gastropod";
+            customModules = [
+              nixos-hardware.nixosModules.framework
+              nur.nixosModules.nur
+              home-manager.nixosModules.home-manager
+              {
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users.akiiino = {
+                  pkgs,
+                  nur,
+                  ...
+                }: {
+                  imports = [
+                    "${self}/modules/firefox.nix"
+                    "${self}/modules/git.nix"
+                    "${self}/modules/kitty.nix"
+                    "${self}/modules/gnome.nix"
+                    "${self}/users/akiiino/home.nix"
+                  ];
+                };
+              }
+            ];
+          };
+          scallop = mkHost {
+            hostname = "scallop";
+          };
+        };
+      };
+      systems = [
+        "x86_64-linux"
+      ];
+      perSystem = {pkgs, ...}: {
+        formatter = pkgs.alejandra;
+        devShells.default = import "${self}/devshell.nix" {inherit self pkgs inputs;};
+      };
+    };
 }
