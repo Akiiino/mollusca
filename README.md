@@ -7,7 +7,7 @@ Contains system configs (think "dotfiles", but as Nix Flakes) for my machines. A
 
 I'm in the process of migrating services from my old server to use Nix; will add them to these files as I go along.
 
-Secrets management is done via [agenix](https://github.com/ryantm/agenix) (for whole-file secrets) and [agebox](https://github.com/slok/agebox) (for minor things I'd just rather not publish, like emails and URLs).
+Secrets management is done via [agenix](https://github.com/ryantm/agenix) (for whole-file secrets) and [sops](https://github.com/mozilla/sops) (for minor things I'd just rather not publish, like emails and URLs).
 
 Applying the configurations:
 
