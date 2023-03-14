@@ -4,16 +4,17 @@
   pkgs,
   ...
 }: let
-  subdomain = name: name + "." + config.minor_secrets.domain;
+  private_subdomain = name: name + "." + config.minor_secrets.private_domain;
+  public_subdomain = name: name + "." + config.minor_secrets.public_domain;
 in {
   imports = [
     ./hardware-configuration.nix
     ./networking.nix
     ./services/nitter.nix
+    ./services/404.nix
   ];
   nix.settings.auto-optimise-store = true;
 
-  nixpkgs.overlays = [(import "${self}/overlays/hydroxide.nix")];
   boot.cleanTmpDir = true;
   zramSwap.enable = true;
   networking.hostName = "scallop";
@@ -25,14 +26,24 @@ in {
   security.sudo.wheelNeedsPassword = false;
 
   security.acme.acceptTerms = true;
-  security.acme.defaults.email = config.minor_secrets.acme_email;
+  age.secrets.hetznerAPIKey.file = "${self}/secrets/hetzner.age";
+  security.acme.defaults = {
+    email = config.minor_secrets.acme_email;
+    dnsProvider = "hetzner";
+    credentialsFile = config.age.secrets.hetznerAPIKey.path;
+    webroot = null;
+  };
+  security.acme.certs = {
+    "${config.minor_secrets.private_domain}".extraDomainNames = [(private_subdomain "*")];
+    "${config.minor_secrets.public_domain}".extraDomainNames = [(public_subdomain "*")];
+  };
 
   environment.systemPackages = with pkgs; [kakoune hydroxide];
 
   networking.firewall.allowedTCPPorts = [80 443];
   services.grocy = {
     enable = true;
-    hostName = subdomain "grocynew";
+    hostName = private_subdomain "grocynew";
     settings = {
       currency = "EUR";
       culture = "en_GB";
@@ -49,7 +60,7 @@ in {
     enable = true;
     package = pkgs.nextcloud25;
     enableBrokenCiphersForSSE = false;
-    hostName = subdomain "nextcloud";
+    hostName = private_subdomain "nextcloud";
     https = true;
     notify_push.enable = false;
     config = {
@@ -87,15 +98,6 @@ in {
     after = ["postgresql.service"];
   };
 
-  age.secrets.hetznerAPIKey.file = "${self}/secrets/hetzner.age";
-  security.acme.certs."${config.minor_secrets.domain}" = {
-    domain = config.minor_secrets.domain;
-    extraDomainNames = [(subdomain "*")];
-    dnsProvider = "hetzner";
-    credentialsFile = config.age.secrets.hetznerAPIKey.path;
-    webroot = null;
-  };
-
   services.nginx = {
     enable = true;
     recommendedGzipSettings = true;
@@ -103,44 +105,18 @@ in {
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
     virtualHosts = let
-      forceSSL = vhost:
+      sharedSSL = vhost:
         vhost
         // {
           enableACME = pkgs.lib.mkForce false;
-          useACMEHost = config.minor_secrets.domain;
+          useACMEHost = config.minor_secrets.private_domain;
           forceSSL = true;
         };
     in {
-      "${config.minor_secrets.domain}" = {
-        locations."/".extraConfig = "return 404;";
-        enableACME = true;
-        forceSSL = true;
-      };
-      "${config.services.grocy.hostName}" = forceSSL {};
-      "${config.services.nextcloud.hostName}" = forceSSL {};
-      "${config.services.nitter.server.hostname}" = forceSSL {
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:13735";
-          proxyWebsockets = true;
-          extraConfig =
-            "proxy_ssl_server_name on;"
-            + "proxy_pass_header Authorization;";
-        };
-      };
-      "defaultDummy404ssl" = forceSSL {
-        default = true;
-        serverName = "_";
-        locations."/".extraConfig = "return 404;";
-      };
+      "${config.services.grocy.hostName}" = sharedSSL {};
+      "${config.services.nextcloud.hostName}" = sharedSSL {};
+      "nc.${config.minor_secrets.private_domain}" = sharedSSL {globalRedirect = "${config.services.nextcloud.hostName}";};
     };
-  };
-
-  age.secrets.keycloakDBPassword.file = "${self}/secrets/keycloak_db.age";
-  services.keycloak = {
-    enable = false;
-    settings.hostname = "https://" + subdomain "test3";
-    database.passwordFile = config.age.secrets.keycloakDBPassword.path;
-    settings.https-port = 23571;
   };
 
   system.stateVersion = "22.05";

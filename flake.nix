@@ -37,46 +37,13 @@
     agenix,
     flake-parts,
     ...
-  }: let
-    commonNixpkgsConfig = {
-      nixpkgs = {
-        config.allowUnfree = true;
-        overlays = [inputs.nur.overlay] ++ (import "${self}/overlays");
-      };
-    };
-    commonNixOSModules = [
-      (
-        {nix.registry.nixpkgs.flake = inputs.nixpkgs;}
-        // commonNixpkgsConfig
-      )
-    ];
-    mkHost = {
-      hostname,
-      arch ? "x86_64-linux",
-      disabledModules ? [],
-      customModules ? [],
-    }:
-      inputs.nixpkgs.lib.nixosSystem {
-        system = arch;
-        modules =
-          [
-            "${self}/machines/${hostname}"
-            "${self}/users/akiiino"
-            "${self}/secrets/minor_secrets.nix"
-            agenix.nixosModules.default
-            {disabledModules = disabledModules;}
-          ]
-          ++ commonNixOSModules
-          ++ customModules;
-        specialArgs = {
-          inherit self;
-        };
-      };
-  in
+  }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       flake = {
+        lib = import "${self}/lib.nix" {inherit inputs self;};
+
         nixosConfigurations = {
-          gastropod = mkHost {
+          gastropod = self.lib.mkHost {
             hostname = "gastropod";
             customModules = [
               nixos-hardware.nixosModules.framework
@@ -101,14 +68,17 @@
               }
             ];
           };
-          scallop = mkHost {
+
+          scallop = self.lib.mkHost {
             hostname = "scallop";
           };
         };
       };
+
       systems = [
         "x86_64-linux"
       ];
+
       perSystem = {pkgs, ...}: {
         formatter = pkgs.alejandra;
         devShells.default = import "${self}/devshell.nix" {inherit self pkgs inputs;};
