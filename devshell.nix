@@ -11,7 +11,6 @@ pkgs.mkShell {
     coreutils
     moreutils
     diffutils
-    nixfmt
     sops
     inputs.ssh-to-age.packages."${system}".ssh-to-age
     inputs.agenix.packages."${system}".agenix

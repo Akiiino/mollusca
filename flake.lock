@@ -178,7 +178,31 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "nur": "nur",
+        "secondbrain": "secondbrain",
         "ssh-to-age": "ssh-to-age"
+      }
+    },
+    "secondbrain": {
+      "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1679140154,
+        "narHash": "sha256-v7eU31YjauTHMi+CkXEgGnjtbD7vzX32HYwt7MW0jLg=",
+        "owner": "akiiino",
+        "repo": "secondbrain",
+        "rev": "06786479a07ed7bb9d6b89e2223e17d8e1185880",
+        "type": "github"
+      },
+      "original": {
+        "owner": "akiiino",
+        "repo": "secondbrain",
+        "type": "github"
       }
     },
     "ssh-to-age": {

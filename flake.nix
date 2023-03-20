@@ -26,6 +26,12 @@
     };
 
     flake-parts.url = "github:hercules-ci/flake-parts";
+
+    secondbrain = {
+      url = "github:akiiino/secondbrain";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
   };
 
   outputs = inputs @ {
@@ -36,11 +42,13 @@
     nixos-hardware,
     agenix,
     flake-parts,
+    secondbrain,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       flake = {
         lib = import "${self}/lib.nix" {inherit inputs self;};
+        secrets = import "${self}/secrets/minor_secrets.nix" {inherit inputs self;};
 
         nixosConfigurations = {
           gastropod = self.lib.mkHost {
@@ -71,6 +79,9 @@
 
           scallop = self.lib.mkHost {
             hostname = "scallop";
+            customModules = [
+              secondbrain.nixosModules.CTO
+            ];
           };
         };
       };

@@ -1,23 +1,27 @@
-{config, ...}: {
+{
+  config,
+  self,
+  ...
+}: {
   config.services.nginx.virtualHosts = {
-    "${config.minor_secrets.private_domain}" = {
+    "${self.secrets.personal_domain}" = {
       locations."/".extraConfig = "return 404;";
       enableACME = true;
       forceSSL = true;
     };
-    "${config.minor_secrets.public_domain}" = {
+    "${self.secrets.public_domain}" = {
       locations."/".extraConfig = "return 404;";
       enableACME = true;
       forceSSL = true;
     };
-    "*.${config.minor_secrets.private_domain}" = {
+    "${self.secrets.personal_subdomain "*"}" = {
       locations."/".extraConfig = "return 404;";
-      useACMEHost = config.minor_secrets.private_domain;
+      useACMEHost = self.secrets.personal_domain;
       forceSSL = true;
     };
-    "*.${config.minor_secrets.public_domain}" = {
+    "${self.secrets.public_subdomain "*"}" = {
       locations."/".extraConfig = "return 404;";
-      useACMEHost = config.minor_secrets.public_domain;
+      useACMEHost = self.secrets.public_domain;
       forceSSL = true;
     };
   };

@@ -4,4 +4,6 @@ let
 in {
   "hetzner.age".publicKeys = [akiiino scallop];
   "nextcloud_root_pass.age".publicKeys = [akiiino scallop];
+  "oauth2-proxy.age".publicKeys = [akiiino scallop];
+  "secondbrain_nc_password.age".publicKeys = [akiiino scallop];
 }
