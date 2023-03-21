@@ -8,6 +8,7 @@
     ./hardware-configuration.nix
     ./networking.nix
     ./services/acme.nix
+    ./services/keycloak.nix
     ./services/nitter.nix
     ./services/grocy.nix
     ./services/nextcloud.nix

@@ -20,7 +20,6 @@
       config = {
         dbtype = "pgsql";
         dbuser = "nextcloud";
-        # dbpassFile = "";  # TODO: add
         dbhost = "/run/postgresql";
         dbname = "nextcloud";
         adminuser = "root";
@@ -33,6 +32,10 @@
       };
       extraApps = with pkgs.nextcloud25Packages.apps; {
         inherit polls forms unsplash calendar deck files_texteditor keeweb notes contacts groupfolders tasks bookmarks;
+        oidc_login = pkgs.fetchNextcloudApp rec {
+          url = "https://github.com/pulsejet/nextcloud-oidc-login/releases/download/v2.4.1/oidc_login.tar.gz";
+          sha256 = "sha256-muTtxUxhSvBbhmJuE/Aig2toLcg+62s/fyA5b73gkYE=";
+        };
       };
     };
 
@@ -55,6 +58,7 @@
     services.nginx.virtualHosts =
       self.lib.mkVirtualHost {
         fqdn = config.services.nextcloud.hostName;
+        vhostConfig.serverAliases = config.services.nextcloud.config.extraTrustedDomains;
       }
       // self.lib.mkVirtualHost {
         fqdn = self.secrets.personal_subdomain "nc";
