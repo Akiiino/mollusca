@@ -1,20 +1,37 @@
 {
   config,
   self,
+  lib,
   ...
-}: {
-  config.services = {
-    grocy = {
+}: let
+  cfg = config.services.grocy;
+in {
+  config = {
+    services.grocy = {
       enable = true;
-      hostName = self.secrets.personal_subdomain "grocynew";
+      hostName = "grocy.localhost";
       settings = {
         currency = "EUR";
         culture = "en_GB";
         calendar.firstDayOfWeek = 1;
       };
+      nginx.enableSSL = false;
+      dataDir = "/persist/var/lib/grocy";
     };
-    nginx.virtualHosts = self.lib.mkVirtualHost {
-      fqdn = config.services.grocy.hostName;
+    services.nginx.virtualHosts =
+      {
+        ${cfg.hostName}.listen = lib.singleton {
+          addr = "127.0.0.1";
+          port = 35168;
+        };
+      }
+      // self.lib.mkProxy {
+        fqdn = config.mkSubdomain "grocy";
+        port = 35168;
+      };
+    services.oauth2_proxy.nginx.virtualHostsWithGroups = lib.singleton {
+      vhost = config.mkSubdomain "grocy";
+      groups = ["family"];
     };
   };
 }

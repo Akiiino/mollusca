@@ -4,24 +4,14 @@
   ...
 }: {
   config.services.nginx.virtualHosts = {
-    "${self.secrets.personal_domain}" = {
+    "${config.domain}" = {
       locations."/".extraConfig = "return 404;";
       enableACME = true;
       forceSSL = true;
     };
-    "${self.secrets.public_domain}" = {
+    "${config.mkSubdomain "*"}" = {
       locations."/".extraConfig = "return 404;";
-      enableACME = true;
-      forceSSL = true;
-    };
-    "${self.secrets.personal_subdomain "*"}" = {
-      locations."/".extraConfig = "return 404;";
-      useACMEHost = self.secrets.personal_domain;
-      forceSSL = true;
-    };
-    "${self.secrets.public_subdomain "*"}" = {
-      locations."/".extraConfig = "return 404;";
-      useACMEHost = self.secrets.public_domain;
+      useACMEHost = config.domain;
       forceSSL = true;
     };
   };

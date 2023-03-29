@@ -1,19 +1,25 @@
 {
   config,
   self,
+  lib,
   ...
-}: {
-  config.services = {
-    nitter = {
+}: let
+  cfg = config.services.nitter;
+in {
+  config = {
+    services.nitter = {
       enable = true;
-      server.hostname = self.secrets.personal_subdomain "nitter";
+      server.hostname = config.mkSubdomain "nitter";
       server.address = "127.0.0.1";
       server.port = 13735;
       server.https = true;
     };
-    nginx.virtualHosts = self.lib.mkProxy {
-      fqdn = config.services.nitter.server.hostname;
-      port = config.services.nitter.server.port;
+
+    services.nginx.virtualHosts = self.lib.mkProxy {
+      fqdn = cfg.server.hostname;
+      port = cfg.server.port;
     };
+
+    services.oauth2_proxy.nginx.virtualHosts = lib.singleton cfg.server.hostname;
   };
 }

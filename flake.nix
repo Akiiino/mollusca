@@ -25,6 +25,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    impermanence.url = "github:nix-community/impermanence";
+
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     secondbrain = {
@@ -43,12 +45,12 @@
     agenix,
     flake-parts,
     secondbrain,
+    impermanence,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       flake = {
         lib = import "${self}/lib.nix" {inherit inputs self;};
-        secrets = import "${self}/secrets/minor_secrets.nix" {inherit inputs self;};
 
         nixosConfigurations = {
           gastropod = self.lib.mkHost {
@@ -81,6 +83,10 @@
             hostname = "scallop";
             customModules = [
               secondbrain.nixosModules.CTO
+              impermanence.nixosModules.impermanence
+              ({config, ...}: {
+                domain = config.secrets.publicDomain;
+              })
             ];
           };
         };

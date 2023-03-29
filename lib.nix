@@ -12,10 +12,11 @@ in rec {
   };
 
   commonNixOSModules = [
-    (
-      {nix.registry.nixpkgs.flake = inputs.nixpkgs;}
-      // commonNixpkgsConfig
-    )
+    "${self}/secrets/minor_secrets.nix"
+    "${self}/users/akiiino"
+    inputs.agenix.nixosModules.default
+    {nix.registry.nixpkgs.flake = inputs.nixpkgs;}
+    commonNixpkgsConfig
   ];
 
   mkHost = {
@@ -29,8 +30,6 @@ in rec {
       modules =
         [
           "${self}/machines/${hostname}"
-          "${self}/users/akiiino"
-          inputs.agenix.nixosModules.default
           {disabledModules = disabledModules;}
         ]
         ++ commonNixOSModules
@@ -61,6 +60,7 @@ in rec {
   mkProxy = {
     fqdn,
     port,
+    extraConfig ? "",
   }:
     mkVirtualHost {
       inherit fqdn;
@@ -68,9 +68,14 @@ in rec {
         locations."/" = {
           proxyPass = "http://127.0.0.1:${builtins.toString port}";
           proxyWebsockets = true;
-          extraConfig = ''
-            proxy_pass_header Authorization;
-          '';
+          extraConfig =
+            ''
+              proxy_pass_header Authorization;
+              proxy_busy_buffers_size 512k;
+              proxy_buffers 4 512k;
+              proxy_buffer_size 256k;
+            ''
+            + extraConfig;
         };
       };
     };

@@ -1,20 +1,30 @@
 {
   config,
   self,
+  lib,
   ...
-}: {
+}: let
+  cfg = config.security.acme;
+in {
   config = {
-    security.acme.acceptTerms = true;
-    age.secrets.hetznerAPIKey.file = "${self}/secrets/hetzner.age";
-    security.acme.defaults = {
-      email = self.secrets.acme_email;
-      dnsProvider = "hetzner";
-      credentialsFile = config.age.secrets.hetznerAPIKey.path;
-      webroot = null;
+    environment.persistence."/persist".directories = lib.singleton {
+      directory = "/var/lib/acme";
+      user = "acme";
+      group = "acme";
+      mode = "u=rwx,g=rx,o=";
     };
-    security.acme.certs = {
-      "${self.secrets.personal_domain}".extraDomainNames = [(self.secrets.personal_subdomain "*")];
-      "${self.secrets.public_domain}".extraDomainNames = [(self.secrets.public_subdomain "*")];
+
+    age.secrets.hetznerAPIKey.file = "${self}/secrets/hetzner.age";
+
+    security.acme = {
+      acceptTerms = true;
+      certs.${config.domain} = {
+        extraDomainNames = [(config.mkSubdomain "*")];
+        email = config.secrets.acmeEmail;
+        dnsProvider = "hetzner";
+        credentialsFile = config.age.secrets.hetznerAPIKey.path;
+        webroot = null;
+      };
     };
   };
 }
