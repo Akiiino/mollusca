@@ -13,7 +13,8 @@
     ./services/grocy.nix
     ./services/nextcloud.nix
     ./services/postgresql.nix
-    ./services/secondbrain.nix
+    #./services/secondbrain.nix
+    ./services/komga.nix
     ./services/oauth-proxy.nix
     ./services/404.nix
     ./disko.nix

@@ -61,6 +61,7 @@ in rec {
     fqdn,
     port,
     extraConfig ? "",
+    extraVhostConfig ? {},
   }:
     mkVirtualHost {
       inherit fqdn;
@@ -77,6 +78,6 @@ in rec {
             ''
             + extraConfig;
         };
-      };
+      } // extraVhostConfig;
     };
 }
