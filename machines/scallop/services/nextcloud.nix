@@ -22,7 +22,7 @@ in {
     users.groups.nextcloud.gid = 992;
     services.nextcloud = {
       enable = true;
-      package = pkgs.nextcloud25;
+      package = pkgs.nextcloud26;
       enableBrokenCiphersForSSE = false;
       hostName = config.mkSubdomain "nextcloud";
       home = "/persist/var/lib/nextcloud";
