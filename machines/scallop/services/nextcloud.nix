@@ -44,8 +44,8 @@ in {
       extraApps = with pkgs.nextcloud25Packages.apps; {
         inherit polls forms unsplash calendar deck files_texteditor keeweb notes contacts groupfolders tasks bookmarks;
         oidc_login = pkgs.fetchNextcloudApp rec {
-          url = "https://github.com/pulsejet/nextcloud-oidc-login/releases/download/v2.4.1/oidc_login.tar.gz";
-          sha256 = "sha256-muTtxUxhSvBbhmJuE/Aig2toLcg+62s/fyA5b73gkYE=";
+          url = "https://github.com/akiiino/nextcloud-oidc-login/archive/master.tar.gz";
+          sha256 = "sha256-EWCckoDFEQv9T5DB4dEMlKHabR5zo+3wd3rUSg3P40w=";
         };
       };
       secretFile = config.age.secrets.nextcloudOidcSecret.path;
@@ -62,7 +62,9 @@ in {
           name = "name";
           quota = "nextCloudQuota";
           groups = "nextCloudGroups";
+          login_filter = "nextCloudGroups";
         };
+        oidc_login_filter_allowed_values = ["nextcloud" "admin"];
 
         allow_user_to_change_display_name = false;
         lost_password_link = "disabled";
@@ -73,7 +75,6 @@ in {
         oidc_login_hide_password_form = true;
         oidc_login_use_id_token = false;
 
-        #oidc_login_filter_allowed_values = [];
 
         oidc_login_scope = "openid profile";
 
