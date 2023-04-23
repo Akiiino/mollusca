@@ -14,7 +14,7 @@
       username = "akiiino";
       passwordFile = config.age.secrets.secondbrainNCPassword.path;
       calendarURL = "https://${config.services.nextcloud.hostName}/remote.php/dav/calendars/akiiino/daily-routine/";
-      dayLookahead = 1;
+      dayLookahead = 0;
     };
     systemd.services."CTO" = {
       requires = ["nginx.service" "phpfpm-nextcloud.service"];

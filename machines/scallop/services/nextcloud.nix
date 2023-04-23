@@ -42,10 +42,22 @@ in {
         "opcache.interned_strings_buffer" = "128";
       };
       extraApps = with pkgs.nextcloud25Packages.apps; {
-        inherit polls forms unsplash calendar deck files_texteditor keeweb notes contacts groupfolders tasks bookmarks;
+        inherit polls forms unsplash calendar files_texteditor keeweb notes contacts tasks bookmarks;
         oidc_login = pkgs.fetchNextcloudApp rec {
           url = "https://github.com/akiiino/nextcloud-oidc-login/archive/master.tar.gz";
           sha256 = "sha256-EWCckoDFEQv9T5DB4dEMlKHabR5zo+3wd3rUSg3P40w=";
+        };
+        deck = pkgs.fetchNextcloudApp rec {
+          url = "https://github.com/nextcloud-releases/deck/releases/download/v1.9.0/deck-v1.9.0.tar.gz";
+          sha256 = "sha256-eATz0sbcEoWKlPTZfqBbroki+NFTxeI+gNztm5Erqa8=";
+        };
+        groupfolders = pkgs.fetchNextcloudApp rec {
+          url = "https://github.com/nextcloud-releases/groupfolders/releases/download/v14.0.1/groupfolders-v14.0.1.tar.gz";
+          sha256 = "sha256-ZQHrZ4baAW1MY7WAMFns1H+zDpd85cpWsuhl7YIKh/Q=";
+        };
+        previewgenerator = pkgs.fetchNextcloudApp rec {
+          url = "https://github.com/akiiino/previewgenerator/archive/7ef965c3e43b374e23d00c92d6ed3b501847e6d9.zip";
+          sha256 = "sha256-WcLLIwfl124A2W36cI1LYoa5SdeTEsGxkPSpNaYrLAs=";
         };
       };
       secretFile = config.age.secrets.nextcloudOidcSecret.path;

@@ -14,7 +14,7 @@
     ./services/nextcloud.nix
     ./services/postgresql.nix
     #./services/gitea.nix
-    #./services/secondbrain.nix
+    ./services/secondbrain.nix
     #./services/komga.nix
     ./services/oauth-proxy.nix
     ./services/404.nix
@@ -52,6 +52,10 @@
         }
       ];
     };
+    swapDevices = [ {
+       device = "/persist/swapfile";
+       size = 4 * 1024;
+     } ];
     environment.persistence."/persist" = {
       hideMounts = true;
       directories = [

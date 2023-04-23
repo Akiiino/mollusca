@@ -1,1 +1,1 @@
-[(import ./hydroxide.nix)]
+[(import ./hydroxide.nix) (import ./nextcloud.nix)]
