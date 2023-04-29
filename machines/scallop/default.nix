@@ -17,6 +17,7 @@
     ./services/secondbrain.nix
     #./services/komga.nix
     ./services/oauth-proxy.nix
+    ./services/nginx.nix
     ./services/404.nix
     ./disko.nix
   ];
@@ -52,10 +53,12 @@
         }
       ];
     };
-    swapDevices = [ {
-       device = "/persist/swapfile";
-       size = 4 * 1024;
-     } ];
+    swapDevices = [
+      {
+        device = "/persist/swapfile";
+        size = 4 * 1024;
+      }
+    ];
     environment.persistence."/persist" = {
       hideMounts = true;
       directories = [
@@ -77,7 +80,7 @@
 
     nix.settings.auto-optimise-store = true;
 
-    boot.cleanTmpDir = true;
+    boot.tmp.cleanOnBoot = true;
     zramSwap.enable = true;
     networking.hostName = "scallop";
     networking.domain = "";
@@ -86,13 +89,6 @@
     environment.systemPackages = with pkgs; [kakoune hydroxide];
 
     networking.firewall.allowedTCPPorts = [80 443];
-    services.nginx = {
-      enable = true;
-      recommendedGzipSettings = true;
-      recommendedOptimisation = true;
-      recommendedProxySettings = true;
-      recommendedTlsSettings = true;
-    };
 
     system.stateVersion = "22.05";
   };

@@ -59,7 +59,7 @@ in {
       stateDir = "${cfg.stateDir}"
       configFile = "${configFile}"
       os.makedirs(stateDir, mode=0o750, exist_ok=True)
-      
+
       with open("${config.age.secrets.komgaClientSecret.path}", "r") as f:
           secret = f.read().strip()
       with open(f"{configFile}/application.yml", "r") as f_in:

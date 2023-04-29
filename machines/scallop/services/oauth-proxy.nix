@@ -11,6 +11,7 @@
       enable = true;
       keyFile = config.age.secrets.oauth2_proxy.path;
       cookie.domain = "." + config.domain;
+      cookie.expire = "336h0m0s";
 
       provider = "keycloak-oidc";
       redirectURL = "https://${config.mkSubdomain "oauth2"}/oauth2/callback";

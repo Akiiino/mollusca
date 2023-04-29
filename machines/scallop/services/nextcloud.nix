@@ -87,7 +87,6 @@ in {
         oidc_login_hide_password_form = true;
         oidc_login_use_id_token = false;
 
-
         oidc_login_scope = "openid profile";
 
         oidc_login_webdav_enabled = false;

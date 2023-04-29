@@ -84,9 +84,7 @@
             customModules = [
               secondbrain.nixosModules.CTO
               impermanence.nixosModules.impermanence
-              ({config, ...}: {
-                domain = config.secrets.publicDomain;
-              })
+              ({config, ...}: {domain = config.secrets.publicDomain;})
             ];
           };
         };
