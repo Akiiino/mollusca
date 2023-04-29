@@ -23,6 +23,10 @@
       extraConfig.whitelist-domain = "." + config.domain;
       extraConfig.oidc-issuer-url = "https://${config.services.keycloak.settings.hostname}/realms/shore";
     };
+    systemd.services."oauth2_proxy" = {
+      requires = ["keycloak.service"];
+      after = ["keycloak.service"];
+    };
 
     services.nginx.virtualHosts = self.lib.mkProxy {
       fqdn = config.mkSubdomain "oauth2";
