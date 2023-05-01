@@ -127,11 +127,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1682927587,
-        "narHash": "sha256-hagLJ2h1xQhWYBeRAcPoz26CLcNZMW6EthzcPMMz6Ww=",
+        "lastModified": 1682928044,
+        "narHash": "sha256-YhU9Auh+ZPebu/MH1Mzhifbg/afE5JZ4XfTwseMtdlg=",
         "ref": "refs/heads/main",
-        "rev": "8fa78aeee19261e44619e697d9918f5c17bd01e9",
-        "revCount": 2,
+        "rev": "18557fd1059e663cb3a3e361476a2f85b8e4c88a",
+        "revCount": 3,
         "type": "git",
         "url": "ssh://git@github.com/Akiiino/mollusca-secrets.git"
       },
