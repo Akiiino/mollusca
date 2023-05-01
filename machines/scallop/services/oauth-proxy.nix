@@ -22,6 +22,10 @@
 
       extraConfig.whitelist-domain = "." + config.domain;
       extraConfig.oidc-issuer-url = "https://${config.services.keycloak.settings.hostname}/realms/shore";
+      #extraConfig.set-authorization-header = true;
+      #extraConfig.pass-authorization-header = true;
+
+      setXauthrequest = true;
     };
     systemd.services."oauth2_proxy" = {
       requires = ["keycloak.service" "nginx.service"];

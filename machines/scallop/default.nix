@@ -17,6 +17,7 @@
     ./services/secondbrain.nix
     #./services/komga.nix
     ./services/oauth-proxy.nix
+    #./services/calibre-web.nix
     ./services/nginx.nix
     ./services/404.nix
     ./disko.nix
