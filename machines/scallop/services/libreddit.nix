@@ -20,6 +20,11 @@ in {
       fqdn = hostname;
     };
 
+    systemd.services."libreddit" = {
+      requires = ["nginx.service"];
+      after = ["nginx.service"];
+    };
+
     services.oauth2_proxy.nginx.virtualHosts = lib.singleton hostname;
   };
 }

@@ -139,8 +139,8 @@ in {
     };
 
     systemd.services."nextcloud-setup" = {
-      requires = ["postgresql.service"];
-      after = ["postgresql.service"];
+      requires = ["postgresql.service" "nginx.service"];
+      after = ["postgresql.service" "nginx.service"];
     };
 
     services.nginx.virtualHosts = self.lib.mkVirtualHost {

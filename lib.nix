@@ -19,7 +19,7 @@ in rec {
     commonNixpkgsConfig
   ];
 
-  mkHost = {
+  mkMachine = {
     hostname,
     arch ? "x86_64-linux",
     disabledModules ? [],

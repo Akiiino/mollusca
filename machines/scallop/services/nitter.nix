@@ -20,6 +20,11 @@ in {
       port = cfg.server.port;
     };
 
+    systemd.services."nitter" = {
+      requires = ["nginx.service"];
+      after = ["nginx.service"];
+    };
+
     services.oauth2_proxy.nginx.virtualHosts = lib.singleton cfg.server.hostname;
   };
 }

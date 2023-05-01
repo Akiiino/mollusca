@@ -55,11 +55,13 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
+      systems = ["x86_64-linux" "x86_64-darwin"];
+
       flake = {
         lib = import "${self}/lib.nix" {inherit inputs self;};
 
         nixosConfigurations = {
-          gastropod = self.lib.mkHost {
+          gastropod = self.lib.mkMachine {
             hostname = "gastropod";
             customModules = [
               nixos-hardware.nixosModules.framework
@@ -85,7 +87,7 @@
             ];
           };
 
-          scallop = self.lib.mkHost {
+          scallop = self.lib.mkMachine {
             hostname = "scallop";
             customModules = [
               secondbrain.nixosModules.CTO
@@ -95,10 +97,6 @@
           };
         };
       };
-
-      systems = [
-        "x86_64-linux"
-      ];
 
       perSystem = {pkgs, ...}: {
         formatter = pkgs.alejandra;

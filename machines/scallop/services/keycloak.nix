@@ -24,6 +24,10 @@ in {
         features-disabled = "kerberos,par";
       };
     };
+    systemd.services."keycloak" = {
+      requires = ["nginx.service"];
+      after = ["nginx.service"];
+    };
 
     services.nginx.virtualHosts = self.lib.mkProxy {
       fqdn = cfg.settings.hostname;

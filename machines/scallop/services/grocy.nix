@@ -29,6 +29,10 @@ in {
         fqdn = config.mkSubdomain "grocy";
         port = 35168;
       };
+    systemd.services."grocy" = {
+      requires = ["nginx.service"];
+      after = ["nginx.service"];
+    };
     services.oauth2_proxy.nginx.virtualHostsWithGroups = lib.singleton {
       vhost = config.mkSubdomain "grocy";
       groups = ["family"];

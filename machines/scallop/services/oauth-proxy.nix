@@ -24,8 +24,8 @@
       extraConfig.oidc-issuer-url = "https://${config.services.keycloak.settings.hostname}/realms/shore";
     };
     systemd.services."oauth2_proxy" = {
-      requires = ["keycloak.service"];
-      after = ["keycloak.service"];
+      requires = ["keycloak.service" "nginx.service"];
+      after = ["keycloak.service" "nginx.service"];
     };
 
     services.nginx.virtualHosts = self.lib.mkProxy {
