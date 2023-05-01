@@ -43,22 +43,11 @@ in {
       };
       extraApps = with pkgs.nextcloud25Packages.apps; {
         inherit polls forms unsplash calendar files_texteditor keeweb notes contacts tasks bookmarks;
-        oidc_login = pkgs.fetchNextcloudApp rec {
-          url = "https://github.com/akiiino/nextcloud-oidc-login/archive/master.tar.gz";
-          sha256 = "sha256-EWCckoDFEQv9T5DB4dEMlKHabR5zo+3wd3rUSg3P40w=";
-        };
-        deck = pkgs.fetchNextcloudApp rec {
-          url = "https://github.com/nextcloud-releases/deck/releases/download/v1.9.0/deck-v1.9.0.tar.gz";
-          sha256 = "sha256-eATz0sbcEoWKlPTZfqBbroki+NFTxeI+gNztm5Erqa8=";
-        };
-        groupfolders = pkgs.fetchNextcloudApp rec {
-          url = "https://github.com/nextcloud-releases/groupfolders/releases/download/v14.0.1/groupfolders-v14.0.1.tar.gz";
-          sha256 = "sha256-ZQHrZ4baAW1MY7WAMFns1H+zDpd85cpWsuhl7YIKh/Q=";
-        };
-        previewgenerator = pkgs.fetchNextcloudApp rec {
-          url = "https://github.com/akiiino/previewgenerator/archive/7ef965c3e43b374e23d00c92d6ed3b501847e6d9.zip";
-          sha256 = "sha256-WcLLIwfl124A2W36cI1LYoa5SdeTEsGxkPSpNaYrLAs=";
-        };
+        oidc_login = self.inputs.nc-oidc_login;
+        deck = self.inputs.nc-deck;
+        groupfolders = self.inputs.nc-groupfolders;
+        previewgenerator = self.inputs.nc-previewgenerator;
+        announcementcenter = self.inputs.nc-announcementcenter;
       };
       secretFile = config.age.secrets.nextcloudOidcSecret.path;
       extraOptions = {
@@ -101,6 +90,17 @@ in {
         oidc_login_skip_proxy = false;
 
         oidc_login_code_challenge_method = "S256";
+
+        knowledgebaseenabled = false;
+
+        mail_domain = "seashell.social";
+        mail_smtphost = "live.smtp.mailtrap.io";
+        mail_smtpport = 587;
+        mail_smtpsecure = "ssl";
+        mail_smtpauth = "api";
+
+        preview_concurrency_all = 3;
+        preview_concurrency_new = 1;
       };
     };
 
@@ -146,10 +146,6 @@ in {
     services.nginx.virtualHosts = self.lib.mkVirtualHost {
       fqdn = cfg.hostName;
       vhostConfig.serverAliases = cfg.config.extraTrustedDomains;
-      # }
-      # // self.lib.mkVirtualHost {
-      #   fqdn = config.mkSubdomain "nc";
-      #   vhostConfig.globalRedirect = cfg.hostName;
     };
   };
 }

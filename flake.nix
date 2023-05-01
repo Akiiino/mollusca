@@ -40,6 +40,27 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };
+
+    nc-oidc_login = {
+      url = "github:akiiino/nextcloud-oidc-login";
+      flake = false;
+    };
+    nc-deck = {
+      url = "https://github.com/nextcloud-releases/deck/releases/download/v1.9.0/deck-v1.9.0.tar.gz";
+      flake = false;
+    };
+    nc-groupfolders = {
+      url = "https://github.com/nextcloud-releases/groupfolders/releases/download/v14.0.1/groupfolders-v14.0.1.tar.gz";
+      flake = false;
+    };
+    nc-previewgenerator = {
+      url = "github:akiiino/previewgenerator";
+      flake = false;
+    };
+    nc-announcementcenter = {
+      url = "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.5.1/announcementcenter-v6.5.1.tar.gz";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {
