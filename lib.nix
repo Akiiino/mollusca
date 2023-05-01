@@ -12,7 +12,7 @@ in rec {
   };
 
   commonNixOSModules = [
-    "${self}/secrets/minor_secrets.nix"
+    inputs.mollusca-secrets.nixosModules.secrets
     "${self}/users/akiiino"
     inputs.agenix.nixosModules.default
     {nix.registry.nixpkgs.flake = inputs.nixpkgs;}

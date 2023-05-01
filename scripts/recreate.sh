@@ -1,6 +1,3 @@
-decrypt secrets/minor_secrets.enc.json
-git add -N secrets/minor_secrets.json
-
 echo "nixos-anywhere"
 nix run github:numtide/nixos-anywhere -- "akiiino@$1" --flake ".#$2"
 echo "ssh-keygen -R"
@@ -22,7 +19,3 @@ if [ "$1" = "localhost" ]; then
 else
     nixos-rebuild switch --flake ".#$2" --fast --target-host "$1" --build-host "$1" --use-remote-sudo
 fi
-
-echo "encrypt"
-encrypt secrets/minor_secrets.json
-git add -N secrets/minor_secrets.json

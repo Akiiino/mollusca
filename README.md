@@ -13,7 +13,7 @@ Contains system configs for my machines. At the moment contains
 
 There is also a shell environment I use while modifying these configs, available via `nix develop` or via [`direnv`](https://direnv.net/) (with [`nix-direnv`](https://github.com/nix-community/nix-direnv)).
 
-Secrets management is done via [agenix](https://github.com/ryantm/agenix) (for whole-file secrets) and [sops](https://github.com/mozilla/sops) (for minor things I'd just rather not publish, like emails and URLs).
+Secrets management is done via [agenix](https://github.com/ryantm/agenix). Minor secret-like things like URLs and emails are just kept in a separate private flake.
 
 Applying the configurations (while in the development shell):
 

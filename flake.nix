@@ -34,6 +34,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };
+
+    mollusca-secrets = {
+      url = "git+ssh://git@github.com/Akiiino/mollusca-secrets.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
   };
 
   outputs = inputs @ {
