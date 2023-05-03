@@ -93,12 +93,6 @@ in {
 
         knowledgebaseenabled = false;
 
-        mail_domain = "seashell.social";
-        mail_smtphost = "live.smtp.mailtrap.io";
-        mail_smtpport = 587;
-        mail_smtpsecure = "ssl";
-        mail_smtpauth = "api";
-
         preview_concurrency_all = 3;
         preview_concurrency_new = 1;
       };
