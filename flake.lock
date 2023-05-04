@@ -304,11 +304,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1683229218,
-        "narHash": "sha256-nyQV8xBZ+wEMZDOnYQ+ucbhuLGmZ2zLJaz5f1C0hjkM=",
+        "lastModified": 1683229701,
+        "narHash": "sha256-kmxW0j2s1NtE1jWPGPA/96MaHhpz3yMMOkQmmQhNkFw=",
         "owner": "akiiino",
         "repo": "secondbrain",
-        "rev": "b1c93ddb091fa6b4e867b0444005ec28fd3d73d5",
+        "rev": "a6a1e81bbcbaf688359d6878ad5c46d6a823308c",
         "type": "github"
       },
       "original": {
