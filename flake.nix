@@ -12,6 +12,7 @@
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.darwin.follows = "darwin";
     };
 
     ssh-to-age = {
@@ -61,6 +62,17 @@
       url = "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.5.1/announcementcenter-v6.5.1.tar.gz";
       flake = false;
     };
+
+    darwin = {
+      url = "github:LnL7/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    gitsh = {
+      url = "github:akiiino/gitsh-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
   };
 
   outputs = inputs @ {
@@ -73,6 +85,7 @@
     flake-parts,
     secondbrain,
     impermanence,
+    darwin,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -116,6 +129,11 @@
               ({config, ...}: {domain = config.secrets.publicDomain;})
             ];
           };
+        };
+
+        darwinConfigurations."workbook" = darwin.lib.darwinSystem {
+          system = "x86_64-darwin";
+          modules = ["${self}/machines/workbook"];
         };
       };
 
