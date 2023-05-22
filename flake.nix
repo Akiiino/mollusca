@@ -73,6 +73,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };
+
+    autoraise = {
+      url = "github:akiiino/autoraise-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
   };
 
   outputs = inputs @ {
@@ -134,6 +140,9 @@
         darwinConfigurations."workbook" = darwin.lib.darwinSystem {
           system = "x86_64-darwin";
           modules = ["${self}/machines/workbook"];
+          specialArgs = {
+            inherit self;
+          };
         };
       };
 

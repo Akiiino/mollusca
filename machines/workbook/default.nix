@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  self,
   ...
 }: {
   environment.systemPackages = with pkgs; [
@@ -26,15 +27,7 @@
     zlib
     sqlite
     skhd
-    (writeShellScriptBin "write_pom" ''
-      last_pom=$(tail -n 3 ~/poms)
-      reply=$(osascript -e "display dialog \"$last_pom\" default answer \"\"" -e "text returned of the result")
-      if [ -n "$reply" ]; then
-          date=$(date '+%m-%d %H:%M')
-          printf "%s: %s\n" "$date" "$reply" >> ~/poms
-      fi
-    '')
-    (writeShellScriptBin "write_pom_bad" (builtins.readFile "${self}/scripts/write_pom"))
+    (writeShellScriptBin "write_pom" (builtins.readFile "${self}/scripts/write_pom"))
 
     python310
     poetry
@@ -42,13 +35,21 @@
 
     iina
     slack
+    obsidian
+    spotify
+    monitorcontrol
+    teams
     vault
-    # self.inputs.gitsh.packages.x86_64-darwin.gitsh
+    self.inputs.gitsh.packages.x86_64-darwin.gitsh
+    (self.inputs.autoraise.packages.x86_64-darwin.autoraise.override {experimental_focus_first = true;})
   ];
 
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
       "slack"
+      "obsidian"
+      "spotify"
+      "teams"
     ];
 
   fonts = {
@@ -69,14 +70,9 @@
       upgrade = true;
     };
     brews = [
-      {
-        name = "dimentium/autoraise/autoraise";
-        args = ["with-dexperimental_focus_first"];
-      }
       "pure"
-      "rust"
       "pass"
-      "thoughtbot/formulae/gitsh"
+      "choose-gui"
     ];
     casks = [
       "firefox"
@@ -84,17 +80,10 @@
       "keka"
       "kitty"
       "logitech-options"
-      "microsoft-teams"
-      "monitorcontrol"
       "notion"
-      "obsidian"
       "rectangle-pro"
-      "spotify"
       "zotero"
-    ];
-    taps = [
-      "dimentium/autoraise"
-      "thoughtbot/formulae"
+      "mongodb-compass"
     ];
   };
 

@@ -24,6 +24,42 @@
         "type": "github"
       }
     },
+    "autoraise": {
+      "inputs": {
+        "autoraise-release": "autoraise-release",
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1684249982,
+        "narHash": "sha256-bMI5k5LVqT1VnmgWdqMIpYkUduYF41UEQmuDqT0qXPQ=",
+        "owner": "akiiino",
+        "repo": "autoraise-flake",
+        "rev": "b8283ecf65f352ae2bedc43b38dcf0257c0511a2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "akiiino",
+        "repo": "autoraise-flake",
+        "type": "github"
+      }
+    },
+    "autoraise-release": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-F26XksnJX4lkXzhABGmQejuW+/83O+wUTOKcXIUYtk8=",
+        "type": "tarball",
+        "url": "https://github.com/sbmpost/AutoRaise/archive/refs/tags/v3.7.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://github.com/sbmpost/AutoRaise/archive/refs/tags/v3.7.tar.gz"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -336,6 +372,7 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "autoraise": "autoraise",
         "darwin": "darwin",
         "disko": "disko",
         "flake-parts": "flake-parts",
