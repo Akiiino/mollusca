@@ -5,43 +5,41 @@
   self,
   ...
 }: {
-  environment.systemPackages = with pkgs; [
-    jq
-    shellcheck
-    proselint
-    tmux
-    coreutils
-    moreutils
-    exa
-    fzf
-    htop
-    wget
-    rsync
-    curl
-    git
-    kakoune
-    kak-lsp
-    openssl
-    readline
-    xz
-    zlib
-    sqlite
-    skhd
-    (writeShellScriptBin "write_pom" (builtins.readFile "${self}/scripts/write_pom"))
-
-    python310
-    poetry
-    (unison.override {enableX11 = false;})
-
-    iina
-    slack
-    obsidian
-    spotify
-    monitorcontrol
-    teams
-    vault
-    self.inputs.gitsh.packages.x86_64-darwin.gitsh
+  environment.systemPackages = [
     (self.inputs.autoraise.packages.x86_64-darwin.autoraise.override {experimental_focus_first = true;})
+    (pkgs.unison.override {enableX11 = false;})
+
+    pkgs.coreutils
+    pkgs.curl
+    pkgs.exa
+    pkgs.fzf
+    pkgs.git
+    pkgs.htop
+    pkgs.jq
+    pkgs.moreutils
+    pkgs.openssl
+    pkgs.tmux
+    pkgs.wget
+
+    pkgs.iina
+    pkgs.monitorcontrol
+    pkgs.spotify
+
+    pkgs.obsidian
+
+    pkgs.slack
+    pkgs.teams
+    pkgs.vault
+
+    pkgs.kak-lsp
+    pkgs.kakoune
+    pkgs.poetry
+    pkgs.proselint
+    pkgs.python310
+    pkgs.shellcheck
+    self.inputs.gitsh.packages.x86_64-darwin.gitsh
+
+    pkgs.skhd
   ];
 
   nixpkgs.config.allowUnfreePredicate = pkg:
@@ -204,6 +202,7 @@
         # "com.apple.spotlight".orderedItems = [];
         "com.apple.universalaccess" = {
             closeViewSmoothImages = false;
+            closeViewScrollWheelModifiersInt = 524288;
             reduceTransparency = false;
         };
     };
@@ -216,7 +215,7 @@
       cmd + alt + ctrl - j : open -a JupyterLab
       cmd + alt + ctrl - f : open -a Firefox
       cmd + alt + ctrl - k : open -a kitty
-      cmd + alt + ctrl - p : write_pom
+      cmd + alt + ctrl - p : ${(pkgs.writeShellScriptBin "write_pom" (builtins.readFile "${self}/scripts/write_pom"))}/bin/write_pom
     '';
   };
 
