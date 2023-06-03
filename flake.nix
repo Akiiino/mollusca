@@ -99,7 +99,7 @@
 
         nixosConfigurations = {
           gastropod = self.lib.mkNixOSMachine {
-            hostname = "gastropod";
+            name = "gastropod";
             customModules = [
               nixos-hardware.nixosModules.framework
               nur.nixosModules.nur
@@ -107,11 +107,7 @@
               {
                 home-manager.useGlobalPkgs = true;
                 home-manager.useUserPackages = true;
-                home-manager.users.akiiino = {
-                  pkgs,
-                  nur,
-                  ...
-                }: {
+                home-manager.users.akiiino = {...}: {
                   imports = [
                     "${self}/legacy_modules/firefox.nix"
                     "${self}/legacy_modules/git.nix"
@@ -125,7 +121,7 @@
           };
 
           scallop = self.lib.mkNixOSMachine {
-            hostname = "scallop";
+            name = "scallop";
             customModules = [
               secondbrain.nixosModules.CTO
               impermanence.nixosModules.impermanence
@@ -135,7 +131,7 @@
         };
 
         darwinConfigurations."workbook" = self.lib.mkDarwinMachine {
-          hostname = "workbook";
+          name = "workbook";
         };
       };
 

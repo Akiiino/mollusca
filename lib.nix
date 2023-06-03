@@ -25,7 +25,7 @@ in rec {
   ];
 
   mkNixOSMachine = {
-    hostname,
+    name,
     arch ? "x86_64-linux",
     disabledModules ? [],
     customModules ? [],
@@ -34,7 +34,7 @@ in rec {
       system = arch;
       modules =
         [
-          "${self}/machines/${hostname}"
+          "${self}/machines/${name}"
           {disabledModules = disabledModules;}
         ]
         ++ commonNixOSModules
@@ -45,7 +45,7 @@ in rec {
     };
 
   mkDarwinMachine = {
-    hostname,
+    name,
     arch ? "x86_64-darwin",
     disabledModules ? [],
     customModules ? [],
@@ -54,7 +54,7 @@ in rec {
       system = arch;
       modules =
         [
-          "${self}/machines/${hostname}"
+          "${self}/machines/${name}"
           {disabledModules = disabledModules;}
         ]
         ++ commonDarwinModules
