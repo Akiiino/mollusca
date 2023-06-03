@@ -155,6 +155,27 @@
         "url": "https://github.com/thoughtbot/gitsh/releases/download/v0.14/gitsh-0.14.tar.gz"
       }
     },
+    "haumea": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1685133229,
+        "narHash": "sha256-FePm/Gi9PBSNwiDFq3N+DWdfxFq0UKsVVTJS3cQPn94=",
+        "owner": "nix-community",
+        "repo": "haumea",
+        "rev": "34dd58385092a23018748b50f9b23de6266dffc2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "v0.2.2",
+        "repo": "haumea",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -377,6 +398,7 @@
         "disko": "disko",
         "flake-parts": "flake-parts",
         "gitsh": "gitsh",
+        "haumea": "haumea",
         "home-manager": "home-manager_2",
         "impermanence": "impermanence",
         "mollusca-secrets": "mollusca-secrets",
