@@ -1,49 +1,62 @@
 {
   inputs = {
+    # Nix
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    nur.url = "github:nix-community/NUR/master";
-
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    haumea = {
+      url = "github:nix-community/haumea/v0.2.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Machine configuration
+    darwin = {
+      url = "github:LnL7/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    impermanence.url = "github:nix-community/impermanence";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+    # Secrets
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.darwin.follows = "darwin";
     };
-
-    ssh-to-age = {
-      url = "github:Mic92/ssh-to-age";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-    };
-
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    impermanence.url = "github:nix-community/impermanence";
-
-    flake-parts.url = "github:hercules-ci/flake-parts";
-
-    secondbrain = {
-      url = "github:akiiino/secondbrain";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-    };
-
     mollusca-secrets = {
       url = "git+ssh://git@github.com/Akiiino/mollusca-secrets.git";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };
 
-    nc-oidc_login = {
-      url = "github:akiiino/nextcloud-oidc-login";
+    # Packages outside nixpkgs
+    autoraise = {
+      url = "github:akiiino/autoraise-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
+    gitsh = {
+      url = "github:akiiino/gitsh-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
+    secondbrain = {
+      url = "github:akiiino/secondbrain";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
+    nur.url = "github:nix-community/NUR/master";
+
+    # Nextcloud apps
+    nc-announcementcenter = {
+      url = "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.5.1/announcementcenter-v6.5.1.tar.gz";
       flake = false;
     };
     nc-deck = {
@@ -54,49 +67,28 @@
       url = "https://github.com/nextcloud-releases/groupfolders/releases/download/v14.0.1/groupfolders-v14.0.1.tar.gz";
       flake = false;
     };
+    nc-oidc_login = {
+      url = "github:akiiino/nextcloud-oidc-login";
+      flake = false;
+    };
     nc-previewgenerator = {
       url = "github:akiiino/previewgenerator";
       flake = false;
-    };
-    nc-announcementcenter = {
-      url = "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.5.1/announcementcenter-v6.5.1.tar.gz";
-      flake = false;
-    };
-
-    darwin = {
-      url = "github:LnL7/nix-darwin/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    gitsh = {
-      url = "github:akiiino/gitsh-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-    };
-
-    autoraise = {
-      url = "github:akiiino/autoraise-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-    };
-
-    haumea = {
-      url = "github:nix-community/haumea/v0.2.2";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
   outputs = inputs @ {
     self,
     nixpkgs,
-    home-manager,
-    nur,
-    nixos-hardware,
     agenix,
-    flake-parts,
-    secondbrain,
-    impermanence,
     darwin,
+    flake-parts,
+    haumea,
+    home-manager,
+    impermanence,
+    nixos-hardware,
+    nur,
+    secondbrain,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
