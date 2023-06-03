@@ -19,7 +19,12 @@ in rec {
     commonNixpkgsConfig
   ];
 
-  mkMachine = {
+  commonDarwinModules = [
+    {nix.registry.nixpkgs.flake = inputs.nixpkgs;}
+    commonNixpkgsConfig
+  ];
+
+  mkNixOSMachine = {
     hostname,
     arch ? "x86_64-linux",
     disabledModules ? [],
@@ -33,6 +38,26 @@ in rec {
           {disabledModules = disabledModules;}
         ]
         ++ commonNixOSModules
+        ++ customModules;
+      specialArgs = {
+        inherit self;
+      };
+    };
+
+  mkDarwinMachine = {
+    hostname,
+    arch ? "x86_64-darwin",
+    disabledModules ? [],
+    customModules ? [],
+  }:
+    inputs.darwin.lib.darwinSystem {
+      system = arch;
+      modules =
+        [
+          "${self}/machines/${hostname}"
+          {disabledModules = disabledModules;}
+        ]
+        ++ commonDarwinModules
         ++ customModules;
       specialArgs = {
         inherit self;

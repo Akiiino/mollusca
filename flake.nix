@@ -101,7 +101,7 @@
         lib = import "${self}/lib.nix" {inherit inputs self;};
 
         nixosConfigurations = {
-          gastropod = self.lib.mkMachine {
+          gastropod = self.lib.mkNixOSMachine {
             hostname = "gastropod";
             customModules = [
               nixos-hardware.nixosModules.framework
@@ -127,7 +127,7 @@
             ];
           };
 
-          scallop = self.lib.mkMachine {
+          scallop = self.lib.mkNixOSMachine {
             hostname = "scallop";
             customModules = [
               secondbrain.nixosModules.CTO
@@ -137,12 +137,8 @@
           };
         };
 
-        darwinConfigurations."workbook" = darwin.lib.darwinSystem {
-          system = "x86_64-darwin";
-          modules = ["${self}/machines/workbook"];
-          specialArgs = {
-            inherit self;
-          };
+        darwinConfigurations."workbook" = self.lib.mkDarwinMachine {
+          hostname = "workbook";
         };
       };
 
