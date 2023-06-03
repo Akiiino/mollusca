@@ -18,14 +18,14 @@ in {
     services.calibre-web = {
       enable = true;
       listen = {
-          ip = "127.0.0.1";
-          port = 44536;
+        ip = "127.0.0.1";
+        port = 44536;
       };
       options = {
         enableBookUploading = true;
         reverseProxyAuth = {
-            enable = true;
-            header = "X-User";
+          enable = true;
+          header = "X-User";
         };
       };
     };
@@ -43,4 +43,3 @@ in {
     services.oauth2_proxy.nginx.virtualHosts = lib.singleton fqdn;
   };
 }
-

@@ -162,49 +162,49 @@
     CustomSystemPreferences = {
     };
     CustomUserPreferences = {
-        NSGlobalDomain = {
-            AppleAccentColor = 4;
-            AppleHighlightColor = "0.698039 0.843137 1.000000 Blue";
-            # AppleLanguages = ["en"];
-            AppleLocale = "en_GB@currency=EUR";
-            NSToolbarTitleViewRolloverDelay = 0;
-            # NSUserDictionaryReplacementItems = [];
-        };
-        "com.apple.TextEdit" = {
-            PlainTextEncoding = 4;
-            PlainTextEncodingForWrite = 4;
-            RichText = 0;
-        };
-        "com.apple.TimeMachine"."DoNotOfferNewDisksForBackup" = true;
-        "com.apple.desktopservices" = {
-            DSDontWriteNetworkStores = true;
-            DSDontWriteUSBStores = true;
-        };
-        "com.apple.dock" = {
-            largesize = 100;
-            magnification = true;
-            # persistent-apps = [];
-            pinning = "start";
-        };
-        "com.apple.finder" = {
-            NewWindowTarget = "PfHm";
-            ShowExternalHardDrivesOnDesktop = true;
-            ShowHardDrivesOnDesktop = true;
-            ShowMountedServersOnDesktop = true;
-            ShowRemovableMediaOnDesktop = true;
-        };
-        "com.apple.frameworks.diskimages" = {
-            skip-verify = true;
-            skip-verify-locked = true;
-            skip-verify-remote = true;
-        };
-        "com.apple.print.PrintingPrefs"."Quit When Finished" = true;
-        # "com.apple.spotlight".orderedItems = [];
-        "com.apple.universalaccess" = {
-            closeViewSmoothImages = false;
-            closeViewScrollWheelModifiersInt = 524288;
-            reduceTransparency = false;
-        };
+      NSGlobalDomain = {
+        AppleAccentColor = 4;
+        AppleHighlightColor = "0.698039 0.843137 1.000000 Blue";
+        # AppleLanguages = ["en"];
+        AppleLocale = "en_GB@currency=EUR";
+        NSToolbarTitleViewRolloverDelay = 0;
+        # NSUserDictionaryReplacementItems = [];
+      };
+      "com.apple.TextEdit" = {
+        PlainTextEncoding = 4;
+        PlainTextEncodingForWrite = 4;
+        RichText = 0;
+      };
+      "com.apple.TimeMachine"."DoNotOfferNewDisksForBackup" = true;
+      "com.apple.desktopservices" = {
+        DSDontWriteNetworkStores = true;
+        DSDontWriteUSBStores = true;
+      };
+      "com.apple.dock" = {
+        largesize = 100;
+        magnification = true;
+        # persistent-apps = [];
+        pinning = "start";
+      };
+      "com.apple.finder" = {
+        NewWindowTarget = "PfHm";
+        ShowExternalHardDrivesOnDesktop = true;
+        ShowHardDrivesOnDesktop = true;
+        ShowMountedServersOnDesktop = true;
+        ShowRemovableMediaOnDesktop = true;
+      };
+      "com.apple.frameworks.diskimages" = {
+        skip-verify = true;
+        skip-verify-locked = true;
+        skip-verify-remote = true;
+      };
+      "com.apple.print.PrintingPrefs"."Quit When Finished" = true;
+      # "com.apple.spotlight".orderedItems = [];
+      "com.apple.universalaccess" = {
+        closeViewSmoothImages = false;
+        closeViewScrollWheelModifiersInt = 524288;
+        reduceTransparency = false;
+      };
     };
   };
 
