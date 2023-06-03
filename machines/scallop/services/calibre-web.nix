@@ -25,7 +25,7 @@ in {
         enableBookUploading = true;
         reverseProxyAuth = {
             enable = true;
-            header = "X-Auth-User";
+            header = "X-User";
         };
       };
     };
