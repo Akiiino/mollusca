@@ -7,7 +7,7 @@ in rec {
   commonNixpkgsConfig = {
     nixpkgs = {
       config.allowUnfree = true;
-      overlays = [inputs.nur.overlay] ++ (import "${self}/overlays");
+      overlays = [inputs.nur.overlay] ++ (import "${self}/overlays" {flake=self;});
     };
   };
 

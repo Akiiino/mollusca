@@ -374,6 +374,22 @@
         "type": "github"
       }
     },
+    "nixpkgs2211": {
+      "locked": {
+        "lastModified": 1685650716,
+        "narHash": "sha256-sDd7QIcMbIb37nuqMrJElvuyE5eVgWuKGtIPP8IWwCc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f7c1500e2eefa58f3c80dd046cba256e10440201",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-22.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nur": {
       "locked": {
         "lastModified": 1685810707,
@@ -409,6 +425,7 @@
         "nc-previewgenerator": "nc-previewgenerator",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
+        "nixpkgs2211": "nixpkgs2211",
         "nur": "nur",
         "secondbrain": "secondbrain"
       }

@@ -2,6 +2,7 @@
   inputs = {
     # Nix
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs2211.url = "github:NixOS/nixpkgs/nixos-22.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
     haumea = {
       url = "github:nix-community/haumea/v0.2.2";
