@@ -116,10 +116,10 @@
                   ...
                 }: {
                   imports = [
-                    "${self}/modules/firefox.nix"
-                    "${self}/modules/git.nix"
-                    "${self}/modules/kitty.nix"
-                    "${self}/modules/gnome.nix"
+                    "${self}/legacy_modules/firefox.nix"
+                    "${self}/legacy_modules/git.nix"
+                    "${self}/legacy_modules/kitty.nix"
+                    "${self}/legacy_modules/gnome.nix"
                     "${self}/users/akiiino/home.nix"
                   ];
                 };
