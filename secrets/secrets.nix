@@ -10,5 +10,7 @@ in {
   "secondbrain_nc_password.age".publicKeys = [akiiino scallop];
   "keycloak_db_pass.age".publicKeys = [akiiino scallop];
   "komga_client_secret.age".publicKeys = [akiiino scallop];
+  "minio.age".publicKeys = [akiiino scallop];
   "cifs_users/nextcloud.age".publicKeys = [akiiino scallop];
+  "cifs_users/minio.age".publicKeys = [akiiino scallop];
 }

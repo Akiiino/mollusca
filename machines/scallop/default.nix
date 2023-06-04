@@ -15,6 +15,7 @@
     ./services/keycloak.nix
     #./services/komga.nix
     ./services/libreddit.nix
+    ./services/minio.nix
     ./services/nextcloud.nix
     ./services/nginx.nix
     ./services/nitter.nix
