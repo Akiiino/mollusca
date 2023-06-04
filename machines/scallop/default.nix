@@ -6,21 +6,21 @@
   ...
 }: {
   imports = [
-    ./services/acme.nix
-    ./services/keycloak.nix
-    ./services/nitter.nix
-    ./services/libreddit.nix
-    ./services/grocy.nix
-    ./services/nextcloud.nix
-    ./services/postgresql.nix
-    #./services/gitea.nix
-    ./services/secondbrain.nix
-    #./services/komga.nix
-    ./services/oauth-proxy.nix
-    #./services/calibre-web.nix
-    ./services/nginx.nix
-    ./services/404.nix
     ./disko.nix
+    ./services/404.nix
+    ./services/acme.nix
+    #./services/calibre-web.nix
+    #./services/gitea.nix
+    ./services/grocy.nix
+    ./services/keycloak.nix
+    #./services/komga.nix
+    ./services/libreddit.nix
+    ./services/nextcloud.nix
+    ./services/nginx.nix
+    ./services/nitter.nix
+    ./services/oauth-proxy.nix
+    ./services/postgresql.nix
+    ./services/secondbrain.nix
   ];
 
   options = {
@@ -87,7 +87,7 @@
     networking.domain = "";
     security.sudo.wheelNeedsPassword = false;
 
-    environment.systemPackages = with pkgs; [kakoune hydroxide];
+    environment.systemPackages = with pkgs; [kakoune];
 
     networking.firewall.allowedTCPPorts = [80 443];
 
