@@ -42,14 +42,6 @@
     pkgs.skhd
   ];
 
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [
-      "slack"
-      "obsidian"
-      "spotify"
-      "teams"
-    ];
-
   fonts = {
     fontDir.enable = true;
     fonts = [
