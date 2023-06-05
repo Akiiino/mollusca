@@ -12,6 +12,7 @@ pkgs.mkShell {
     moreutils
     diffutils
     inputs.agenix.packages."${system}".agenix
+    inputs.gitsh.packages."${system}".gitsh
     (writeShellScriptBin "rebuild" (builtins.readFile "${self}/scripts/rebuild.sh"))
     (writeShellScriptBin "recreate" (builtins.readFile "${self}/scripts/recreate.sh"))
   ];
