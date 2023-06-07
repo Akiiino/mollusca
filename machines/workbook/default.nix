@@ -25,8 +25,6 @@
     pkgs.monitorcontrol
     pkgs.spotify
 
-    pkgs.obsidian
-
     pkgs.slack
     pkgs.teams
     pkgs.vault
@@ -34,7 +32,6 @@
     pkgs.kak-lsp
     pkgs.kakoune
     pkgs.poetry
-    pkgs.proselint
     pkgs.python310
     pkgs.shellcheck
     self.inputs.gitsh.packages.x86_64-darwin.gitsh
