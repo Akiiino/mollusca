@@ -100,7 +100,7 @@ in {
 
     age.secrets.nextcloudCifsPassword.file = "${self}/secrets/cifs_users/nextcloud.age";
     fileSystems.${cfg.datadir} = let
-      username = config.secrets.cifsUsers.nextcloud;
+      username = config.mollusca.secrets.cifsUsers.nextcloud;
       passwordFile = config.age.secrets.nextcloudCifsPassword.path;
       nextcloud_uid = builtins.toString config.users.users.nextcloud.uid;
       nextcloud_gid = builtins.toString config.users.groups.nextcloud.gid;

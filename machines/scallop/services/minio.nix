@@ -25,7 +25,7 @@ in {
 
     age.secrets.minioCifsPassword.file = "${self}/secrets/cifs_users/minio.age";
     fileSystems.${builtins.head cfg.dataDir} = let
-      username = config.secrets.cifsUsers.minio;
+      username = config.mollusca.secrets.cifsUsers.minio;
       passwordFile = config.age.secrets.minioCifsPassword.path;
       minio_uid = builtins.toString config.users.users.minio.uid;
       minio_gid = builtins.toString config.users.groups.minio.gid;

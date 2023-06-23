@@ -20,7 +20,7 @@ in {
       acceptTerms = true;
       certs.${config.domain} = {
         extraDomainNames = [(config.mkSubdomain "*")];
-        email = config.secrets.acmeEmail;
+        email = config.mollusca.secrets.acmeEmail;
         dnsProvider = "hetzner";
         credentialsFile = config.age.secrets.hetznerAPIKey.path;
         webroot = null;
