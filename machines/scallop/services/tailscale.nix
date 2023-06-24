@@ -25,9 +25,10 @@
       fi
 
       # otherwise authenticate with tailscale
-      ${tailscale}/bin/tailscale up -authkey tskey-auth-kmyqnh5CNTRL-BjjVLCkYrVEUEM4wYzGJWEaTcZoNV77DV
+      ${tailscale}/bin/tailscale up --advertise-exit-node -authkey tskey-auth-kmyqnh5CNTRL-BjjVLCkYrVEUEM4wYzGJWEaTcZoNV77DV
     '';
   };
+  boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
   networking.firewall = {
     enable = true;
     trustedInterfaces = [ "tailscale0" ];
