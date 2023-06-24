@@ -23,6 +23,7 @@
     ./services/outline.nix
     ./services/postgresql.nix
     ./services/secondbrain.nix
+    ./services/tailscale.nix
   ];
 
   options = {
