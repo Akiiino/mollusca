@@ -11,14 +11,22 @@ in {
       file = "${self}/secrets/keycloak_db_pass.age";
     };
 
-    age.secrets.outlineCredentials.file = "${self}/secrets/outline.age";
-    age.secrets.outlineOIDCCredentials.file = "${self}/secrets/outline_OIDC.age";
+    age.secrets.outlineCredentials = {
+        file = "${self}/secrets/outline.age";
+        owner = "outline";
+        group = "outline";
+    };
+    age.secrets.outlineOIDCCredentials = {
+        file = "${self}/secrets/outline_OIDC.age";
+        owner = "outline";
+        group = "outline";
+    };
     services.outline = {
-      enable = false;
+      enable = true;
       secretKeyFile = "/persist/var/lib/outline/secret_key";
       utilsSecretFile = "/persist/var/lib/outline/utils_secret";
-      publicUrl = config.mkSubdomain "outline";
-      port = 42510;
+      publicUrl = "https://" + config.mkSubdomain "outline";
+      port = 42511;
       storage = {
         accessKey = "l7nGG60kqXIwazeIKcfn";
         secretKeyFile = config.age.secrets.outlineCredentials.path;
@@ -40,7 +48,7 @@ in {
     };
 
     services.nginx.virtualHosts = self.lib.mkProxy {
-      fqdn = cfg.publicUrl;
+      fqdn = config.mkSubdomain "outline";
       port = cfg.port;
     };
   };
