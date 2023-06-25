@@ -12,14 +12,14 @@ in {
     };
 
     age.secrets.outlineCredentials = {
-        file = "${self}/secrets/outline.age";
-        owner = "outline";
-        group = "outline";
+      file = "${self}/secrets/outline.age";
+      owner = "outline";
+      group = "outline";
     };
     age.secrets.outlineOIDCCredentials = {
-        file = "${self}/secrets/outline_OIDC.age";
-        owner = "outline";
-        group = "outline";
+      file = "${self}/secrets/outline_OIDC.age";
+      owner = "outline";
+      group = "outline";
     };
     services.outline = {
       enable = true;

@@ -4,6 +4,7 @@
   ...
 }: {
   config = {
+    imports = [self.inputs.secondbrain.nixosModules.CTO];
     age.secrets.secondbrainNCPassword = {
       file = "${self}/secrets/secondbrain_nc_password.age";
       owner = "CTO";

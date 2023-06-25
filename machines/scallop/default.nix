@@ -24,6 +24,8 @@
     ./services/postgresql.nix
     ./services/secondbrain.nix
     ./services/tailscale.nix
+
+    self.inputs.impermanence.nixosModules.impermanence
   ];
 
   options = {

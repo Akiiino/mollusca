@@ -1,16 +1,18 @@
-{ config, pkgs, ... }:
-
 {
-  environment.systemPackages = [ pkgs.tailscale ];
+  config,
+  pkgs,
+  ...
+}: {
+  environment.systemPackages = [pkgs.tailscale];
 
   services.tailscale.enable = true;
 
   systemd.services.tailscale-autoconnect = {
     description = "Automatic connection to Tailscale";
 
-    after = [ "network-pre.target" "tailscale.service" ];
-    wants = [ "network-pre.target" "tailscale.service" ];
-    wantedBy = [ "multi-user.target" ];
+    after = ["network-pre.target" "tailscale.service"];
+    wants = ["network-pre.target" "tailscale.service"];
+    wantedBy = ["multi-user.target"];
 
     serviceConfig.Type = "oneshot";
 
@@ -31,7 +33,7 @@
   boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
   networking.firewall = {
     enable = true;
-    trustedInterfaces = [ "tailscale0" ];
-    allowedUDPPorts = [ config.services.tailscale.port ];
+    trustedInterfaces = ["tailscale0"];
+    allowedUDPPorts = [config.services.tailscale.port];
   };
 }

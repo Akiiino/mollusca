@@ -121,16 +121,12 @@
           scallop = self.lib.mkNixOSMachine {
             name = "scallop";
             customModules = [
-              secondbrain.nixosModules.CTO
-              impermanence.nixosModules.impermanence
               ({config, ...}: {domain = config.mollusca.secrets.publicDomain;})
             ];
           };
         };
 
-        darwinConfigurations."workbook" = self.lib.mkDarwinMachine {
-          name = "workbook";
-        };
+        darwinConfigurations."workbook" = self.lib.mkDarwinMachine {name = "workbook";};
       };
 
       perSystem = {pkgs, ...}: {
