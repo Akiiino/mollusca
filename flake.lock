@@ -235,19 +235,16 @@
     },
     "mollusca-secrets": {
       "inputs": {
-        "flake-parts": [
-          "flake-parts"
-        ],
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1687526498,
-        "narHash": "sha256-yzBdJp4tDX9f3NxQdHUiCFq6NxmN0BoqMIUONSHI3Cs=",
+        "lastModified": 1687532826,
+        "narHash": "sha256-zM/alE9wtzIxX2TSY1ao0rwg3gCTC4Uxz9td/BOiQHk=",
         "ref": "refs/heads/main",
-        "rev": "90132f26f4c667a0a3623c08f0577f6828091095",
-        "revCount": 5,
+        "rev": "510c72726746b40deec9080a2db3847edd4fe988",
+        "revCount": 8,
         "type": "git",
         "url": "ssh://git@github.com/Akiiino/mollusca-secrets.git"
       },

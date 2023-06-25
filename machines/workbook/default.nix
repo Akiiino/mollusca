@@ -4,7 +4,19 @@
   pkgs,
   self,
   ...
-}: {
+}: let
+  username = config.mollusca.secrets.workUsername;
+  homeDirectory = "/Users/" + config.mollusca.secrets.workUsername;
+in {
+  users.users.${username}.home = homeDirectory;
+  home-manager.users."${username}" = {
+    home = {
+      inherit username homeDirectory;
+
+      stateVersion = "23.11";
+    };
+  };
+
   environment.systemPackages = [
     (self.inputs.autoraise.packages.x86_64-darwin.autoraise.override {experimental_focus_first = true;})
     (pkgs.unison.override {enableX11 = false;})

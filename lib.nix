@@ -7,21 +7,32 @@ in rec {
   commonNixpkgsConfig = {
     nixpkgs = {
       config.allowUnfree = true;
-      overlays = [inputs.nur.overlay] ++ (import "${self}/overlays" {flake=self;});
+      overlays = [inputs.nur.overlay] ++ (import "${self}/overlays" {flake = self;});
     };
+    nix.registry.nixpkgs.flake = inputs.nixpkgs;
   };
+
+  commonHomeManagerConfig = {
+    home-manager.useGlobalPkgs = true;
+    home-manager.useUserPackages = true;
+  };
+
+  commonModules = [
+    commonNixpkgsConfig
+    commonHomeManagerConfig
+  ];
 
   commonNixOSModules = [
     inputs.mollusca-secrets.nixosModules.secrets
     "${self}/users/akiiino"
     inputs.agenix.nixosModules.default
-    {nix.registry.nixpkgs.flake = inputs.nixpkgs;}
-    commonNixpkgsConfig
+    inputs.home-manager.nixosModules.default
   ];
 
   commonDarwinModules = [
-    {nix.registry.nixpkgs.flake = inputs.nixpkgs;}
-    commonNixpkgsConfig
+    inputs.mollusca-secrets.darwinModules.secrets
+    inputs.agenix.darwinModules.default
+    inputs.home-manager.darwinModules.default
   ];
 
   mkNixOSMachine = {
@@ -37,6 +48,7 @@ in rec {
           "${self}/machines/${name}"
           {disabledModules = disabledModules;}
         ]
+        ++ commonModules
         ++ commonNixOSModules
         ++ customModules;
       specialArgs = {
@@ -57,6 +69,7 @@ in rec {
           "${self}/machines/${name}"
           {disabledModules = disabledModules;}
         ]
+        ++ commonModules
         ++ commonDarwinModules
         ++ customModules;
       specialArgs = {

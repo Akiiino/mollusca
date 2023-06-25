@@ -49,12 +49,14 @@ in {
       ];
     };
 
-    services.nginx.virtualHosts = self.lib.mkProxy {
-      fqdn = config.mkSubdomain "minio-console";
-      port = lib.toInt (builtins.substring 1 6 cfg.consoleAddress);
-    } // self.lib.mkProxy {
-      fqdn = config.mkSubdomain "minio";
-      port = lib.toInt (builtins.substring 1 6 cfg.listenAddress);
-    };
+    services.nginx.virtualHosts =
+      self.lib.mkProxy {
+        fqdn = config.mkSubdomain "minio-console";
+        port = lib.toInt (builtins.substring 1 6 cfg.consoleAddress);
+      }
+      // self.lib.mkProxy {
+        fqdn = config.mkSubdomain "minio";
+        port = lib.toInt (builtins.substring 1 6 cfg.listenAddress);
+      };
   };
 }

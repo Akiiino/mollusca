@@ -34,7 +34,6 @@
     mollusca-secrets = {
       url = "git+ssh://git@github.com/Akiiino/mollusca-secrets.git";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
     };
 
     # Packages outside nixpkgs
@@ -106,8 +105,6 @@
               nur.nixosModules.nur
               home-manager.nixosModules.home-manager
               {
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
                 home-manager.users.akiiino = {...}: {
                   imports = [
                     "${self}/legacy_modules/firefox.nix"
