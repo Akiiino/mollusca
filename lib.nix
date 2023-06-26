@@ -10,6 +10,9 @@ in rec {
       overlays = [inputs.nur.overlay] ++ (import "${self}/overlays" {flake = self;});
     };
     nix.registry.nixpkgs.flake = inputs.nixpkgs;
+    nix.extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
   };
 
   commonHomeManagerConfig = {

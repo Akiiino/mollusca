@@ -6,50 +6,81 @@
   ...
 }: let
   username = config.mollusca.secrets.workUsername;
-  homeDirectory = "/Users/" + config.mollusca.secrets.workUsername;
+  homeDirectory = "/Users/" + username;
+  user = config.home-manager.users."${username}";
 in {
   users.users.${username}.home = homeDirectory;
   home-manager.users."${username}" = {
+    xdg = {
+      enable = true;
+      configHome = homeDirectory + "/Configuration";
+      dataHome = homeDirectory + "/Data";
+    };
+    programs = {
+      git = {
+        enable = true;
+        userName = "${config.mollusca.secrets.surname}, ${config.mollusca.secrets.name}";
+        userEmail = config.mollusca.secrets.workEmail;
+        extraConfig = {
+          gitsh.historyFile = user.xdg.dataHome + "/gitsh/history";
+          diff = {
+            tool = "kitty";
+            guitool = "kitty.gui";
+          };
+          difftool = {
+            prompt = false;
+            trustExitCode = true;
+          };
+          "difftool \"kitty\"".cmd = "kitty +kitten diff $LOCAL $REMOTE";
+          "difftool \"kitty.gui\"".cmd = "kitty kitty +kitten diff $LOCAL $REMOTE";
+          push.default = "current";
+          blame.ignoreRevsFile = ".git-blame-ignore-revs";
+        };
+      };
+      htop = {
+        enable = true;
+        settings.highlight_base_name = 1;
+      };
+    };
+
     home = {
       inherit username homeDirectory;
+
+      packages = [
+        (self.inputs.autoraise.packages.x86_64-darwin.autoraise.override {experimental_focus_first = true;})
+        (pkgs.unison.override {enableX11 = false;})
+
+        pkgs.coreutils
+        pkgs.curl
+        pkgs.exa
+        pkgs.fzf
+        pkgs.jq
+        pkgs.moreutils
+        pkgs.openssl
+        pkgs.tmux
+        pkgs.wget
+
+        pkgs.iina
+        pkgs.monitorcontrol
+        pkgs.spotify
+
+        pkgs.slack
+        pkgs.teams
+        pkgs.vault
+
+        pkgs.kak-lsp
+        pkgs.kakoune
+        pkgs.poetry
+        pkgs.python310
+        pkgs.shellcheck
+        self.inputs.gitsh.packages.x86_64-darwin.gitsh
+
+        pkgs.skhd
+      ];
 
       stateVersion = "23.11";
     };
   };
-
-  environment.systemPackages = [
-    (self.inputs.autoraise.packages.x86_64-darwin.autoraise.override {experimental_focus_first = true;})
-    (pkgs.unison.override {enableX11 = false;})
-
-    pkgs.coreutils
-    pkgs.curl
-    pkgs.exa
-    pkgs.fzf
-    pkgs.git
-    pkgs.htop
-    pkgs.jq
-    pkgs.moreutils
-    pkgs.openssl
-    pkgs.tmux
-    pkgs.wget
-
-    pkgs.iina
-    pkgs.monitorcontrol
-    pkgs.spotify
-
-    pkgs.slack
-    pkgs.teams
-    pkgs.vault
-
-    pkgs.kak-lsp
-    pkgs.kakoune
-    pkgs.poetry
-    pkgs.python310
-    pkgs.shellcheck
-    self.inputs.gitsh.packages.x86_64-darwin.gitsh
-
-    pkgs.skhd
-  ];
 
   fonts = {
     fontDir.enable = true;
@@ -89,7 +120,6 @@ in {
   nix.extraOptions = ''
     bash-prompt-prefix = (nix:$name)\040
     extra-nix-path = nixpkgs=flake:nixpkgs
-    experimental-features = nix-command flakes
     build-users-group = nixbld
   '';
   services.nix-daemon.enable = true;
