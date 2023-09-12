@@ -9,20 +9,63 @@
   homeDirectory = "/Users/" + username;
   user = config.home-manager.users."${username}";
 in {
+  programs.zsh.enable = true;
+
   users.users.${username}.home = homeDirectory;
   home-manager.users."${username}" = {
     xdg = {
       enable = true;
       configHome = homeDirectory + "/Configuration";
       dataHome = homeDirectory + "/Data";
+      stateHome = homeDirectory + "/State";
     };
     programs = {
+      zsh = {
+        enable = true;
+        dotDir = "Configuration/zsh";
+        enableSyntaxHighlighting = true;
+        history.path = user.xdg.stateHome + "/zsh/history";
+        shellAliases = {
+          ll = "exa --long --header --git --icons --classify --group-directories-first";
+          lla = "exa --long --header --git --icons --classify --group-directories-first --all";
+          lt = "ll --tree --level=2";
+          lta = "lla --tree --level=2";
+          kdiff = "kitty +kitten diff";
+          icat = "kitty +kitten icat";
+        };
+
+        envExtra = ''
+          export $(cat /Audatic/environment)
+        '';
+        initExtra = ''
+          setopt NO_CASE_GLOB
+          kitty + complete setup zsh | source /dev/stdin
+
+          # Case-insensitive completion
+          zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*'
+
+          autoload -U promptinit; promptinit; prompt pure
+
+          clear_dsstore() {
+              find ~ -name ".DS_Store" -delete
+              find /Data/ -name ".DS_Store" -delete
+              find /Configuration/ -name ".DS_Store" -delete
+          }
+        '';
+      };
+      direnv = {
+        enable = true;
+        enableZshIntegration = true;
+        nix-direnv.enable = true;
+      };
+      fzf.enable = true;
       git = {
         enable = true;
         userName = "${config.mollusca.secrets.surname}, ${config.mollusca.secrets.name}";
         userEmail = config.mollusca.secrets.workEmail;
+        lfs.enable = true;
         extraConfig = {
-          gitsh.historyFile = user.xdg.dataHome + "/gitsh/history";
+          gitsh.historyFile = user.xdg.stateHome + "/gitsh/history";
           diff = {
             tool = "kitty";
             guitool = "kitty.gui";
@@ -40,6 +83,142 @@ in {
       htop = {
         enable = true;
         settings.highlight_base_name = 1;
+      };
+      kitty = {
+        enable = true;
+        theme = "Gruvbox Light";
+        settings = {
+            "font_family" = "Iosevka Medium Extended";
+            "bold_font" = "Iosevka Bold Extended";
+            "italic_font" = "Iosevka Extended Oblique";
+            "bold_italic_font" = "Iosevka Bold Extended Oblique";
+            "font_size" = 16;
+
+            "confirm_os_window_close" = 2;
+            "placement_strategy" = "top-left";
+            "hide_window_decorations" = false;
+            "window_padding_width" = 10;
+            "tab_bar_margin_width" = 8;
+
+            "allow_remote_control" = true;
+            "clear_all_shortcuts" = true;
+            "focus_follows_mouse" = true;
+
+            "symbol_map" = lib.concatStringsSep "," [
+                "U+E5FA-U+E62B"
+                "U+E700-U+E7C5"
+                "U+F000-U+F2E0"
+                "U+E200-U+E2A9"
+                "U+F500-U+FD46"
+                "U+E300-U+E3EB"
+                "U+F400-U+F4A8"
+                "U+2665"
+                "U+26A1"
+                "U+F27C"
+                "U+E0A3"
+                "U+E0B4-U+E0C8"
+                "U+E0CA"
+                "U+E0CC-U+E0D2"
+                "U+E0D4"
+                "U+23FB-U+23FE"
+                "U+2B58"
+                "U+F300-U+F313"
+                "U+E000-U+E00D"
+            ] + " Hack Nerd Font Mono Regular";
+
+            "adjust_line_height" = 0;
+            "adjust_column_width" = 0;
+
+            "disable_ligatures" = "always";
+
+            "cursor_blink_interval" = 0;
+            "cursor_shape" = "block";
+
+            "window_resize_step_cells" = 1;
+            "window_resize_step_lines" = 1;
+
+            "enabled_layouts" = "splits:split_axis=vertical";
+
+            "window_border_width" = "5pt";
+
+            "draw_minimal_borders" = true;
+            "inactive_text_alpha" = 1;
+
+            "tab_bar_min_tabs" = 2;
+
+            "tab_bar_style" = "custom";
+
+            "tab_title_template" = "[{index}] {title}";
+            "active_tab_font_style" = "bold";
+            "inactive_tab_font_style" = "normal";
+
+            "kitty_mod" = "super";
+            "macos_option_as_alt" = "left";
+        };
+        keybindings = {
+          "kitty_mod+c" = "copy_to_clipboard";
+          "kitty_mod+v" = "paste_from_clipboard";
+
+          "kitty_mod+k" = "scroll_line_up";
+          "kitty_mod+j" = "scroll_line_down";
+          "kitty_mod+page_up" = "scroll_page_up";
+          "kitty_mod+page_down" = "scroll_page_down";
+          "kitty_mod+home" = "scroll_home";
+          "kitty_mod+end" = "scroll_end";
+
+          "kitty_mod+n" = "new_os_window";
+
+          "kitty_mod+[" = "launch --location=hsplit";
+          "kitty_mod+]" = "launch --location=vsplit";
+
+          "kitty_mod+enter" = "layout_action rotate";
+
+          "kitty_mod+shift+up" = "move_window up";
+          "kitty_mod+shift+left" = "move_window left";
+          "kitty_mod+shift+right" = "move_window right";
+          "kitty_mod+shift+down" = "move_window down";
+
+          "kitty_mod+left" = "neighboring_window left";
+          "kitty_mod+right" = "neighboring_window right";
+          "kitty_mod+up" = "neighboring_window up";
+          "kitty_mod+down" = "neighboring_window down";
+
+          "kitty_mod+r" = "start_resizing_window";
+
+          "kitty_mod+t" = "new_tab";
+          "kitty_mod+." = "move_tab_forward";
+          "kitty_mod+," = "move_tab_backward";
+          "kitty_mod+alt+t" = "set_tab_title";
+
+          "kitty_mod+1" = "goto_tab 1";
+          "kitty_mod+2" = "goto_tab 2";
+          "kitty_mod+3" = "goto_tab 3";
+          "kitty_mod+4" = "goto_tab 4";
+          "kitty_mod+5" = "goto_tab 5";
+          "kitty_mod+6" = "goto_tab 6";
+          "kitty_mod+7" = "goto_tab 7";
+          "kitty_mod+8" = "goto_tab 8";
+          "kitty_mod+9" = "goto_tab 9";
+          "kitty_mod+0" = "goto_tab 10";
+
+            #: Font sizes
+
+          "kitty_mod+equal" = "change_font_size all +2.0";
+          "kitty_mod+plus" = "change_font_size all +2.0";
+          "kitty_mod+kp_add" = "change_font_size all +2.0";
+          "kitty_mod+minus" = "change_font_size all -2.0";
+          "kitty_mod+kp_subtract" = "change_font_size all -2.0";
+          "kitty_mod+backspace" = "change_font_size all 0";
+
+          "kitty_mod+shift+;" = "kitty_shell window";
+          "kitty_mod+delete" = "clear_terminal reset active";
+          "f1" = "new_window_with_cwd";
+        };
+        environment = {
+            "PATH" = "\${PATH}:/usr/local/bin:/bin";
+            "LC_ALL" = "en_US.UTF-8";
+            "LANG" = "en_US.UTF-8";
+        };
       };
     };
 
@@ -70,10 +249,7 @@ in {
 
         pkgs.kak-lsp
         pkgs.kakoune
-        pkgs.poetry
-        pkgs.python310
         pkgs.shellcheck
-        self.inputs.gitsh.packages.x86_64-darwin.gitsh
 
         pkgs.skhd
       ];
@@ -108,7 +284,6 @@ in {
       "firefox"
       "jupyterlab"
       "keka"
-      "kitty"
       "logitech-options"
       "notion"
       "rectangle-pro"
@@ -123,15 +298,6 @@ in {
     build-users-group = nixbld
   '';
   services.nix-daemon.enable = true;
-
-  programs.zsh = {
-    enable = true;
-    promptInit = "autoload -U promptinit; promptinit; prompt pure";
-    enableSyntaxHighlighting = true;
-    enableFzfCompletion = true;
-    enableFzfHistory = true;
-    enableFzfGit = true;
-  };
 
   system.keyboard = {
     enableKeyMapping = true;
