@@ -7,13 +7,9 @@
 }: {
   imports = [
     ./disko.nix
-    ./services/404.nix
     ./services/acme.nix
-    #./services/calibre-web.nix
-    #./services/gitea.nix
     ./services/grocy.nix
     ./services/keycloak.nix
-    #./services/komga.nix
     ./services/libreddit.nix
     ./services/minio.nix
     ./services/nextcloud.nix
@@ -25,6 +21,8 @@
     ./services/secondbrain.nix
     ./services/tailscale.nix
 
+    "${self}/users/akiiino"
+
     self.inputs.impermanence.nixosModules.impermanence
   ];
 
@@ -32,6 +30,8 @@
     domain = lib.mkOption {
       type = lib.types.str;
       description = "Domain being hosted by this server";
+      default = config.mollusca.secrets.publicDomain;
+      readOnly = true;
     };
     mkSubdomain = lib.mkOption {
       type = lib.types.functionTo lib.types.str;
@@ -40,13 +40,10 @@
     };
   };
   config = {
-    users.mutableUsers = false;
-    nix.extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
+    mollusca.isRemote = true;
+
     services.openssh = {
       enable = true;
-      settings.PasswordAuthentication = false;
       hostKeys = [
         {
           path = "/persist/ssh/ssh_host_ed25519_key";
@@ -59,12 +56,14 @@
         }
       ];
     };
+
     swapDevices = [
       {
         device = "/persist/swapfile";
         size = 4 * 1024;
       }
     ];
+
     environment.persistence."/persist" = {
       hideMounts = true;
       directories = [
@@ -76,6 +75,7 @@
         "/etc/machine-id"
       ];
     };
+
     systemd.network.networks."10-uplink" = {
       matchConfig = {
         Virtualization = true;
@@ -90,12 +90,7 @@
     zramSwap.enable = true;
     networking.hostName = "scallop";
     networking.domain = "";
-    security.sudo.wheelNeedsPassword = false;
-
-    environment.systemPackages = with pkgs; [kakoune];
 
     networking.firewall.allowedTCPPorts = [80 443];
-
-    system.stateVersion = "22.05";
   };
 }

@@ -15,14 +15,14 @@ in {
       server.https = true;
     };
 
-    services.nginx.virtualHosts = self.lib.mkProxy {
-      fqdn = cfg.server.hostname;
-      port = cfg.server.port;
-    };
-
     systemd.services."nitter" = {
       requires = ["nginx.service"];
       after = ["nginx.service"];
+    };
+
+    services.nginx.virtualHosts = self.lib.mkProxy {
+      fqdn = cfg.server.hostname;
+      port = cfg.server.port;
     };
 
     services.oauth2_proxy.nginx.virtualHosts = lib.singleton cfg.server.hostname;

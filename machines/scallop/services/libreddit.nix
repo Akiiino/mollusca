@@ -5,7 +5,7 @@
   ...
 }: let
   cfg = config.services.libreddit;
-  hostname = config.mkSubdomain "libreddit";
+  fqdn = config.mkSubdomain "libreddit";
   port = 13736;
 in {
   config = {
@@ -15,16 +15,13 @@ in {
       address = "127.0.0.1";
     };
 
-    services.nginx.virtualHosts = self.lib.mkProxy {
-      inherit port;
-      fqdn = hostname;
-    };
+    services.nginx.virtualHosts = self.lib.mkProxy {inherit port fqdn;};
 
     systemd.services."libreddit" = {
       requires = ["nginx.service"];
       after = ["nginx.service"];
     };
 
-    services.oauth2_proxy.nginx.virtualHosts = lib.singleton hostname;
+    services.oauth2_proxy.nginx.virtualHosts = lib.singleton fqdn;
   };
 }

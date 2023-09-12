@@ -24,12 +24,17 @@
     };
     impermanence.url = "github:nix-community/impermanence";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Secrets
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.darwin.follows = "darwin";
+      inputs.home-manager.follows = "home-manager";
     };
     mollusca-secrets = {
       url = "git+ssh://git@github.com/Akiiino/mollusca-secrets.git";
@@ -52,7 +57,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };
-    nur.url = "github:nix-community/NUR/master";
+    stevenBlackHosts = {
+      url = "github:StevenBlack/hosts";
+      flake = false;
+    };
 
     # Nextcloud apps
     nc-announcementcenter = {
@@ -87,51 +95,47 @@
     home-manager,
     impermanence,
     nixos-hardware,
-    nur,
     secondbrain,
+    stevenBlackHosts,
+    nixos-generators,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = ["x86_64-linux" "x86_64-darwin"];
 
       flake = {
-        lib = import "${self}/lib.nix" {inherit inputs self;};
+        lib = import "${self}/lib/default.nix" {inherit inputs self;};
 
         nixosConfigurations = {
           gastropod = self.lib.mkNixOSMachine {
             name = "gastropod";
-            customModules = [
-              nixos-hardware.nixosModules.framework
-              nur.nixosModules.nur
-              home-manager.nixosModules.home-manager
-              {
-                home-manager.users.akiiino = {...}: {
-                  imports = [
-                    "${self}/legacy_modules/firefox.nix"
-                    "${self}/legacy_modules/git.nix"
-                    "${self}/legacy_modules/kitty.nix"
-                    "${self}/legacy_modules/gnome.nix"
-                    "${self}/users/akiiino/home.nix"
-                  ];
-                };
-              }
-            ];
+          };
+
+          nautilus = self.lib.mkNixOSMachine {
+            name = "nautilus";
           };
 
           scallop = self.lib.mkNixOSMachine {
             name = "scallop";
-            customModules = [
-              ({config, ...}: {domain = config.mollusca.secrets.publicDomain;})
-            ];
+          };
+
+          mussel = self.lib.mkNixOSMachine {
+            arch = "aarch64-linux";
+            name = "mussel";
           };
         };
 
-        darwinConfigurations."workbook" = self.lib.mkDarwinMachine {name = "workbook";};
+        darwinConfigurations = {
+          "workbook" = self.lib.mkDarwinMachine {name = "workbook";};
+        };
       };
 
       perSystem = {pkgs, ...}: {
         formatter = pkgs.alejandra;
         devShells.default = import "${self}/devshell.nix" {inherit self pkgs inputs;};
+        packages = {
+          musselSD = self.nixosConfigurations.mussel.config.formats.sd-aarch64;
+        };
       };
     };
 }

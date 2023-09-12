@@ -6,7 +6,7 @@
 }: {
   programs.kitty = {
     enable = true;
-    theme = "Gruvbox Dark";
+    theme = "Gruvbox Light";
     font = {
       package = pkgs.iosevka;
       name = "Iosevka Medium Extended";
@@ -23,7 +23,7 @@
       confirm_os_window_close = 2;
       placement_strategy = "center";
       # hide_window_decorations = true;
-      # window_padding_width = 10;
+      window_padding_width = 10;
       # tab_bar_margin_width = 1;
       # tab_bar_margin_height = "5.0 0.0";
       disable_ligatures = "always";

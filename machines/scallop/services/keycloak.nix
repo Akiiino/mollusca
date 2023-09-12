@@ -7,9 +7,7 @@
   cfg = config.services.keycloak;
 in {
   config = {
-    age.secrets.keycloakDBPass = {
-      file = "${self}/secrets/keycloak_db_pass.age";
-    };
+    age.secrets.keycloakDBPass.file = "${self}/secrets/keycloak_db_pass.age";
 
     services.keycloak = {
       enable = true;

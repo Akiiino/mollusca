@@ -101,31 +101,18 @@ in {
     age.secrets.nextcloudCifsPassword.file = "${self}/secrets/cifs_users/nextcloud.age";
     fileSystems.${cfg.datadir} = let
       username = config.mollusca.secrets.cifsUsers.nextcloud;
-      passwordFile = config.age.secrets.nextcloudCifsPassword.path;
-      nextcloud_uid = builtins.toString config.users.users.nextcloud.uid;
-      nextcloud_gid = builtins.toString config.users.groups.nextcloud.gid;
-    in {
-      device = "//${username}.your-storagebox.de/${username}";
-      fsType = "cifs";
-      options = [
-        "user=${username}"
-        "credentials=${passwordFile}"
-        "seal"
-        "x-systemd.automount"
-        "noauto"
-        "x-systemd.idle-timeout=60"
-        "x-systemd.device-timeout=5s"
-        "x-systemd.mount-timeout=5s"
-        "uid=${nextcloud_uid}"
-        "gid=${nextcloud_gid}"
-        "file_mode=0750"
-        "dir_mode=0750"
-        "mfsymlinks"
-      ];
-    };
+    in
+      self.lib.mkCifs {
+        location = "//${username}.your-storagebox.de/${username}";
+        uid = builtins.toString config.users.users.nextcloud.uid;
+        gid = builtins.toString config.users.groups.nextcloud.gid;
+        user = username;
+        credentialsFile = config.age.secrets.nextcloudCifsPassword.path;
+      };
 
     services.postgresql = {
-      ensureDatabases = [cfg.config.dbname];
+      enable = true;
+      ensureDatabases = lib.singleton cfg.config.dbname;
       ensureUsers = lib.singleton {
         name = cfg.config.dbuser;
         ensurePermissions."DATABASE ${cfg.config.dbname}" = "ALL PRIVILEGES";
