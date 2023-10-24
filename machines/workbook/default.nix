@@ -26,10 +26,12 @@ in {
         enableSyntaxHighlighting = true;
         history.path = user.xdg.stateHome + "/zsh/history";
         shellAliases = {
-          ll = "exa --long --header --git --icons --classify --group-directories-first";
-          lla = "exa --long --header --git --icons --classify --group-directories-first --all";
+          ll = "eza --long --header --git --icons --classify --group-directories-first";
+          lla = "eza --long --header --git --icons --classify --group-directories-first --all";
           lt = "ll --tree --level=2";
           lta = "lla --tree --level=2";
+          lln = "ll --sort modified";
+          ltn = "lt --sort modified";
           kdiff = "kitty +kitten diff";
           icat = "kitty +kitten icat";
         };
@@ -64,6 +66,11 @@ in {
         userName = "${config.mollusca.secrets.surname}, ${config.mollusca.secrets.name}";
         userEmail = config.mollusca.secrets.workEmail;
         lfs.enable = true;
+        aliases = {
+          "fpull" = "! f() { git fetch origin \"$1\":\"$1\"; }; f";
+          "remote-main" = "! git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'";
+          "move-branch" = "! f() { ONTO=$1 BRANCH=\${2:-$(git branch --show-current)} FROM=\${3:-$(git remote-main)}; git rebase --onto $ONTO $(git merge-base $FROM $BRANCH) $BRANCH; }; f";
+        };
         extraConfig = {
           gitsh.historyFile = user.xdg.stateHome + "/gitsh/history";
           diff = {
@@ -231,7 +238,7 @@ in {
 
         pkgs.coreutils
         pkgs.curl
-        pkgs.exa
+        pkgs.eza
         pkgs.fzf
         pkgs.jq
         pkgs.moreutils
