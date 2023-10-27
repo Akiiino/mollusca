@@ -289,11 +289,11 @@
     "nc-previewgenerator": {
       "flake": false,
       "locked": {
-        "lastModified": 1682762768,
-        "narHash": "sha256-q59j0V8s9HKeB7cwNW6VoTAZtBhPgLUfz2rWkPCQ/78=",
+        "lastModified": 1698434446,
+        "narHash": "sha256-bn1b8tANZK8LeM/66J0mQpdkoRFDxP5777k/st6Xb+U=",
         "owner": "akiiino",
         "repo": "previewgenerator",
-        "rev": "41141d1ed33cf60b738a1999d6aafe9d1cfc4dac",
+        "rev": "2523f9b6b3bed4d3371d0a495e35ef3fc1badf8b",
         "type": "github"
       },
       "original": {
