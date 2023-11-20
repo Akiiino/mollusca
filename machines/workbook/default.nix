@@ -251,7 +251,6 @@ in {
         pkgs.spotify
 
         pkgs.slack
-        pkgs.teams
         pkgs.vault
 
         pkgs.kak-lsp
@@ -296,6 +295,7 @@ in {
       "rectangle-pro"
       "zotero"
       "mongodb-compass"
+      "microsoft-teams"
     ];
   };
 
