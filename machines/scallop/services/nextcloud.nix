@@ -41,7 +41,8 @@ in {
         "opcache.interned_strings_buffer" = "128";
       };
       extraApps = {
-        inherit (pkgs.nextcloud27Packages.apps)
+        inherit
+          (pkgs.nextcloud27Packages.apps)
           polls
           forms
           unsplash

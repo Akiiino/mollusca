@@ -2,15 +2,33 @@
   inputs,
   self,
 }: rec {
-  commonNixpkgsConfig = {
+  commonNixpkgsConfig = let
+    base = "/etc/nixpkgs/channels";
+    nixpkgsPath = "${base}/nixpkgs";
+    nixpkgs2211Path = "${base}/nixpkgs2211";
+  in {
     nixpkgs = {
       config.allowUnfree = true;
       overlays = import "${self}/overlays" {flake = self;};
     };
-    nix.registry.nixpkgs.flake = inputs.nixpkgs;
-    nix.extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
+    nix = {
+      settings.experimental-features = ["nix-command" "flakes"];
+
+      registry = {
+        nixpkgs.flake = inputs.nixpkgs;
+        nixpkgs2211.flake = inputs.nixpkgs2211;
+      };
+
+      nixPath = [
+        "nixpkgs=${nixpkgsPath}"
+        "nixpkgs2211=${nixpkgs2211Path}"
+        "/nix/var/nix/profiles/per-user/root/channels"
+      ];
+    };
+    systemd.tmpfiles.rules = [
+      "L+ ${nixpkgsPath}     - - - - ${inputs.nixpkgs}"
+      "L+ ${nixpkgs2211Path} - - - - ${inputs.nixpkgs2211}"
+    ];
   };
 
   commonHomeManagerConfig = {
