@@ -15,6 +15,9 @@ in {
       mode = "u=rwx,g=rx,o=";
     };
 
-    services.postgresql.enable = true;
+    services.postgresql = {
+        enable = true;
+        package = pkgs.postgresql_14;
+    };
   };
 }

@@ -4,7 +4,7 @@ self: super: {
     src = super.fetchFromGitHub {
       owner = "rinkaru";
       repo = "libreddit";
-      rev = "b1d090bd126ff0f15e34353f099393ce69dade98";
+      rev = "5c6a21e8c12857ebcb6a1e217786a433285a9bfa";
       sha256 = "sha256-k5Mlw0aOPgCtpxbkAaUC+ENGS73YjcA+w5D1vS2RxGA=";
     };
     cargoDeps = old.cargoDeps.overrideAttrs (_: {

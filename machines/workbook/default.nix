@@ -95,72 +95,74 @@ in {
         enable = true;
         theme = "Gruvbox Light";
         settings = {
-            "font_family" = "Iosevka Medium Extended";
-            "bold_font" = "Iosevka Bold Extended";
-            "italic_font" = "Iosevka Extended Oblique";
-            "bold_italic_font" = "Iosevka Bold Extended Oblique";
-            "font_size" = 16;
+          "font_family" = "Iosevka Medium Extended";
+          "bold_font" = "Iosevka Bold Extended";
+          "italic_font" = "Iosevka Extended Oblique";
+          "bold_italic_font" = "Iosevka Bold Extended Oblique";
+          "font_size" = 16;
 
-            "confirm_os_window_close" = 2;
-            "placement_strategy" = "top-left";
-            "hide_window_decorations" = false;
-            "window_padding_width" = 10;
-            "tab_bar_margin_width" = 8;
+          "confirm_os_window_close" = 2;
+          "placement_strategy" = "top-left";
+          "hide_window_decorations" = false;
+          "window_padding_width" = 10;
+          "tab_bar_margin_width" = 8;
 
-            "allow_remote_control" = true;
-            "clear_all_shortcuts" = true;
-            "focus_follows_mouse" = true;
+          "allow_remote_control" = true;
+          "clear_all_shortcuts" = true;
+          "focus_follows_mouse" = true;
 
-            "symbol_map" = lib.concatStringsSep "," [
-                "U+E5FA-U+E62B"
-                "U+E700-U+E7C5"
-                "U+F000-U+F2E0"
-                "U+E200-U+E2A9"
-                "U+F500-U+FD46"
-                "U+E300-U+E3EB"
-                "U+F400-U+F4A8"
-                "U+2665"
-                "U+26A1"
-                "U+F27C"
-                "U+E0A3"
-                "U+E0B4-U+E0C8"
-                "U+E0CA"
-                "U+E0CC-U+E0D2"
-                "U+E0D4"
-                "U+23FB-U+23FE"
-                "U+2B58"
-                "U+F300-U+F313"
-                "U+E000-U+E00D"
-            ] + " Hack Nerd Font Mono Regular";
+          "symbol_map" =
+            lib.concatStringsSep "," [
+              "U+E5FA-U+E62B"
+              "U+E700-U+E7C5"
+              "U+F000-U+F2E0"
+              "U+E200-U+E2A9"
+              "U+F500-U+FD46"
+              "U+E300-U+E3EB"
+              "U+F400-U+F4A8"
+              "U+2665"
+              "U+26A1"
+              "U+F27C"
+              "U+E0A3"
+              "U+E0B4-U+E0C8"
+              "U+E0CA"
+              "U+E0CC-U+E0D2"
+              "U+E0D4"
+              "U+23FB-U+23FE"
+              "U+2B58"
+              "U+F300-U+F313"
+              "U+E000-U+E00D"
+            ]
+            + " Hack Nerd Font Mono Regular";
 
-            "adjust_line_height" = 0;
-            "adjust_column_width" = 0;
+          "adjust_line_height" = 0;
+          "adjust_column_width" = 0;
 
-            "disable_ligatures" = "always";
+          "disable_ligatures" = "always";
 
-            "cursor_blink_interval" = 0;
-            "cursor_shape" = "block";
+          "cursor_blink_interval" = 0;
+          "cursor_shape" = "block";
 
-            "window_resize_step_cells" = 1;
-            "window_resize_step_lines" = 1;
+          "window_resize_step_cells" = 1;
+          "window_resize_step_lines" = 1;
 
-            "enabled_layouts" = "splits:split_axis=vertical";
+          "enabled_layouts" = "splits:split_axis=vertical";
 
-            "window_border_width" = "5pt";
+          "window_border_width" = "5pt";
 
-            "draw_minimal_borders" = true;
-            "inactive_text_alpha" = 1;
+          "draw_minimal_borders" = true;
+          "inactive_text_alpha" = 1;
 
-            "tab_bar_min_tabs" = 2;
+          "tab_bar_min_tabs" = 2;
 
-            "tab_bar_style" = "custom";
+          "tab_bar_style" = "custom";
 
-            "tab_title_template" = "[{index}] {title}";
-            "active_tab_font_style" = "bold";
-            "inactive_tab_font_style" = "normal";
+          "tab_title_template" = "[{index}] {title}";
+          "active_tab_font_style" = "bold";
+          "inactive_tab_font_style" = "normal";
 
-            "kitty_mod" = "super";
-            "macos_option_as_alt" = "left";
+          "kitty_mod" = "super";
+          "macos_option_as_alt" = "left";
         };
         keybindings = {
           "kitty_mod+c" = "copy_to_clipboard";
@@ -208,7 +210,7 @@ in {
           "kitty_mod+9" = "goto_tab 9";
           "kitty_mod+0" = "goto_tab 10";
 
-            #: Font sizes
+          #: Font sizes
 
           "kitty_mod+equal" = "change_font_size all +2.0";
           "kitty_mod+plus" = "change_font_size all +2.0";
@@ -222,9 +224,9 @@ in {
           "f1" = "new_window_with_cwd";
         };
         environment = {
-            "PATH" = "\${PATH}:/usr/local/bin:/bin";
-            "LC_ALL" = "en_US.UTF-8";
-            "LANG" = "en_US.UTF-8";
+          "PATH" = "\${PATH}:/usr/local/bin:/bin";
+          "LC_ALL" = "en_US.UTF-8";
+          "LANG" = "en_US.UTF-8";
         };
       };
     };

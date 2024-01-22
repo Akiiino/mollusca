@@ -237,51 +237,27 @@
     "nc-announcementcenter": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-F90lNhPT69J5H6TV4KqomAioALvXFkdIjQchWWEmuNI=",
+        "narHash": "sha256-r18lZI8WssjaKO3VXcVBdC3bzVMH8a++ByJCQor8/qM=",
         "type": "tarball",
-        "url": "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.5.1/announcementcenter-v6.5.1.tar.gz"
+        "url": "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.6.2/announcementcenter-v6.6.2.tar.gz"
       },
       "original": {
         "type": "tarball",
-        "url": "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.5.1/announcementcenter-v6.5.1.tar.gz"
-      }
-    },
-    "nc-deck": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-eATz0sbcEoWKlPTZfqBbroki+NFTxeI+gNztm5Erqa8=",
-        "type": "tarball",
-        "url": "https://github.com/nextcloud-releases/deck/releases/download/v1.9.0/deck-v1.9.0.tar.gz"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://github.com/nextcloud-releases/deck/releases/download/v1.9.0/deck-v1.9.0.tar.gz"
-      }
-    },
-    "nc-groupfolders": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-ZQHrZ4baAW1MY7WAMFns1H+zDpd85cpWsuhl7YIKh/Q=",
-        "type": "tarball",
-        "url": "https://github.com/nextcloud-releases/groupfolders/releases/download/v14.0.1/groupfolders-v14.0.1.tar.gz"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://github.com/nextcloud-releases/groupfolders/releases/download/v14.0.1/groupfolders-v14.0.1.tar.gz"
+        "url": "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.6.2/announcementcenter-v6.6.2.tar.gz"
       }
     },
     "nc-oidc_login": {
       "flake": false,
       "locked": {
-        "lastModified": 1682180099,
-        "narHash": "sha256-EWCckoDFEQv9T5DB4dEMlKHabR5zo+3wd3rUSg3P40w=",
-        "owner": "akiiino",
+        "lastModified": 1702060586,
+        "narHash": "sha256-NnJCass6F+aAQ0I4kYJVQqfEWqUBWqclosNVdYF7jF4=",
+        "owner": "pulsejet",
         "repo": "nextcloud-oidc-login",
-        "rev": "4c71c3dcdf2f9dd7f906dfdd8e850a32fccca216",
+        "rev": "4180e00c7d8180711c19af68b355e8bdcc568907",
         "type": "github"
       },
       "original": {
-        "owner": "akiiino",
+        "owner": "pulsejet",
         "repo": "nextcloud-oidc-login",
         "type": "github"
       }
@@ -417,8 +393,6 @@
         "impermanence": "impermanence",
         "mollusca-secrets": "mollusca-secrets",
         "nc-announcementcenter": "nc-announcementcenter",
-        "nc-deck": "nc-deck",
-        "nc-groupfolders": "nc-groupfolders",
         "nc-oidc_login": "nc-oidc_login",
         "nc-previewgenerator": "nc-previewgenerator",
         "nixos-generators": "nixos-generators",

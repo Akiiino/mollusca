@@ -77,6 +77,6 @@ in rec {
         "dir_mode=${dir_mode}"
         "mfsymlinks"
       ]
-      ++ lib.optional (credentialsFile != null) "credentials = ${credentialsFile}";
+      ++ lib.optional (credentialsFile != null) "credentials=${credentialsFile}";
   };
 }

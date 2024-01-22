@@ -22,8 +22,7 @@ in {
     users.groups.nextcloud.gid = 992;
     services.nextcloud = {
       enable = true;
-      package = pkgs.nextcloud26;
-      enableBrokenCiphersForSSE = false;
+      package = pkgs.nextcloud27;
       hostName = config.mkSubdomain "nextcloud";
       home = "/persist/var/lib/nextcloud";
       datadir = "/persist/nextcloud_data";
@@ -41,11 +40,22 @@ in {
         "opcache.memory_consumption" = "256";
         "opcache.interned_strings_buffer" = "128";
       };
-      extraApps = with pkgs.nextcloud25Packages.apps; {
-        inherit polls forms unsplash calendar files_texteditor keeweb notes contacts tasks bookmarks;
+      extraApps = {
+        inherit (pkgs.nextcloud27Packages.apps)
+          polls
+          forms
+          unsplash
+          calendar
+          files_texteditor
+          keeweb
+          notes
+          contacts
+          tasks
+          bookmarks
+          deck
+          groupfolders
+          ;
         oidc_login = self.inputs.nc-oidc_login;
-        deck = self.inputs.nc-deck;
-        groupfolders = self.inputs.nc-groupfolders;
         previewgenerator = self.inputs.nc-previewgenerator;
         announcementcenter = self.inputs.nc-announcementcenter;
       };
@@ -103,7 +113,7 @@ in {
       username = config.mollusca.secrets.cifsUsers.nextcloud;
     in
       self.lib.mkCifs {
-        location = "//${username}.your-storagebox.de/${username}";
+        location = "${username}.your-storagebox.de/${username}";
         uid = builtins.toString config.users.users.nextcloud.uid;
         gid = builtins.toString config.users.groups.nextcloud.gid;
         user = username;

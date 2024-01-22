@@ -64,19 +64,11 @@
 
     # Nextcloud apps
     nc-announcementcenter = {
-      url = "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.5.1/announcementcenter-v6.5.1.tar.gz";
-      flake = false;
-    };
-    nc-deck = {
-      url = "https://github.com/nextcloud-releases/deck/releases/download/v1.9.0/deck-v1.9.0.tar.gz";
-      flake = false;
-    };
-    nc-groupfolders = {
-      url = "https://github.com/nextcloud-releases/groupfolders/releases/download/v14.0.1/groupfolders-v14.0.1.tar.gz";
+      url = "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.6.2/announcementcenter-v6.6.2.tar.gz";
       flake = false;
     };
     nc-oidc_login = {
-      url = "github:akiiino/nextcloud-oidc-login";
+      url = "github:pulsejet/nextcloud-oidc-login";
       flake = false;
     };
     nc-previewgenerator = {
