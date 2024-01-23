@@ -2,11 +2,7 @@
   inputs,
   self,
 }: rec {
-  commonNixpkgsConfig = let
-    base = "/etc/nixpkgs/channels";
-    nixpkgsPath = "${base}/nixpkgs";
-    nixpkgs2211Path = "${base}/nixpkgs2211";
-  in {
+  commonNixpkgsConfig = {
     nixpkgs = {
       config.allowUnfree = true;
       overlays = import "${self}/overlays" {flake = self;};
@@ -19,16 +15,7 @@
         nixpkgs2211.flake = inputs.nixpkgs2211;
       };
 
-      nixPath = [
-        "nixpkgs=${nixpkgsPath}"
-        "nixpkgs2211=${nixpkgs2211Path}"
-        "/nix/var/nix/profiles/per-user/root/channels"
-      ];
     };
-    systemd.tmpfiles.rules = [
-      "L+ ${nixpkgsPath}     - - - - ${inputs.nixpkgs}"
-      "L+ ${nixpkgs2211Path} - - - - ${inputs.nixpkgs2211}"
-    ];
   };
 
   commonHomeManagerConfig = {
@@ -48,11 +35,17 @@
     inputs.home-manager.nixosModules.default
     "${self}/modules/remote.nix"
     "${self}/modules/gui.nix"
-    {
+    ({pkgs, ...}: {
       users.mutableUsers = false;
       i18n.defaultLocale = "en_US.UTF-8";
-      system.stateVersion = "23.11";
-    }
+      system = {
+        extraSystemBuilderCmds = ''
+          ln -sv ${pkgs.path} $out/nixpkgs
+        '';
+        stateVersion = "23.11";
+      };
+      nix.nixPath = ["nixpkgs=/run/current-system/nixpkgs"];
+    })
   ];
 
   commonDarwinModules = [
@@ -60,6 +53,12 @@
     inputs.agenix.darwinModules.default
     inputs.home-manager.darwinModules.default
     inputs.mac-app-util.darwinModules.default
+    ({pkgs, ...}: {
+      environment.postBuild = ''
+        ln -sv ${pkgs.path} $out/nixpkgs
+      '';
+      nix.nixPath = ["nixpkgs=/run/current-system/sw/nixpkgs"];
+    })
   ];
 
   mkNixOSMachine = {
