@@ -287,7 +287,6 @@ in {
     brews = [
       "pure"
       "pass"
-      "choose-gui"
     ];
     casks = [
       "firefox"
