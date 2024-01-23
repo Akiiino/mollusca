@@ -53,7 +53,7 @@
       environment.postBuild = ''
         ln -sv ${pkgs.path} $out/nixpkgs
       '';
-      nix.nixPath = ["nixpkgs=/run/current-system/sw/nixpkgs"];
+      nix.nixPath = pkgs.lib.mkForce ["nixpkgs=/run/current-system/sw/nixpkgs"];
     })
   ];
 
