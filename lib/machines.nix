@@ -10,11 +10,7 @@
     nix = {
       settings.experimental-features = ["nix-command" "flakes"];
 
-      registry = {
-        nixpkgs.flake = inputs.nixpkgs;
-        nixpkgs2211.flake = inputs.nixpkgs2211;
-      };
-
+      registry.nixpkgs.flake = inputs.nixpkgs;
     };
   };
 
