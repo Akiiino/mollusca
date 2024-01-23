@@ -59,6 +59,7 @@
     inputs.mollusca-secrets.darwinModules.secrets
     inputs.agenix.darwinModules.default
     inputs.home-manager.darwinModules.default
+    inputs.mac-app-util.darwinModules.default
   ];
 
   mkNixOSMachine = {

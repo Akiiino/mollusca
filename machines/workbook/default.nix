@@ -13,6 +13,7 @@ in {
 
   users.users.${username}.home = homeDirectory;
   home-manager.users."${username}" = {
+    imports = [self.inputs.mac-app-util.homeManagerModules.default];
     xdg = {
       enable = true;
       configHome = homeDirectory + "/Configuration";
