@@ -75,24 +75,4 @@
   programs.adb.enable = true;
   networking.firewall.allowedTCPPorts = [5000];
   networking.firewall.allowedUDPPorts = [34197];
-
-  services.interception-tools = let
-    dualFunctionFile = pkgs.writeText "dual-function-keys.yaml" ''
-      MAPPINGS:
-        - KEY: KEY_MEDIA
-          TAP: KEY_DELETE
-          HOLD: KEY_DELETE
-          HOLD_START: BEFORE_CONSUME
-    '';
-  in {
-    enable = true;
-    plugins = [pkgs.interception-tools-plugins.dual-function-keys];
-    udevmonConfig = ''
-      - JOB: "${pkgs.interception-tools}/bin/intercept -g $DEVNODE | ${pkgs.interception-tools-plugins.dual-function-keys}/bin/dual-function-keys -c ${dualFunctionFile} | ${pkgs.interception-tools}/bin/uinput -d $DEVNODE"
-        DEVICE:
-          NAME: "AT Translated Set 2 keyboard"
-          EVENTS:
-            EV_KEY: [KEY_MEDIA]
-    '';
-  };
 }
