@@ -4,7 +4,7 @@ with lib.hm.gvariant; {
   dconf.settings = {
     "org/gnome/desktop/input-sources" = {
       per-window = false;
-      sources = [(mkTuple ["xkb" "us"]) (mkTuple ["xkb" "ru+mac"])];
+      sources = [(mkTuple ["xkb" "de+us"]) (mkTuple ["xkb" "ru+mac"])];
       xkb-options = ["terminate:ctrl_alt_bksp"];
     };
 
