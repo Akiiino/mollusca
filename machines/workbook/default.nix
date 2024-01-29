@@ -269,6 +269,7 @@ in {
 
         nixcasks.keka
         nixcasks.jupyterlab
+        nixcasks.jupyter-notebook-viewer
         nixcasks.notion
         nixcasks.rectangle-pro
         nixcasks.zotero
