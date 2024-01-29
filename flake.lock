@@ -348,6 +348,26 @@
         "type": "github"
       }
     },
+    "nixcasks": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1706477945,
+        "narHash": "sha256-BZ1HbzCbwkNPoroVIpb9BuA7rCpPJdSxKLyFIEu1nEM=",
+        "owner": "jacekszymanski",
+        "repo": "nixcasks",
+        "rev": "12e9c7b643a4b8b4646ce16157bd302760fde849",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jacekszymanski",
+        "repo": "nixcasks",
+        "type": "github"
+      }
+    },
     "nixlib": {
       "locked": {
         "lastModified": 1693701915,
@@ -480,6 +500,7 @@
         "nc-announcementcenter": "nc-announcementcenter",
         "nc-oidc_login": "nc-oidc_login",
         "nc-previewgenerator": "nc-previewgenerator",
+        "nixcasks": "nixcasks",
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",

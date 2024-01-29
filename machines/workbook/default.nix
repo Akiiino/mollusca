@@ -3,11 +3,16 @@
   lib,
   pkgs,
   self,
+  nixpkgs,
   ...
 }: let
   username = config.mollusca.secrets.workUsername;
   homeDirectory = "/Users/" + username;
   user = config.home-manager.users."${username}";
+  nixcasks = import self.inputs.nixcasks {
+    inherit nixpkgs pkgs;
+    osVersion = "monterey";
+  };
 in {
   programs.zsh.enable = true;
 
@@ -261,6 +266,14 @@ in {
         pkgs.shellcheck
 
         pkgs.skhd
+
+        nixcasks.keka
+        nixcasks.jupyterlab
+        nixcasks.notion
+        nixcasks.rectangle-pro
+        nixcasks.zotero
+        nixcasks.mongodb-compass
+        nixcasks.firefox
       ];
 
       stateVersion = "23.11";
@@ -289,14 +302,7 @@ in {
       "pass"
     ];
     casks = [
-      "firefox"
-      "jupyterlab"
-      "keka"
       "logitech-options"
-      "notion"
-      "rectangle-pro"
-      "zotero"
-      "mongodb-compass"
       "microsoft-teams"
     ];
   };

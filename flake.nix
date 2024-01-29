@@ -43,6 +43,10 @@
     };
 
     # Packages outside nixpkgs
+    nixcasks = {
+      url = "github:jacekszymanski/nixcasks";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     autoraise = {
       url = "github:akiiino/autoraise-flake";
       inputs.nixpkgs.follows = "nixpkgs";
