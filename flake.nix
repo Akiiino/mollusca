@@ -117,13 +117,15 @@
           };
 
           mussel = self.lib.mkNixOSMachine {
-            arch = "aarch64-linux";
+            system = "aarch64-linux";
             name = "mussel";
           };
         };
 
         darwinConfigurations = {
-          "workbook" = self.lib.mkDarwinMachine {name = "workbook";};
+          "workbook" = self.lib.mkDarwinMachine {
+            name = "workbook";
+          };
         };
       };
 
