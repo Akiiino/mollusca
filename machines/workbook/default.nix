@@ -59,6 +59,9 @@ in {
               find /Data/ -name ".DS_Store" -delete
               find /Configuration/ -name ".DS_Store" -delete
           }
+
+          # [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init -)"
         '';
       };
       direnv = {
@@ -264,6 +267,8 @@ in {
         pkgs.kak-lsp
         pkgs.kakoune
         pkgs.shellcheck
+
+        pkgs.pyenv
 
         pkgs.skhd
 
