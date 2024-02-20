@@ -94,6 +94,7 @@ in {
           "difftool \"kitty.gui\"".cmd = "kitty kitty +kitten diff $LOCAL $REMOTE";
           push.default = "current";
           blame.ignoreRevsFile = ".git-blame-ignore-revs";
+          credential.helper = "osxkeychain";
         };
       };
       htop = {
