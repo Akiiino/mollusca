@@ -68,6 +68,17 @@ in {
         enable = true;
         enableZshIntegration = true;
         nix-direnv.enable = true;
+        stdlib = ''
+            declare -A direnv_layout_dirs
+            direnv_layout_dir() {
+                local hash path
+                echo "''${direnv_layout_dirs[$PWD]:=$(
+                    hash="$(sha1sum - <<< "$PWD" | head -c40)"
+                    path="''${PWD//[^a-zA-Z0-9]/-}"
+                    echo "${user.xdg.cacheHome}/direnv/layouts/''${hash}''${path}"
+                )}"
+            }
+        '';
       };
       fzf.enable = true;
       git = {
@@ -243,6 +254,10 @@ in {
 
     home = {
       inherit username homeDirectory;
+
+      sessionVariables = {
+          RUFF_CACHE_DIR = "${user.xdg.cacheHome}/ruff";
+      };
 
       packages = [
         (self.inputs.autoraise.packages.x86_64-darwin.autoraise.override {experimental_focus_first = true;})
