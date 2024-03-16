@@ -6,7 +6,7 @@
   ...
 }: {
   imports = [
-    self.inputs.nixos-hardware.nixosModules.framework
+    self.inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
     ./hardware-configuration.nix
     "${self}/users/akiiino"
   ];
