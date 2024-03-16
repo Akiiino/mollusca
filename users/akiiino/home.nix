@@ -22,6 +22,7 @@
   programs.kakoune.enable = true;
   programs.bash.enable = true;
   programs.zsh.enable = true;
+  home.language.base = "en_US.UTF-8";
 
   home.stateVersion = "22.05";
 }
