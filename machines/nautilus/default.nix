@@ -82,4 +82,8 @@
     remotePlay.openFirewall = true;
   };
   environment.variables.DBUS_SYSTEM_BUS_ADDRESS = "steam";
+  environment.systemPackages = with pkgs; [
+    ungoogled-chromium
+    firefox
+  ];
 }

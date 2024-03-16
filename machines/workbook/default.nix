@@ -69,15 +69,15 @@ in {
         enableZshIntegration = true;
         nix-direnv.enable = true;
         stdlib = ''
-            declare -A direnv_layout_dirs
-            direnv_layout_dir() {
-                local hash path
-                echo "''${direnv_layout_dirs[$PWD]:=$(
-                    hash="$(sha1sum - <<< "$PWD" | head -c40)"
-                    path="''${PWD//[^a-zA-Z0-9]/-}"
-                    echo "${user.xdg.cacheHome}/direnv/layouts/''${hash}''${path}"
-                )}"
-            }
+          declare -A direnv_layout_dirs
+          direnv_layout_dir() {
+              local hash path
+              echo "''${direnv_layout_dirs[$PWD]:=$(
+                  hash="$(sha1sum - <<< "$PWD" | head -c40)"
+                  path="''${PWD//[^a-zA-Z0-9]/-}"
+                  echo "${user.xdg.cacheHome}/direnv/layouts/''${hash}''${path}"
+              )}"
+          }
         '';
       };
       fzf.enable = true;
@@ -256,7 +256,7 @@ in {
       inherit username homeDirectory;
 
       sessionVariables = {
-          RUFF_CACHE_DIR = "${user.xdg.cacheHome}/ruff";
+        RUFF_CACHE_DIR = "${user.xdg.cacheHome}/ruff";
       };
 
       packages = [

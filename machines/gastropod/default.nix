@@ -63,7 +63,7 @@
     gnome-photos
     gnome.gnome-calendar
     gnome.gnome-power-manager
-    gnome.gedit
+    gedit
     gnome.cheese
     gnome.dconf-editor
     gnome.gnome-remote-desktop
