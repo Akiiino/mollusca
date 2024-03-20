@@ -55,8 +55,8 @@
     };
     gitsh = {
       url = "github:akiiino/gitsh-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
+      # inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.flake-parts.follows = "flake-parts";
     };
     secondbrain = {
       url = "github:akiiino/secondbrain";
