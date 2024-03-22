@@ -276,6 +276,7 @@ in {
         pkgs.iina
         pkgs.monitorcontrol
         pkgs.spotify
+        pkgs.localsend
 
         pkgs.slack
         pkgs.vault
