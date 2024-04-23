@@ -73,6 +73,6 @@
   programs.steam.enable = true;
 
   programs.adb.enable = true;
-  networking.firewall.allowedTCPPorts = [5000];
-  networking.firewall.allowedUDPPorts = [34197];
+  networking.firewall.allowedTCPPorts = [5000 53317];
+  networking.firewall.allowedUDPPorts = [34197 53317];
 }
