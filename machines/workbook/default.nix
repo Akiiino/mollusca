@@ -33,15 +33,15 @@ in {
       zsh = {
         enable = true;
         dotDir = "Configuration/zsh";
-        enableSyntaxHighlighting = true;
+        syntaxHighlighting.enable = true;
         history.path = hmUser.xdg.stateHome + "/zsh/history";
-        shellAliases = {
-          ll = "eza --long --header --git --icons --classify --group-directories-first";
-          lla = "eza --long --header --git --icons --classify --group-directories-first --all";
-          lt = "ll --tree --level=2";
-          lta = "lla --tree --level=2";
-          lln = "ll --sort modified";
-          ltn = "lt --sort modified";
+        shellAliases = rec {
+          ll = "${lib.getExe pkgs.eza} --long --header --git --icons --classify --group-directories-first";
+          lla = "${ll} --all";
+          lt = "${ll} --tree --level=2";
+          lta = "${lt} --all";
+          lln = "${ll} --sort modified";
+          ltn = "${lt} --sort modified";
           kdiff = "kitty +kitten diff";
           icat = "kitty +kitten icat";
         };
