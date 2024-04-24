@@ -10,33 +10,59 @@
     font = {
       package = pkgs.iosevka;
       name = "Iosevka Medium Extended";
-      size = 18;
+      size = lib.mkDefault 18;
     };
-    extraConfig = ''
-      bold_font        Iosevka Bold Extended
-      italic_font      Iosevka Extended Oblique
-      bold_italic_font Iosevka Bold Extended Oblique
-    '';
+    environment = {
+      "PATH" = "\${PATH}:/usr/local/bin:/bin";
+      "LC_ALL" = "en_US.UTF-8";
+      "LANG" = "en_US.UTF-8";
+    };
     settings = {
+      font_family = "Iosevka Medium Extended";
+      bold_font = "Iosevka Bold Extended";
+      italic_font = "Iosevka Extended Oblique";
+      bold_italic_font = "Iosevka Bold Extended Oblique";
       allow_remote_control = true;
-      symbol_map = "U+E5FA-U+E62B,U+E700-U+E7C5,U+F000-U+F2E0,U+E200-U+E2A9,U+F500-U+FD46,U+E300-U+E3EB,U+F400-U+F4A8,U+2665,U+26A1,U+F27C,U+E0A3,U+E0B4-U+E0C8,U+E0CA,U+E0CC-U+E0D2,U+E0D4,U+23FB-U+23FE,U+2B58,U+F300-U+F313,U+E000-U+E00D Hack Nerd Font Mono Regular";
+      symbol_map =
+        lib.concatStringsSep "," [
+          "U+E5FA-U+E62B"
+          "U+E700-U+E7C5"
+          "U+F000-U+F2E0"
+          "U+E200-U+E2A9"
+          "U+F500-U+FD46"
+          "U+E300-U+E3EB"
+          "U+F400-U+F4A8"
+          "U+2665"
+          "U+26A1"
+          "U+F27C"
+          "U+E0A3"
+          "U+E0B4-U+E0C8"
+          "U+E0CA"
+          "U+E0CC-U+E0D2"
+          "U+E0D4"
+          "U+23FB-U+23FE"
+          "U+2B58"
+          "U+F300-U+F313"
+          "U+E000-U+E00D"
+        ]
+        + " Hack Nerd Font Mono Regular";
       confirm_os_window_close = 2;
       placement_strategy = "center";
-      # hide_window_decorations = true;
+      hide_window_decorations = false;
       window_padding_width = 10;
       # tab_bar_margin_width = 1;
       # tab_bar_margin_height = "5.0 0.0";
       disable_ligatures = "always";
-      tab_bar_min_tabs = 2;
+      tab_bar_min_tabs = 1;
 
       tab_bar_style = "powerline";
       tab_powerline_style = "slanted";
 
       tab_title_template = "[{index}] {title}";
-      active_tab_font_style = "bold";
 
       active_tab_foreground = "#fbf1c7";
       active_tab_background = "#3c3836";
+      active_tab_font_style = "bold";
       inactive_tab_foreground = "#282828";
       inactive_tab_background = "#a89984";
       inactive_tab_font_style = "normal";
@@ -54,10 +80,13 @@
       window_resize_step_lines = 1;
       enabled_layouts = "splits:split_axis=vertical";
       focus_follows_mouse = true;
-      # allow_remote_control = true;
+
+      # "cursor_blink_interval" = 0;
+      # "cursor_shape" = "block";
 
       # scrollback_pager $XDG_CONFIG_HOME/kitty/kak-pager.sh INPUT_LINE_NUMBER CURSOR_LINE CURSOR_COLUMN
-      # kitty_mod = "super";
+      kitty_mod = "super";
+      macos_option_as_alt = "left";
       clear_all_shortcuts = true;
     };
     keybindings = {
@@ -173,6 +202,8 @@
       "kitty_mod+f2" = "edit_config_file";
       "kitty_mod+shift+;" = "kitty_shell window";
       "kitty_mod+delete" = "clear_terminal reset active";
+
+      "f1" = "new_window_with_cwd";
     };
   };
 }
