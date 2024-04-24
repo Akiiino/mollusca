@@ -18,10 +18,10 @@
     };
     home-manager.users.akiiino = lib.mkIf config.mollusca.enableHM ({...}: {
       imports = [
-        "${self}/users/akiiino/modules/firefox.nix"
-        "${self}/users/akiiino/modules/git.nix"
-        "${self}/users/akiiino/modules/kitty.nix"
-        "${self}/users/akiiino/modules/gnome.nix"
+        "${self}/modules/apps/firefox.nix"
+        "${self}/modules/apps/git.nix"
+        "${self}/modules/apps/kitty.nix"
+        "${self}/modules/apps/gnome.nix"
         "${self}/users/akiiino/home.nix"
       ];
     });

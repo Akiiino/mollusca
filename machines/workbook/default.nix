@@ -8,7 +8,7 @@
 }: let
   username = config.mollusca.secrets.workUsername;
   homeDirectory = "/Users/" + username;
-  user = config.home-manager.users."${username}";
+  hmUser = config.home-manager.users."${username}";
   nixcasks = import self.inputs.nixcasks {
     inherit nixpkgs pkgs;
     osVersion = "monterey";
@@ -30,7 +30,7 @@ in {
         enable = true;
         dotDir = "Configuration/zsh";
         enableSyntaxHighlighting = true;
-        history.path = user.xdg.stateHome + "/zsh/history";
+        history.path = hmUser.xdg.stateHome + "/zsh/history";
         shellAliases = {
           ll = "eza --long --header --git --icons --classify --group-directories-first";
           lla = "eza --long --header --git --icons --classify --group-directories-first --all";
@@ -75,7 +75,7 @@ in {
               echo "''${direnv_layout_dirs[$PWD]:=$(
                   hash="$(sha1sum - <<< "$PWD" | head -c40)"
                   path="''${PWD//[^a-zA-Z0-9]/-}"
-                  echo "${user.xdg.cacheHome}/direnv/layouts/''${hash}''${path}"
+                  echo "${hmUser.xdg.cacheHome}/direnv/layouts/''${hash}''${path}"
               )}"
           }
         '';
@@ -92,7 +92,7 @@ in {
           "move-branch" = "! f() { ONTO=$1 BRANCH=\${2:-$(git branch --show-current)} FROM=\${3:-$(git remote-main)}; git rebase --onto $ONTO $(git merge-base $FROM $BRANCH) $BRANCH; }; f";
         };
         extraConfig = {
-          gitsh.historyFile = user.xdg.stateHome + "/gitsh/history";
+          gitsh.historyFile = hmUser.xdg.stateHome + "/gitsh/history";
           diff = {
             tool = "kitty";
             guitool = "kitty.gui";
@@ -256,7 +256,7 @@ in {
       inherit username homeDirectory;
 
       sessionVariables = {
-        RUFF_CACHE_DIR = "${user.xdg.cacheHome}/ruff";
+        RUFF_CACHE_DIR = "${hmUser.xdg.cacheHome}/ruff";
       };
 
       packages = [
