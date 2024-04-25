@@ -19,3 +19,7 @@ Applying the configurations (while in the development shell):
 
 - Locally (laptop): ```rebuild localhost gastropod```
 - Remotely (from laptop to server): ```rebuild <REMOTE_HOST> scallop```
+
+
+## TODOs:
+- Unify colorscheme management; `config.mollusca.colorscheme`?

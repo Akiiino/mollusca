@@ -24,6 +24,7 @@ in {
       "${self}/modules/apps/kitty.nix"
       "${self}/modules/apps/zsh.nix"
       "${self}/modules/apps/direnv.nix"
+      "${self}/modules/apps/starship.nix"
     ];
     xdg = {
       enable = true;
@@ -38,8 +39,6 @@ in {
           export $(cat /Audatic/environment)
         '';
         initExtra = ''
-          autoload -U promptinit; promptinit; prompt pure
-
           clear_dsstore() {
               find ~ -name ".DS_Store" -delete
               find /Data/ -name ".DS_Store" -delete
@@ -88,7 +87,7 @@ in {
       inherit username homeDirectory;
 
       sessionVariables = {
-        RUFF_CACHE_DIR = "${hmUser.xdg.cacheHome}/ruff";
+        RUFF_CACHE_DIR = hmUser.xdg.cacheHome + "/ruff";
       };
 
       packages = [
@@ -153,7 +152,6 @@ in {
       upgrade = true;
     };
     brews = [
-      "pure"
       "pass"
     ];
     casks = [
