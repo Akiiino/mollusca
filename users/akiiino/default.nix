@@ -12,10 +12,12 @@
     users.users.akiiino = {
       isNormalUser = true;
       extraGroups = ["wheel"];
+      shell = pkgs.zsh;
       openssh.authorizedKeys.keys = [
         (builtins.readFile "${self}/secrets/keys/akiiino.pub")
       ];
     };
+    home-manager.extraSpecialArgs = {inherit self;};
     home-manager.users.akiiino = lib.mkIf config.mollusca.enableHM ({...}: {
       imports = [
         "${self}/modules/apps/firefox.nix"
@@ -23,6 +25,10 @@
         "${self}/modules/apps/kitty.nix"
         "${self}/modules/apps/gnome.nix"
         "${self}/modules/apps/direnv.nix"
+        "${self}/modules/apps/kitty.nix"
+        "${self}/modules/apps/zsh.nix"
+        "${self}/modules/apps/direnv.nix"
+        "${self}/modules/apps/starship.nix"
         "${self}/users/akiiino/home.nix"
       ];
     });

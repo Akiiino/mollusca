@@ -5,8 +5,8 @@
   ...
 }: {
   home.sessionVariables = {
-    STARSHIP_CONFIG = hmUser.xdg.configHome + "/starship.toml";
-    STARSHIP_CACHE = hmUser.xdg.cacheHome + "/starship";
+    STARSHIP_CONFIG = config.xdg.configHome + "/starship.toml";
+    STARSHIP_CACHE = config.xdg.cacheHome + "/starship";
   };
   programs.starship = {
     enable = true;

@@ -10,6 +10,11 @@
     ./hardware-configuration.nix
     "${self}/users/akiiino"
   ];
+  fonts.packages = [
+    pkgs.fira-code
+    (pkgs.nerdfonts.override {fonts = ["Hack"];})
+    pkgs.iosevka
+  ];
 
   users.users.akiiino = {
     extraGroups = ["adbusers"];
@@ -70,9 +75,11 @@
   ];
   environment.gnome.excludePackages = with pkgs; [gnome-tour];
 
-  programs.steam.enable = true;
-
-  programs.adb.enable = true;
+  programs = {
+    steam.enable = true;
+    zsh.enable = true;
+    adb.enable = true;
+  };
   networking.firewall.allowedTCPPorts = [5000 53317];
   networking.firewall.allowedUDPPorts = [34197 53317];
 }

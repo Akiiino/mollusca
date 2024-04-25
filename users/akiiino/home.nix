@@ -18,6 +18,12 @@
     gyre-fonts
     localsend
   ];
+  xdg = {
+    enable = true;
+    configHome = config.home.homeDirectory + "/Configuration";
+    dataHome = config.home.homeDirectory + "/Data";
+    stateHome = config.home.homeDirectory + "/State";
+  };
   programs.kakoune.enable = true;
   programs.bash.enable = true;
   programs.zsh.enable = true;
