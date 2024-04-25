@@ -8,6 +8,6 @@
   networking = import ./networking.nix {inherit self;};
 in {
   inherit (machines) mkNixOSMachine mkDarwinMachine;
-  inherit (utils) takeLast;
+  inherit (utils) takeLast removePrefixOrThrow;
   inherit (networking) mkProxy mkVirtualHost mkCifs;
 }

@@ -6,6 +6,8 @@
 }: {
   programs.zsh = {
     enable = true;
+    dotDir = self.lib.removePrefixOrThrow config.home.homeDirectory (config.xdg.configHome + "/zsh");
+    history.path = config.xdg.stateHome + "/zsh/history";
     syntaxHighlighting.enable = true;
     shellAliases = rec {
       ll = "${lib.getExe pkgs.eza} --long --header --git --icons --classify --group-directories-first";

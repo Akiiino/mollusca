@@ -32,8 +32,6 @@ in {
     programs = {
       kitty.font.size = 16;
       zsh = {
-        dotDir = "Configuration/zsh";
-        history.path = hmUser.xdg.stateHome + "/zsh/history";
         envExtra = ''
           export $(cat /Audatic/environment)
         '';
