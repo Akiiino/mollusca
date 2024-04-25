@@ -17,11 +17,13 @@ in {
   programs.zsh.enable = true;
 
   users.users.${username}.home = homeDirectory;
+  home-manager.extraSpecialArgs = {inherit self;};
   home-manager.users."${username}" = {
     imports = [
       self.inputs.mac-app-util.homeManagerModules.default
       "${self}/modules/apps/kitty.nix"
       "${self}/modules/apps/zsh.nix"
+      "${self}/modules/apps/direnv.nix"
     ];
     xdg = {
       enable = true;
@@ -46,22 +48,6 @@ in {
 
           # [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
           eval "$(pyenv init -)"
-        '';
-      };
-      direnv = {
-        enable = true;
-        enableZshIntegration = true;
-        nix-direnv.enable = true;
-        stdlib = ''
-          declare -A direnv_layout_dirs
-          direnv_layout_dir() {
-              local hash path
-              echo "''${direnv_layout_dirs[$PWD]:=$(
-                  hash="$(sha1sum - <<< "$PWD" | head -c40)"
-                  path="''${PWD//[^a-zA-Z0-9]/-}"
-                  echo "${hmUser.xdg.cacheHome}/direnv/layouts/''${hash}''${path}"
-              )}"
-          }
         '';
       };
       fzf.enable = true;

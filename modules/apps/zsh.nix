@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  self,
   ...
 }: {
   programs.zsh = {

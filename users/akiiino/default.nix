@@ -22,6 +22,7 @@
         "${self}/modules/apps/git.nix"
         "${self}/modules/apps/kitty.nix"
         "${self}/modules/apps/gnome.nix"
+        "${self}/modules/apps/direnv.nix"
         "${self}/users/akiiino/home.nix"
       ];
     });
