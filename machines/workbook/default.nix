@@ -40,12 +40,9 @@ in {
         '';
         initExtra = ''
           clear_dsstore() {
-              find ~ -name ".DS_Store" -delete
-              find /Data/ -name ".DS_Store" -delete
-              find /Configuration/ -name ".DS_Store" -delete
+              find . -name ".DS_Store" -delete
           }
 
-          # [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
           eval "$(pyenv init -)"
         '';
       };
@@ -85,6 +82,12 @@ in {
 
     home = {
       inherit username homeDirectory;
+
+      file = {
+        ".mongodb".source = hmUser.lib.file.mkOutOfStoreSymlink (hmUser.xdg.stateHome + "/mongodb");
+        "${hmUser.xdg.stateHome}/mongodb/.keep".text = "";
+      };
+
 
       sessionVariables = {
         RUFF_CACHE_DIR = hmUser.xdg.cacheHome + "/ruff";
