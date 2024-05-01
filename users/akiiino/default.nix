@@ -31,6 +31,7 @@
         "${self}/modules/apps/starship.nix"
         "${self}/users/akiiino/home.nix"
       ];
+      programs.kitty.settings.kitty_mod = "ctrl+shift";
     });
   };
 }

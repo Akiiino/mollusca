@@ -74,7 +74,7 @@
       window_border_width = "5pt";
 
       draw_minimal_borders = true;
-      inactive_text_alpha = "0.75";
+      inactive_text_alpha = "1";
 
       window_resize_step_cells = 1;
       window_resize_step_lines = 1;
@@ -85,7 +85,7 @@
       # "cursor_shape" = "block";
 
       # scrollback_pager $XDG_CONFIG_HOME/kitty/kak-pager.sh INPUT_LINE_NUMBER CURSOR_LINE CURSOR_COLUMN
-      kitty_mod = "super";
+      kitty_mod = lib.mkDefault "super";
       macos_option_as_alt = "left";
       clear_all_shortcuts = true;
     };
@@ -94,8 +94,6 @@
 
       "kitty_mod+c" = "copy_to_clipboard";
       "kitty_mod+v" = "paste_from_clipboard";
-
-      "kitty_mod+g" = "launch --cwd=current --location=hsplit gitsh";
 
       #: Scrolling
 
@@ -115,10 +113,10 @@
 
       "kitty_mod+enter" = "layout_action rotate";
 
-      "kitty_mod+shift+up" = "move_window up";
-      "kitty_mod+shift+left" = "move_window left";
-      "kitty_mod+shift+right" = "move_window right";
-      "kitty_mod+shift+down" = "move_window down";
+      "kitty_mod+alt+up" = "move_window up";
+      "kitty_mod+alt+left" = "move_window left";
+      "kitty_mod+alt+right" = "move_window right";
+      "kitty_mod+alt+down" = "move_window down";
 
       "kitty_mod+left" = "neighboring_window left";
       "kitty_mod+right" = "neighboring_window right";
@@ -167,7 +165,7 @@
       #: instance to run git commands on a filename output from a previous
       #: git command.
 
-      "kitty_mod+p>shift+f" = "kitten hints --type path";
+      "kitty_mod+p>alt+f" = "kitten hints --type path";
 
       #: Select a path/filename and open it with the default open program.
 
@@ -199,8 +197,7 @@
       #: Miscellaneous
 
       "kitty_mod+u" = "kitten unicode_input";
-      "kitty_mod+f2" = "edit_config_file";
-      "kitty_mod+shift+;" = "kitty_shell window";
+      "kitty_mod+alt+;" = "kitty_shell window";
       "kitty_mod+delete" = "clear_terminal reset active";
 
       "f1" = "new_window_with_cwd";
