@@ -316,6 +316,28 @@
         "type": "github"
       }
     },
+<<<<<<< HEAD
+=======
+    "jovianNixOS": {
+      "inputs": {
+        "nix-github-actions": "nix-github-actions",
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1714591989,
+        "narHash": "sha256-omTqstRKowhf8Dfz+uCRwzKkuMCE8vqJhOd55KdrgYo=",
+        "owner": "akiiino",
+        "repo": "Jovian-NixOS",
+        "rev": "6e87a7ab45e43c371aa969c6dbd6366acf2ff47c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "akiiino",
+        "repo": "Jovian-NixOS",
+        "type": "github"
+      }
+    },
+>>>>>>> bd0fe1a (flake.lock: Update)
     "mac-app-util": {
       "inputs": {
         "cl-nix-lite": "cl-nix-lite",
