@@ -86,6 +86,8 @@ in {
       file = {
         ".mongodb".source = hmUser.lib.file.mkOutOfStoreSymlink (hmUser.xdg.stateHome + "/mongodb");
         "${hmUser.xdg.stateHome}/mongodb/.keep".text = "";
+
+        "${hmUser.home.homeDirectory}/Home/.keep".text = "";
       };
 
 
