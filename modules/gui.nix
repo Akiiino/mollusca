@@ -33,7 +33,7 @@ in {
       }
       (lib.mkIf (cfg.desktopEnvironment == "plasma") {
         services.xserver = {
-          displayManager.sddm.enable = true;
+          displayManager.lightdm.enable = true;
           desktopManager.plasma5.enable = true;
         };
       })

@@ -105,7 +105,6 @@ in {
         "${hmUser.home.homeDirectory}/Home/.keep".text = "";
       };
 
-
       sessionVariables = {
         RUFF_CACHE_DIR = hmUser.xdg.cacheHome + "/ruff";
       };

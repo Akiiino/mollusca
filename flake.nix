@@ -30,6 +30,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     mac-app-util.url = "github:hraban/mac-app-util";
+    jovianNixOS.url = "github:Jovian-Experiments/Jovian-NixOS";
 
     # Secrets
     agenix = {

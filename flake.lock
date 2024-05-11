@@ -324,15 +324,15 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1714591989,
-        "narHash": "sha256-omTqstRKowhf8Dfz+uCRwzKkuMCE8vqJhOd55KdrgYo=",
-        "owner": "akiiino",
+        "lastModified": 1714464433,
+        "narHash": "sha256-ztvukQ2LvrRQBtiRiut8FgCOyKXgqLTIp3Deg/OguUY=",
+        "owner": "Jovian-Experiments",
         "repo": "Jovian-NixOS",
-        "rev": "6e87a7ab45e43c371aa969c6dbd6366acf2ff47c",
+        "rev": "2a5194b960801b68cfc4c811eb1733cf3aa8ece6",
         "type": "github"
       },
       "original": {
-        "owner": "akiiino",
+        "owner": "Jovian-Experiments",
         "repo": "Jovian-NixOS",
         "type": "github"
       }
