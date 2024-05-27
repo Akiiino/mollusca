@@ -223,7 +223,7 @@ in {
       FXPreferredViewStyle = "clmv";
     };
     screencapture = {
-      location = "/Data/Screenshots";
+      location = hmUser.xdg.dataHome + "/Screenshots";
       type = "png";
     };
     universalaccess = {
@@ -235,10 +235,9 @@ in {
       NSGlobalDomain = {
         AppleAccentColor = 4;
         AppleHighlightColor = "0.698039 0.843137 1.000000 Blue";
-        # AppleLanguages = ["en"];
-        AppleLocale = "en_GB@currency=EUR";
+        AppleLocale = "en_DE";
         NSToolbarTitleViewRolloverDelay = 0;
-        # NSUserDictionaryReplacementItems = [];
+        NSUserDictionaryReplacementItems = [];
       };
       "com.apple.TextEdit" = {
         PlainTextEncoding = 4;
@@ -253,7 +252,7 @@ in {
       "com.apple.dock" = {
         largesize = 100;
         magnification = true;
-        # persistent-apps = [];
+        persistent-apps = [];
         pinning = "start";
       };
       "com.apple.finder" = {
