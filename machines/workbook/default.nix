@@ -46,6 +46,20 @@ in {
           eval "$(pyenv init -)"
         '';
       };
+      firefox = {
+        enable = true;
+        package = nixcasks.firefox;
+        profiles."${username}" = {
+          extensions = with self.inputs.firefox-addons.packages.x86_64-darwin; [
+            clearurls
+            cookie-autodelete
+            tree-style-tab
+            ublock-origin
+            vimium
+            zotero-connector
+          ];
+        };
+      };
       fzf.enable = true;
       git = {
         enable = true;
@@ -132,7 +146,6 @@ in {
         nixcasks.rectangle-pro
         nixcasks.zotero
         nixcasks.mongodb-compass
-        nixcasks.firefox
       ];
 
       stateVersion = "23.11";
