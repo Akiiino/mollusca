@@ -16,7 +16,7 @@
     self.inputs.nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
     self.inputs.nixos-hardware.nixosModules.common-pc
     self.inputs.nixos-hardware.nixosModules.common-pc-ssd
-    self.inputs.jovianNixOS.nixosModules.jovian
+    # self.inputs.jovianNixOS.nixosModules.jovian
     "${self}/users/akiiino"
     "${self}/users/rinkaru"
   ];
@@ -28,22 +28,11 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  jovian = {
-    steam = {
-      enable = true;
-      autoStart = true;
-      desktopSession = "plasma";
-      user = "nautilus";
-    };
-    steamos.useSteamOSConfig = false;
-  };
-
   mollusca.isRemote = true;
   mollusca.gui = {
     enable = true;
     desktopEnvironment = "plasma";
   };
-  services.xserver.displayManager.lightdm.enable = lib.mkForce false;
 
 
   # users.mutableUsers = false;
@@ -90,11 +79,11 @@
     bluetooth.enable = true;
   };
 
-  # services.xserver = {
-  #   enable = true;
-  #   videoDrivers = ["nvidia"];
-  #   displayManager.autoLogin.user = "nautilus";
-  # };
+  services.xserver = {
+    enable = true;
+    videoDrivers = ["nvidia"];
+    displayManager.autoLogin.user = "nautilus";
+  };
 
   nixpkgs.config.pulseaudio = true;
 
