@@ -20,7 +20,7 @@
     home-manager.extraSpecialArgs = {inherit self;};
     home-manager.users.akiiino = lib.mkIf config.mollusca.enableHM ({...}: {
       imports = [
-        "${self}/modules/apps/firefox.nix"
+        "${self}/modules/apps/firefox"
         "${self}/modules/apps/git.nix"
         "${self}/modules/apps/kitty.nix"
         "${self}/modules/apps/gnome.nix"

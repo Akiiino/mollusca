@@ -8,6 +8,7 @@
     self.inputs.mollusca-secrets.nixosModules.secrets
     self.inputs.agenix.nixosModules.default
     self.inputs.home-manager.nixosModules.default
+    self.inputs.nh_darwin.nixosModules.default
     "${self}/modules/remote.nix"
     "${self}/modules/gui.nix"
   ];

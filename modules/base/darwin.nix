@@ -8,6 +8,7 @@
     self.inputs.agenix.darwinModules.default
     self.inputs.home-manager.darwinModules.default
     self.inputs.mac-app-util.darwinModules.default
+    self.inputs.nh_darwin.nixDarwinModules.default
   ];
 
   environment.postBuild = ''
