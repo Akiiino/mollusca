@@ -72,6 +72,6 @@ in {
       port = cfg.port;
     };
 
-    services.oauth2_proxy.nginx.virtualHosts = lib.singleton (config.mkSubdomain "komga");
+    services.oauth2-proxy.nginx.virtualHosts = lib.singleton (config.mkSubdomain "komga");
   };
 }

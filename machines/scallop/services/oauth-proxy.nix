@@ -6,10 +6,10 @@
 }: {
   imports = [./oauth-proxy_nginx.nix];
   config = {
-    age.secrets.oauth2_proxy.file = "${self}/secrets/oauth2-proxy_keycloak.age";
-    services.oauth2_proxy = {
+    age.secrets.oauth2-proxy.file = "${self}/secrets/oauth2-proxy_keycloak.age";
+    services.oauth2-proxy = {
       enable = true;
-      keyFile = config.age.secrets.oauth2_proxy.path;
+      keyFile = config.age.secrets.oauth2-proxy.path;
       cookie.domain = "." + config.domain;
       cookie.expire = "336h0m0s";
 
@@ -27,7 +27,7 @@
 
       setXauthrequest = true;
     };
-    systemd.services."oauth2_proxy" = {
+    systemd.services."oauth2-proxy" = {
       requires = ["keycloak.service" "nginx.service"];
       after = ["keycloak.service" "nginx.service"];
     };

@@ -28,6 +28,6 @@ in {
       fqdn = domain;
     };
 
-    #services.oauth2_proxy.nginx.virtualHosts = lib.singleton domain;
+    #services.oauth2-proxy.nginx.virtualHosts = lib.singleton domain;
   };
 }

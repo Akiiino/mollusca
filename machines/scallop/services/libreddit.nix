@@ -22,6 +22,6 @@ in {
       after = ["nginx.service"];
     };
 
-    services.oauth2_proxy.nginx.virtualHosts = lib.singleton fqdn;
+    services.oauth2-proxy.nginx.virtualHosts = lib.singleton fqdn;
   };
 }

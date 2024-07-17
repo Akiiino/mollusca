@@ -4,10 +4,10 @@
   lib,
   ...
 }: let
-  cfg = config.services.oauth2_proxy.nginx;
+  cfg = config.services.oauth2-proxy.nginx;
 in {
   options = {
-    services.oauth2_proxy.nginx.virtualHostsWithGroups = lib.mkOption {
+    services.oauth2-proxy.nginx.virtualHostsWithGroups = lib.mkOption {
       type = lib.types.listOf lib.types.attrs;
       default = [];
       description = lib.mdDoc ''
@@ -16,7 +16,7 @@ in {
     };
   };
 
-  config.services.nginx = lib.mkIf config.services.oauth2_proxy.enable (lib.mkMerge
+  config.services.nginx = lib.mkIf config.services.oauth2-proxy.enable (lib.mkMerge
     ((lib.optional (cfg.virtualHostsWithGroups != []) {
         recommendedProxySettings = true; # needed because duplicate headers
       })

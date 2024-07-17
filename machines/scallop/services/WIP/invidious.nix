@@ -18,6 +18,6 @@ in {
       port = cfg.server.port;
     };
 
-    services.oauth2_proxy.nginx.virtualHosts = lib.singleton cfg.server.hostname;
+    services.oauth2-proxy.nginx.virtualHosts = lib.singleton cfg.server.hostname;
   };
 }

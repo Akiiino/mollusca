@@ -33,7 +33,7 @@ in {
       requires = ["nginx.service"];
       after = ["nginx.service"];
     };
-    services.oauth2_proxy.nginx.virtualHostsWithGroups = lib.singleton {
+    services.oauth2-proxy.nginx.virtualHostsWithGroups = lib.singleton {
       vhost = config.mkSubdomain "grocy";
       groups = ["family"];
     };
