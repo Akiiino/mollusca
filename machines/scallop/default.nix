@@ -8,7 +8,6 @@
   imports = [
     ./disko.nix
     ./services/acme.nix
-    ./services/grocy.nix
     ./services/keycloak.nix
     ./services/minio.nix
     ./services/nextcloud.nix
