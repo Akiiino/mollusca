@@ -14,11 +14,12 @@ in {
       database.passwordFile = config.age.secrets.keycloakDBPass.path;
       settings = {
         hostname = config.mkSubdomain "keycloak";
-        hostname-strict-backchannel = true;
+        # hostname-strict-backchannel = true;
         proxy = "edge";
         http-host = "127.0.0.1";
         http-port = 37654;
-        features = "declarative-user-profile";
+        https-port = 37655;
+        # features = "declarative-user-profile";
         features-disabled = "kerberos,par";
       };
     };

@@ -22,7 +22,7 @@ in {
     users.groups.nextcloud.gid = 992;
     services.nextcloud = {
       enable = true;
-      package = pkgs.nextcloud27;
+      package = pkgs.nextcloud28;
       hostName = config.mkSubdomain "nextcloud";
       home = "/persist/var/lib/nextcloud";
       datadir = "/persist/nextcloud_data";
@@ -42,13 +42,13 @@ in {
       };
       extraApps = {
         inherit
-          (pkgs.nextcloud27Packages.apps)
+          (pkgs.nextcloud28Packages.apps)
           polls
           forms
-          unsplash
+          # unsplash
           calendar
-          files_texteditor
-          keeweb
+          # files_texteditor
+          # keeweb
           notes
           contacts
           tasks
@@ -126,7 +126,7 @@ in {
       ensureDatabases = lib.singleton cfg.config.dbname;
       ensureUsers = lib.singleton {
         name = cfg.config.dbuser;
-        ensurePermissions."DATABASE ${cfg.config.dbname}" = "ALL PRIVILEGES";
+        ensureDBOwnership = true;
       };
     };
 

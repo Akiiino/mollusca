@@ -4,8 +4,9 @@
   lib,
   ...
 }: {
-  environment.systemPackages = [pkgs.tailscale];
-
+  mollusca.useTailscale = true;
+  mollusca.isExitNode = true;
+  services.tailscale.extraUpFlags = ["--hostname scallop"];
   environment.persistence."/persist".directories = lib.singleton {
     directory = "/var/lib/tailscale";
     user = "root";

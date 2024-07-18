@@ -76,7 +76,7 @@
 
     # Nextcloud apps
     nc-announcementcenter = {
-      url = "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.6.2/announcementcenter-v6.6.2.tar.gz";
+      url = "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.8.1/announcementcenter-v6.8.1.tar.gz";
       flake = false;
     };
     nc-oidc_login = {

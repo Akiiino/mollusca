@@ -576,11 +576,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1720697445,
-        "narHash": "sha256-IvFFc57vljkR1eP4VeNMuXJTS/POClq+ytFAadigSY0=",
+        "lastModified": 1721226562,
+        "narHash": "sha256-KfdwusX12hhkzXKBmu2HhaU9EhaxVeWLDQw1Ll2A03o=",
         "owner": "Jovian-Experiments",
         "repo": "Jovian-NixOS",
-        "rev": "bba994424596df09228f5437bcf8ef7fde1fe56e",
+        "rev": "927eea31915468e06b94bedf678261dc7cf048c8",
         "type": "github"
       },
       "original": {
@@ -633,14 +633,14 @@
     "nc-announcementcenter": {
       "flake": false,
       "locked": {
-        "lastModified": 1692288020,
-        "narHash": "sha256-r18lZI8WssjaKO3VXcVBdC3bzVMH8a++ByJCQor8/qM=",
+        "lastModified": 1711017760,
+        "narHash": "sha256-OxO+pOQTUXfhiQJQm5o16hdyX0P+p2mISr5BdylkGmM=",
         "type": "tarball",
-        "url": "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.6.2/announcementcenter-v6.6.2.tar.gz"
+        "url": "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.8.1/announcementcenter-v6.8.1.tar.gz"
       },
       "original": {
         "type": "tarball",
-        "url": "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.6.2/announcementcenter-v6.6.2.tar.gz"
+        "url": "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.8.1/announcementcenter-v6.8.1.tar.gz"
       }
     },
     "nc-oidc_login": {
@@ -662,11 +662,11 @@
     "nc-previewgenerator": {
       "flake": false,
       "locked": {
-        "lastModified": 1698434446,
-        "narHash": "sha256-bn1b8tANZK8LeM/66J0mQpdkoRFDxP5777k/st6Xb+U=",
+        "lastModified": 1721238168,
+        "narHash": "sha256-bQOZrMSBTe+gFHzkhw5WjZjethaxsklSxh3Z/C9zS+s=",
         "owner": "akiiino",
         "repo": "previewgenerator",
-        "rev": "2523f9b6b3bed4d3371d0a495e35ef3fc1badf8b",
+        "rev": "ef4f6b068347147e1bd5096de2896013833fa4e6",
         "type": "github"
       },
       "original": {
