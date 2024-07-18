@@ -10,11 +10,9 @@
     ./services/acme.nix
     ./services/grocy.nix
     ./services/keycloak.nix
-    ./services/libreddit.nix
     ./services/minio.nix
     ./services/nextcloud.nix
     ./services/nginx.nix
-    ./services/nitter.nix
     ./services/oauth-proxy.nix
     ./services/outline.nix
     ./services/postgresql.nix
