@@ -4,7 +4,6 @@
   lib,
   ...
 }: {
-  imports = [./oauth-proxy_nginx.nix];
   config = {
     age.secrets.oauth2-proxy.file = "${self}/secrets/oauth2-proxy_keycloak.age";
     services.oauth2-proxy = {
@@ -22,19 +21,21 @@
 
       extraConfig.whitelist-domain = "." + config.domain;
       extraConfig.oidc-issuer-url = "https://${config.services.keycloak.settings.hostname}/realms/shore";
-      #extraConfig.set-authorization-header = true;
-      #extraConfig.pass-authorization-header = true;
 
       setXauthrequest = true;
-    };
-    systemd.services."oauth2-proxy" = {
-      requires = ["keycloak.service" "nginx.service"];
-      after = ["keycloak.service" "nginx.service"];
+
+      nginx.domain = "seashell.social";
     };
 
     services.nginx.virtualHosts = self.lib.mkProxy {
       fqdn = config.mkSubdomain "oauth2";
       port = 4180;
     };
+
+    systemd.services."oauth2-proxy" = {
+      requires = ["keycloak.service" "nginx.service"];
+      after = ["keycloak.service" "nginx.service"];
+    };
+
   };
 }
