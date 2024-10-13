@@ -17,6 +17,7 @@
     ./services/postgresql.nix
     ./services/secondbrain.nix
     ./services/tailscale.nix
+    ./services/foundry.nix
 
     "${self}/users/akiiino"
 
@@ -38,6 +39,11 @@
   };
   config = {
     mollusca.isRemote = true;
+
+    services.nginx.virtualHosts = self.lib.mkProxy {
+      fqdn = "pride-bingo.seashell.social";
+      port = 9132;
+    };
 
     services.openssh = {
       enable = true;

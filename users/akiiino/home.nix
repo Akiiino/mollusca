@@ -18,6 +18,16 @@
     gyre-fonts
     localsend
   ];
+  home.file = {
+    ".local/share".source = config.lib.file.mkOutOfStoreSymlink (config.xdg.dataHome);
+    "${config.xdg.dataHome}/.keep".text = "";
+
+    ".config".source = config.lib.file.mkOutOfStoreSymlink (config.xdg.configHome);
+    "${config.xdg.configHome}/.keep".text = "";
+
+    ".local/state".source = config.lib.file.mkOutOfStoreSymlink (config.xdg.stateHome);
+    "${config.xdg.stateHome}/.keep".text = "";
+  };
   xdg = {
     enable = true;
     configHome = config.home.homeDirectory + "/Configuration";

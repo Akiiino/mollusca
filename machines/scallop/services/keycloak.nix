@@ -15,7 +15,9 @@ in {
       settings = {
         hostname = config.mkSubdomain "keycloak";
         # hostname-strict-backchannel = true;
-        proxy = "edge";
+        # proxy = "edge";
+        proxy-headers = "forwarded";
+        http-enabled = true;
         http-host = "127.0.0.1";
         http-port = 37654;
         https-port = 37655;
