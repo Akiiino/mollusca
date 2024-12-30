@@ -153,8 +153,7 @@ in {
   };
 
   fonts = {
-    fontDir.enable = true;
-    fonts = [
+    packages = [
       pkgs.fira-code
       (pkgs.nerdfonts.override {fonts = ["Hack"];})
       pkgs.iosevka
