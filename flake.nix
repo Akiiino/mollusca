@@ -13,7 +13,6 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nh_darwin.url = "github:ToyVo/nh_darwin";
 
     # Machine configuration
     darwin = {
