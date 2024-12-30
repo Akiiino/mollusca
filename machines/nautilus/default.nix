@@ -16,7 +16,6 @@
     self.inputs.nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
     self.inputs.nixos-hardware.nixosModules.common-pc
     self.inputs.nixos-hardware.nixosModules.common-pc-ssd
-    # self.inputs.jovianNixOS.nixosModules.jovian
     "${self}/users/akiiino"
     "${self}/users/rinkaru"
   ];

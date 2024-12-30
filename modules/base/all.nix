@@ -7,7 +7,6 @@
     settings.experimental-features = ["nix-command" "flakes"];
 
     registry.nixpkgs.flake = self.inputs.nixpkgs;
-    registry.nixpkgs-unstable.flake = self.inputs.nixpkgs-unstable;
   };
   home-manager = {
     useGlobalPkgs = true;
