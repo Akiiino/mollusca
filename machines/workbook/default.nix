@@ -173,7 +173,7 @@ in {
       "pass"
     ];
     casks = [
-      "logitech-options"
+      "logi-options+"
       "microsoft-teams"
     ];
   };
