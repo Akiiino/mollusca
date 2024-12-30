@@ -6,7 +6,7 @@
 }: {
   programs.kitty = {
     enable = true;
-    theme = "Gruvbox Light";
+    themeFile = "gruvbox-light";
     font = {
       package = pkgs.iosevka;
       name = "Iosevka Medium Extended";

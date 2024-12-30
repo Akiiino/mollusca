@@ -10,7 +10,7 @@
     self.inputs.mac-app-util.darwinModules.default
   ];
 
-  environment.postBuild = ''
+  environment.extraSetup = ''
     ln -sv ${pkgs.path} $out/nixpkgs
   '';
   nix.nixPath = pkgs.lib.mkForce ["nixpkgs=/run/current-system/sw/nixpkgs"];

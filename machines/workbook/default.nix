@@ -155,7 +155,7 @@ in {
   fonts = {
     packages = [
       pkgs.fira-code
-      (pkgs.nerdfonts.override {fonts = ["Hack"];})
+      pkgs.nerd-fonts.hack
       pkgs.iosevka
     ];
   };
@@ -222,7 +222,7 @@ in {
     dock = {
       autohide = true;
       enable-spring-load-actions-on-all-items = true;
-      expose-group-by-app = false;
+      expose-group-apps = false;
       mru-spaces = false;
       orientation = "right";
       show-process-indicators = true;
