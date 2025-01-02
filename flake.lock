@@ -406,6 +406,24 @@
         "type": "github"
       }
     },
+    "nh": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1735816258,
+        "narHash": "sha256-7zBiXoC43piFocq0wHvNm5KgzolCi3axD4QhWfsw4DU=",
+        "owner": "viperML",
+        "repo": "nh",
+        "rev": "b7a857066e726dafe9c5f00a8af6ab3f25036ee1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "viperML",
+        "repo": "nh",
+        "type": "github"
+      }
+    },
     "nixcasks": {
       "inputs": {
         "nixpkgs": [
@@ -542,6 +560,22 @@
     },
     "nixpkgs_3": {
       "locked": {
+        "lastModified": 1733016324,
+        "narHash": "sha256-8qwPSE2g1othR1u4uP86NXxm6i7E9nHPyJX3m3lx7Q4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "7e1ca67996afd8233d9033edd26e442836cc2ad6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-24.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
         "lastModified": 1735471104,
         "narHash": "sha256-0q9NGQySwDQc7RhAV2ukfnu7Gxa5/ybJ2ANT8DQrQrs=",
         "owner": "NixOS",
@@ -573,10 +607,11 @@
         "nc-announcementcenter": "nc-announcementcenter",
         "nc-oidc_login": "nc-oidc_login",
         "nc-previewgenerator": "nc-previewgenerator",
+        "nh": "nh",
         "nixcasks": "nixcasks",
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs_4",
         "secondbrain": "secondbrain",
         "stevenBlackHosts": "stevenBlackHosts"
       }

@@ -3,11 +3,7 @@
     config.allowUnfree = true;
     overlays = import "${self}/overlays" {flake = self;};
   };
-  nix = {
-    settings.experimental-features = ["nix-command" "flakes"];
-
-    registry.nixpkgs.flake = self.inputs.nixpkgs;
-  };
+  nix.settings.experimental-features = ["nix-command" "flakes"];
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;

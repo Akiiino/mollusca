@@ -140,7 +140,6 @@ in {
         pkgs.skhd
 
         nixcasks.keka
-        nixcasks.jupyterlab
         nixcasks.jupyter-notebook-viewer
         nixcasks.notion
         nixcasks.rectangle-pro
