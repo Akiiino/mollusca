@@ -41,6 +41,10 @@
     extraGroups = ["audio"];
     # uid = 1002;
     # group = "users";
+    openssh.authorizedKeys.keys = [
+      (builtins.readFile "${self}/secrets/keys/akiiino.pub")
+      (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
+    ];
   };
   # users.groups.users.gid = 100;
 
@@ -54,7 +58,7 @@
   hardware = {
     opengl = {
       enable = true;
-      driSupport = true;
+      # driSupport = true;
       driSupport32Bit = true;
       extraPackages = with pkgs; [
         vaapiVdpau
@@ -85,6 +89,9 @@
   };
 
   nixpkgs.config.pulseaudio = true;
+
+  networking.firewall.allowedTCPPorts = [11111];
+  networking.firewall.allowedUDPPorts = [11111];
 
   programs.zsh.enable = true;
   programs.steam = {

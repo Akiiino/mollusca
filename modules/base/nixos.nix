@@ -20,5 +20,6 @@
     '';
     stateVersion = "23.11";
   };
+  programs.zsh.enable = true;
   nix.nixPath = ["nixpkgs=/run/current-system/nixpkgs"];
 }

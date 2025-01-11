@@ -9,16 +9,15 @@
     ./disko.nix
     ./services/acme.nix
     ./services/keycloak.nix
-    ./services/libreddit.nix
     ./services/minio.nix
     ./services/nextcloud.nix
     ./services/nginx.nix
-    ./services/nitter.nix
     ./services/oauth-proxy.nix
     ./services/outline.nix
     ./services/postgresql.nix
     ./services/secondbrain.nix
     ./services/tailscale.nix
+    ./services/foundry.nix
 
     "${self}/users/akiiino"
 
@@ -40,6 +39,11 @@
   };
   config = {
     mollusca.isRemote = true;
+
+    services.nginx.virtualHosts = self.lib.mkProxy {
+      fqdn = "traveler.seashell.social";
+      port = 9132;
+    };
 
     services.openssh = {
       enable = true;
