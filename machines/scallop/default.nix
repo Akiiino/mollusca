@@ -41,7 +41,7 @@
     mollusca.isRemote = true;
 
     services.nginx.virtualHosts = self.lib.mkProxy {
-      fqdn = "pride-bingo.seashell.social";
+      fqdn = "traveler.seashell.social";
       port = 9132;
     };
 
