@@ -68,5 +68,8 @@
   };
   boot.initrd.availableKernelModules = ["ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi"];
   boot.initrd.kernelModules = ["nvme"];
+  fileSystems."/home/akiiino/SteamLibrary" = {
+    device = "/dev/disk/by-partlabel/disk-main-steam";
+  };
   # fileSystems."/steam".options = ["uid=1002" "gid=100"];
 }

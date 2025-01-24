@@ -46,6 +46,17 @@
       (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
     ];
   };
+  users.users.akiiino = {
+    isNormalUser = true;
+    password = "";
+    extraGroups = ["audio"];
+    # uid = 1002;
+    # group = "users";
+    openssh.authorizedKeys.keys = [
+      (builtins.readFile "${self}/secrets/keys/akiiino.pub")
+      (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
+    ];
+  };
   # users.groups.users.gid = 100;
 
   networking = {
@@ -76,7 +87,7 @@
       package = config.boot.kernelPackages.nvidiaPackages.beta;
     };
     pulseaudio = {
-      enable = true;
+      enable = false;
       support32Bit = true;
     };
     bluetooth.enable = true;
@@ -102,5 +113,7 @@
   environment.systemPackages = with pkgs; [
     ungoogled-chromium
     firefox
+    keepassxc
+    onboard
   ];
 }
