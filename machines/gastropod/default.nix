@@ -54,24 +54,24 @@
   services.gnome.core-utilities.enable = false;
   environment.systemPackages = with pkgs; [
     gparted
-    gnome.eog
-    gnome.evince
-    gnome.nautilus
-    gnome.totem
-    gnome.gnome-bluetooth
-    gnome.gnome-calculator
-    gnome.gnome-screenshot
-    gnome.file-roller
-    gnome.gnome-clocks
-    gnome.gnome-music
-    gnome.gnome-tweaks
+    eog
+    evince
+    nautilus
+    totem
+    gnome-bluetooth
+    gnome-calculator
+    gnome-screenshot
+    file-roller
+    gnome-clocks
+    gnome-music
+    gnome-tweaks
     gnome-photos
-    gnome.gnome-calendar
-    gnome.gnome-power-manager
+    gnome-calendar
+    gnome-power-manager
     gedit
-    gnome.cheese
-    gnome.dconf-editor
-    gnome.gnome-remote-desktop
+    cheese
+    dconf-editor
+    gnome-remote-desktop
   ];
   environment.gnome.excludePackages = with pkgs; [gnome-tour];
 
@@ -82,4 +82,6 @@
   };
   networking.firewall.allowedTCPPorts = [5000 53317];
   networking.firewall.allowedUDPPorts = [34197 53317];
+
+  services.xserver.wacom.enable = true;
 }
