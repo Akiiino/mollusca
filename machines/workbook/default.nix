@@ -26,6 +26,15 @@ in {
       "${self}/modules/apps/direnv.nix"
       "${self}/modules/apps/starship.nix"
     ];
+    launchd.agents.activate-user = {
+      enable = true;
+      config = {
+        Program = "/bin/sh";
+        ProgramArguments = ["/bin/sh" "-c" "/bin/wait4path /nix/store && exec /run/current-system/activate-user"];
+        RunAtLoad = true;
+        KeepAlive.SuccessfulExit = false;
+      };
+    };
     xdg = {
       enable = true;
       configHome = homeDirectory + "/Configuration";
@@ -103,6 +112,8 @@ in {
         "${hmUser.xdg.stateHome}/mongodb/.keep".text = "";
 
         "${hmUser.home.homeDirectory}/Home/.keep".text = "";
+
+        "Audatic".source = hmUser.lib.file.mkOutOfStoreSymlink ("/mnt/home/npopov/Audatic");
       };
 
       sessionVariables = {
@@ -173,6 +184,7 @@ in {
     casks = [
       "logi-options+"
       "microsoft-teams"
+      "microsoft-outlook"
     ];
   };
 
@@ -181,7 +193,6 @@ in {
     extra-nix-path = nixpkgs=flake:nixpkgs
     build-users-group = nixbld
   '';
-  services.nix-daemon.enable = true;
 
   system.keyboard = {
     enableKeyMapping = true;
@@ -264,6 +275,7 @@ in {
         largesize = 100;
         magnification = true;
         persistent-apps = [];
+        persistent-others = [];
         pinning = "start";
       };
       "com.apple.finder" = {
@@ -299,5 +311,39 @@ in {
     '';
   };
 
-  system.stateVersion = 4;
+  launchd.user.envVariables = {
+    XDG_CONFIG_HOME = hmUser.xdg.configHome;
+    XDG_DATA_HOME = hmUser.xdg.configHome;
+
+    # todo: simplify with a module
+    IPYTHONDIR =          "${hmUser.xdg.configHome}/jupyter";
+    JUPYTER_CONFIG_DIR =  "${hmUser.xdg.configHome}/jupyter";
+    KERAS_HOME =          "${hmUser.xdg.configHome}/keras";
+    LESSKEY =             "${hmUser.xdg.configHome}/less/lesskey";
+    MPLCONFIGDIR =        "${hmUser.xdg.configHome}/matplotlib";
+    PARALLEL_HOME =       "${hmUser.xdg.configHome}/parallel";
+    VAULT_CONFIG_PATH =   "${hmUser.xdg.configHome}/vault/vault";
+    ZDOTDIR =             "${hmUser.xdg.configHome}/zsh";
+ 
+    CARGO_HOME =          "${hmUser.xdg.dataHome}/cargo";
+    GNUPGHOME =           "${hmUser.xdg.dataHome}/gnupg";
+    LESSHISTFILE =        "${hmUser.xdg.dataHome}/less/history";
+    PASSAGE_DIR =         "${hmUser.xdg.dataHome}/passage";
+    PASSWORD_STORE_DIR =  "${hmUser.xdg.dataHome}/passwords";
+    POETRY_HOME =         "${hmUser.xdg.dataHome}/poetry";
+    PYENV_ROOT =          "${hmUser.xdg.dataHome}/pyenv";
+    UNISON =              "${hmUser.xdg.dataHome}/unison";
+
+	EDITOR = "kak";
+    VISUAL = "kak";
+    PAGER = "kak";
+
+    PYTHONDONTWRITEBYTECODE = "1";
+    PYTHONBREAKPOINT = "pudb.set_trace";
+    MYPY_CACHE_DIR = "/dev/null";
+
+    UNISONLOCALHOSTNAME = "laptop";
+};
+
+  system.stateVersion = 5;
 }
