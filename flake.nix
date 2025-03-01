@@ -103,7 +103,7 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      systems = ["x86_64-linux" "x86_64-darwin"];
+      systems = ["x86_64-linux" "x86_64-darwin" "aarch64-darwin"];
 
       flake = {
         lib = import "${self}/lib/default.nix" {inherit inputs self;};
@@ -130,6 +130,10 @@
         darwinConfigurations = {
           "workbook" = self.lib.mkDarwinMachine {
             name = "workbook";
+          };
+          "workbook_m4" = self.lib.mkDarwinMachine {
+            name = "workbook";
+            system = "aarch64-darwin";
           };
         };
       };
