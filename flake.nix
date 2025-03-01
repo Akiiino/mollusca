@@ -130,9 +130,6 @@
         darwinConfigurations = {
           "workbook" = self.lib.mkDarwinMachine {
             name = "workbook";
-          };
-          "workbook_m4" = self.lib.mkDarwinMachine {
-            name = "workbook";
             system = "aarch64-darwin";
           };
         };

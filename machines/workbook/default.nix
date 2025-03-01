@@ -11,7 +11,7 @@
   hmUser = config.home-manager.users."${username}";
   nixcasks = import self.inputs.nixcasks {
     inherit nixpkgs pkgs;
-    osVersion = "monterey";
+    osVersion = "sequoia";
   };
 in {
   programs.zsh.enable = true;
@@ -25,16 +25,17 @@ in {
       "${self}/modules/apps/zsh.nix"
       "${self}/modules/apps/direnv.nix"
       "${self}/modules/apps/starship.nix"
+      "${self}/modules/apps/firefox"
     ];
-    launchd.agents.activate-user = {
-      enable = true;
-      config = {
-        Program = "/bin/sh";
-        ProgramArguments = ["/bin/sh" "-c" "/bin/wait4path /nix/store && exec /run/current-system/activate-user"];
-        RunAtLoad = true;
-        KeepAlive.SuccessfulExit = false;
-      };
-    };
+    # launchd.agents.activate-user = {
+    #   enable = true;
+    #   config = {
+    #     Program = "/bin/sh";
+    #     ProgramArguments = ["-c" "exec /run/current-system/activate-user"];
+    #     RunAtLoad = true;
+    #     KeepAlive.SuccessfulExit = false;
+    #   };
+    # };
     xdg = {
       enable = true;
       configHome = homeDirectory + "/Configuration";
@@ -51,24 +52,9 @@ in {
           clear_dsstore() {
               find . -name ".DS_Store" -delete
           }
-
-          eval "$(pyenv init -)"
         '';
       };
-      firefox = {
-        enable = true;
-        package = nixcasks.firefox;
-        profiles."${username}" = {
-          extensions = with self.inputs.firefox-addons.packages.x86_64-darwin; [
-            clearurls
-            cookie-autodelete
-            tree-style-tab
-            ublock-origin
-            vimium
-            zotero-connector
-          ];
-        };
-      };
+      firefox.package = nixcasks.firefox;
       fzf.enable = true;
       git = {
         enable = true;
@@ -113,6 +99,8 @@ in {
 
         "${hmUser.home.homeDirectory}/Home/.keep".text = "";
 
+        "${hmUser.xdg.stateHome}/gitsh/.keep".text = "";
+
         "Audatic".source = hmUser.lib.file.mkOutOfStoreSymlink ("/mnt/home/npopov/Audatic");
       };
 
@@ -138,6 +126,7 @@ in {
         pkgs.monitorcontrol
         pkgs.spotify
         pkgs.localsend
+        pkgs.keepassxc
 
         pkgs.slack
         pkgs.vault
@@ -145,8 +134,6 @@ in {
         pkgs.kak-lsp
         pkgs.kakoune
         pkgs.shellcheck
-
-        pkgs.pyenv
 
         pkgs.skhd
 
@@ -178,9 +165,6 @@ in {
       cleanup = "zap";
       upgrade = true;
     };
-    brews = [
-      "pass"
-    ];
     casks = [
       "logi-options+"
       "microsoft-teams"
@@ -331,7 +315,6 @@ in {
     PASSAGE_DIR =         "${hmUser.xdg.dataHome}/passage";
     PASSWORD_STORE_DIR =  "${hmUser.xdg.dataHome}/passwords";
     POETRY_HOME =         "${hmUser.xdg.dataHome}/poetry";
-    PYENV_ROOT =          "${hmUser.xdg.dataHome}/pyenv";
     UNISON =              "${hmUser.xdg.dataHome}/unison";
 
 	EDITOR = "kak";
