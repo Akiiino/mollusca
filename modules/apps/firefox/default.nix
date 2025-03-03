@@ -181,6 +181,9 @@
         "intl.regional_prefs.use_os_locales" = true;
         "layout.spellcheckDefault" = 0;
         "browser.ml.chat.enabled" = false;
+        "browser.translations.enable" = false;
+        "browser.translations.automaticallyPopup" = false;
+        "browser.translations.panelShown" = true;
       };
       search = {
         force = true;
