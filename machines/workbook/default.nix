@@ -140,7 +140,6 @@ in {
         nixcasks.keka
         nixcasks.jupyter-notebook-viewer
         nixcasks.notion
-        nixcasks.rectangle-pro
         nixcasks.zotero
         nixcasks.mongodb-compass
       ];
@@ -169,6 +168,7 @@ in {
       "logi-options+"
       "microsoft-teams"
       "microsoft-outlook"
+      "rectangle-pro"
     ];
   };
 

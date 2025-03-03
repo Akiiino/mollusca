@@ -25,7 +25,7 @@
       id = 0;
       name = "akiiino";
       isDefault = true;
-      extensions = with self.inputs.firefox-addons.packages.x86_64-darwin; [
+      extensions.packages = with self.inputs.firefox-addons.packages.x86_64-darwin; [
         # TODO: save extension configs
         clearurls
         cookie-autodelete
