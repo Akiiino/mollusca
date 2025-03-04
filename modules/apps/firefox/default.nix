@@ -5,6 +5,9 @@
   self,
   ...
 }: {
+  imports = [
+    self.inputs.arkenfox.hmModules.arkenfox
+  ];
   programs.firefox = {
     enable = true;
     policies = {  # doesn't work on darwin ;(

@@ -70,6 +70,10 @@
       url = gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons;
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    arkenfox = {
+      url = "github:dwarfmaster/arkenfox-nixos";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     foundryvtt.url = "github:reckenrode/nix-foundryvtt";
 
     # Nextcloud apps
