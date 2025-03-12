@@ -46,7 +46,7 @@ in {
       kitty.font.size = 16;
       zsh = {
         envExtra = ''
-          export $(cat /Audatic/environment)
+          export $(cat ${homeDirectory}/Audatic/environment)
         '';
         initExtra = ''
           clear_dsstore() {
@@ -142,6 +142,7 @@ in {
         nixcasks.notion
         nixcasks.zotero
         nixcasks.mongodb-compass
+        nixcasks.middleclick
       ];
 
       stateVersion = "23.11";
@@ -169,6 +170,7 @@ in {
       "microsoft-teams"
       "microsoft-outlook"
       "rectangle-pro"
+      "docker"
     ];
   };
 

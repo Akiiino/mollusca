@@ -11,10 +11,8 @@
   programs.firefox = {
     enable = true;
     policies = {  # doesn't work on darwin ;(
-      CaptivePortal = false;
       DisableFirefoxAccounts = true;
       DisableFirefoxStudies = true;
-      DisableFormHistory = true;
       DisablePocket = true;
       DisableSetDesktopBackground = true;
       DisableTelemetry = true;
@@ -24,169 +22,158 @@
       # };
       NetworkPrediction = false;
     };
+    arkenfox = {
+      enable = true;
+      version = "133.0";
+    };
     profiles.akiiino = {
       id = 0;
       name = "akiiino";
       isDefault = true;
       extensions.packages = with self.inputs.firefox-addons.packages.x86_64-darwin; [
         # TODO: save extension configs
-        clearurls
-        cookie-autodelete
         keepass-helper
-        tree-style-tab
+        # tree-style-tab
+        sidebery
         ublock-origin
         vimium
       ];
+      userChrome = ''
+        #main-window[tabsintitlebar="true"]:not([extradragspace="true"]) #TabsToolbar > .toolbar-items {
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        #main-window:not([tabsintitlebar="true"]) #TabsToolbar {
+            visibility: collapse !important;
+        }
+
+        #sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"] #sidebar-header {
+          display: none;
+        }
+        '';
+      containersForce = true;
+      containers = {
+        "Personal" = {
+          id = 1;
+          color = "blue";
+          icon = "fingerprint";
+        };
+        "Work" = {
+          id = 2;
+          color = "orange";
+          icon = "briefcase";
+        };
+        "Banking" = {
+          id = 3;
+          color = "green";
+          icon = "dollar";
+        };
+        "Shopping" = {
+          id = 4;
+          color = "pink";
+          icon = "cart";
+        };
+        "Test" = {
+          id = 5;
+          color = "red";
+          icon = "pet";
+        };
+      };
+      arkenfox = {
+        enable = true;
+        enableAllSections = true;
+        "0100"."0102"."browser.startup.page".value = 3;  # resume previous session
+        "1000"."1003"."browser.sessionstore.privacy_level".value = 0;  # don't delete data on close
+        "2600"."2651"."browser.download.useDownloadDir".value = true;  # don't ask for downloads
+        "2600"."2652"."browser.download.alwaysOpenPanel".value = true;  # show download panel
+        "2600"."2654"."browser.download.always_ask_before_handling_new_types".value = false;  # don't ask for downloads
+        "2800"."2811" = {
+            "privacy.clearOnShutdown.cache".value = true;
+            "privacy.clearOnShutdown_v2.cache".value = true;
+            "privacy.clearOnShutdown.downloads".value = true;
+            "privacy.clearOnShutdown.formdata".value = true;
+            "privacy.clearOnShutdown.history".value = false;
+            "privacy.clearOnShutdown_v2.historyFormDataAndDownloads".value = false;
+            "privacy.clearOnShutdown.siteSettings".value = false;
+            "privacy.clearOnShutdown_v2.siteSettings".value = false;
+        };
+        "2800"."2815" = {
+            "privacy.clearOnShutdown.cookies".value = false;
+            "privacy.clearOnShutdown.offlineApps".value = false;
+            "privacy.clearOnShutdown.sessions".value = false;
+            "privacy.clearOnShutdown_v2.cookiesAndStorage".value = false;
+        };
+        "2800"."2840"."privacy.sanitize.timeSpan".value = "1";
+        "5000"."5003"."signon.rememberSignons" = {
+            enable = true;
+            value = false;
+        };
+        "5000"."5017" = {
+          "extensions.formautofill.addresses.enabled" = {
+            enable = true;
+            value = false;
+          };
+          "extensions.formautofill.creditCards.enabled" = {
+            enable = true;
+            value = false;
+          };
+        };
+        "5000"."5021"."keyword.enabled" = {
+          enable = true;
+          value = false;
+        };
+      };
       settings = {
         # https://ffprofile.com/
-        "app.normandy.api_url" = "";
-        "app.normandy.enabled" = false;
-        "app.shield.optoutstudies.enabled" = false;
         "app.update.auto" = false;
-        "beacon.enabled" = false;
-        "breakpad.reportURL" = "";
-        "browser.aboutConfig.showWarning" = false;
-        "browser.cache.offline.enable" = false;
-        "browser.crashReports.unsubmittedCheck.autoSubmit" = false;
-        "browser.crashReports.unsubmittedCheck.autoSubmit2" = false;
-        "browser.crashReports.unsubmittedCheck.enabled" = false;
+        # "beacon.enabled" = false;  # reenable?
         "browser.disableResetPrompt" = true;
         "browser.fixup.alternate.enabled" = false;
-        "browser.newtab.preload" = false;
-        "browser.newtabpage.activity-stream.section.highlights.includePocket" = false;
-        "browser.newtabpage.enhanced" = false;
-        "browser.newtabpage.introShown" = true;
-        "browser.safebrowsing.appRepURL" = "";
-        "browser.safebrowsing.blockedURIs.enabled" = false;
-        "browser.safebrowsing.downloads.enabled" = false;
-        "browser.safebrowsing.downloads.remote.enabled" = false;
-        "browser.safebrowsing.downloads.remote.url" = "";
-        "browser.safebrowsing.enabled" = false;
-        "browser.safebrowsing.malware.enabled" = false;
-        "browser.safebrowsing.phishing.enabled" = false;
-        "browser.search.suggest.enabled" = false;
         "browser.selfsupport.url" = "";
-        "browser.send_pings" = false;
-        "browser.sessionstore.privacy_level" = 0;
         "browser.shell.checkDefaultBrowser" = false;
-        "browser.startup.homepage_override.mstone" = "ignore";
-        "browser.tabs.crashReporting.sendReport" = false;
         "browser.urlbar.groupLabels.enabled" = false;
-        "browser.urlbar.quicksuggest.enabled" = false;
-        "browser.urlbar.speculativeConnect.enabled" = false;
         "browser.urlbar.trimURLs" = false;
-        "datareporting.healthreport.service.enabled" = false;
-        "datareporting.healthreport.uploadEnabled" = false;
-        "datareporting.policy.dataSubmissionEnabled" = false;
-        "device.sensors.ambientLight.enabled" = false;
-        "device.sensors.enabled" = false;
-        "device.sensors.motion.enabled" = false;
-        "device.sensors.orientation.enabled" = false;
-        "device.sensors.proximity.enabled" = false;
-        "dom.battery.enabled" = false;
         "dom.private-attribution.submission.enabled" = false;
-        "dom.security.https_only_mode" = true;
-        "dom.security.https_only_mode_ever_enabled" = true;
-        "dom.webaudio.enabled" = false;
         "experiments.activeExperiment" = false;
         "experiments.enabled" = false;
         "experiments.manifest.uri" = "";
         "experiments.supported" = false;
-        "extensions.ClearURLs@kevinr.whiteList" = "";
-        "extensions.autoDisableScopes" = 14;
         "extensions.getAddons.cache.enabled" = false;
-        "extensions.getAddons.showPane" = false;
         "extensions.pocket.enabled" = false;
         "extensions.shield-recipe-client.api_url" = "";
         "extensions.shield-recipe-client.enabled" = false;
-        "extensions.webservice.discoverURL" = "";
-        "keyword.enabled" = false;
         "media.autoplay.default" = 0;
         "media.autoplay.enabled" = true;
         "media.eme.enabled" = false;
+        "browser.eme.ui.enabled" = false;
         "media.gmp-widevinecdm.enabled" = false;
-        "media.navigator.enabled" = false;
-        "media.peerconnection.enabled" = false;
-        "media.video_stats.enabled" = false;
         "network.allow-experiments" = false;
-        "network.captive-portal-service.enabled" = false;
-        "network.cookie.cookieBehavior" = 1;
-        "network.dns.disablePrefetch" = true;
-        "network.dns.disablePrefetchFromHTTPS" = true;
-        "network.http.referer.spoofSource" = true;
-        "network.http.speculative-parallel-limit" = 0;
-        "network.predictor.enable-prefetch" = false;
-        "network.predictor.enabled" = false;
-        "network.prefetch-next" = false;
-        "network.trr.mode" = 5;
-        "privacy.query_stripping" = true;
-        "privacy.trackingprotection.cryptomining.enabled" = true;
-        "privacy.trackingprotection.enabled" = true;
-        "privacy.trackingprotection.fingerprinting.enabled" = true;
-        "privacy.trackingprotection.pbmode.enabled" = true;
-        "privacy.usercontext.about_newtab_segregation.enabled" = true;
         "security.ssl.disable_session_identifiers" = true;
-        "services.sync.prefs.sync.browser.newtabpage.activity-stream.showSponsoredTopSite" = false;
-        "signon.autofillForms" = false;
-        "toolkit.telemetry.archive.enabled" = false;
-        "toolkit.telemetry.bhrPing.enabled" = false;
-        "toolkit.telemetry.cachedClientID" = "";
-        "toolkit.telemetry.enabled" = false;
-        "toolkit.telemetry.firstShutdownPing.enabled" = false;
-        "toolkit.telemetry.hybridContent.enabled" = false;
-        "toolkit.telemetry.newProfilePing.enabled" = false;
-        "toolkit.telemetry.prompted" = 2;
-        "toolkit.telemetry.rejected" = true;
-        "toolkit.telemetry.reportingpolicy.firstRun" = false;
-        "toolkit.telemetry.server" = "";
-        "toolkit.telemetry.shutdownPingSender.enabled" = false;
-        "toolkit.telemetry.unified" = false;
-        "toolkit.telemetry.unifiedIsOptIn" = false;
-        "toolkit.telemetry.updatePing.enabled" = false;
         "webgl.disabled" = true;
         "webgl.renderer-string-override" = " ";
         "webgl.vendor-string-override" = " ";
 
         # Manual
-        # remove recommendations and sponsors
-        "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons" = false;
-        "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features" = false;
-        "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
-
         # don't show history in suggestions
         "browser.urlbar.suggest.history" = false;
 
-		# restore session
-        "browser.startup.page" = 3;
+        "privacy.annotate_channels.strict_list.enabled" = true;  # strict tracker blocking; disable if causes problems?
 
-        # strict tracking protection
-        "browser.contentblocking.category" = "strict";
-        "network.cookie.cookieBehavior.optInPartitioning" = true;
-        "network.http.referer.disallowCrossSiteRelaxingDefault.top_navigation" = true;
-        "privacy.annotate_channels.strict_list.enabled" = true;
-        "privacy.bounceTrackingProtection.mode" = 1;
-        "privacy.fingerprintingProtection" = true;
-        "privacy.query_stripping.enabled" = true;
-        "privacy.query_stripping.enabled.pbmode" = true;
-        "privacy.trackingprotection.emailtracking.enabled" = true;
-        # "privacy.trackingprotection.enabled" = true;  # already defined
-        "privacy.trackingprotection.socialtracking.enabled" = true;
-
-        # don't save passwords, addresses, cards, searches
-        "signon.rememberSignons" = false;
-        "signon.management.page.breach-alerts.enabled" = false;
-        "extensions.formautofill.addresses.enabled" = false;
-        "extensions.formautofill.creditCards.enabled" = false;
-        "privacy.history.custom" = true;
-        "browser.formfill.enable" = false;
+        "privacy.history.custom" = true;  # not needed anymore?
 
         # misc
-        "intl.regional_prefs.use_os_locales" = true;
-        "layout.spellcheckDefault" = 0;
-        "browser.ml.chat.enabled" = false;
-        "browser.translations.enable" = false;
-        "browser.translations.automaticallyPopup" = false;
-        "browser.translations.panelShown" = true;
+        "intl.regional_prefs.use_os_locales" = true;  # use OS locale
+        "layout.spellcheckDefault" = 0;  # no spellcheck
+        "browser.ml.chat.enabled" = false;  # no AI chat
+        "browser.translations.enable" = false;  # no translations
+        "browser.translations.automaticallyPopup" = false;  # no translations
+        "browser.translations.panelShown" = true;  # no translations
+        "extensions.screenshots.disabled" = true;  # no screenshots
+        "identity.fxaccounts.enabled" = false;  # no Firefox Sync
+
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;  # enable userChrome.css
+        "media.videocontrols.picture-in-picture.video-toggle.has-used" = true;  # disable PiP reminder
       };
       search = {
         force = true;
