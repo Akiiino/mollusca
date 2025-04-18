@@ -30,9 +30,8 @@
   mollusca.isRemote = true;
   mollusca.gui = {
     enable = true;
-    desktopEnvironment = "plasma";
+    desktopEnvironment = "gnome";
   };
-
 
   # users.mutableUsers = false;
   users.users.nautilus = {
@@ -67,10 +66,10 @@
   time.timeZone = "Europe/Berlin";
 
   hardware = {
-    opengl = {
+    graphics = {
       enable = true;
       # driSupport = true;
-      driSupport32Bit = true;
+      enable32Bit = true;
       extraPackages = with pkgs; [
         vaapiVdpau
         libvdpau-va-gl
@@ -86,18 +85,18 @@
       powerManagement.enable = true;
       package = config.boot.kernelPackages.nvidiaPackages.beta;
     };
-    pulseaudio = {
-      enable = false;
-      support32Bit = true;
-    };
     bluetooth.enable = true;
   };
 
   services.xserver = {
     enable = true;
     videoDrivers = ["nvidia"];
-    displayManager.autoLogin.user = "nautilus";
   };
+  services.pulseaudio = {
+      enable = false;
+      support32Bit = true;
+    };
+  services.displayManager.autoLogin.user = "nautilus";
 
   nixpkgs.config.pulseaudio = true;
 

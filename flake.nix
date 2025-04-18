@@ -112,28 +112,15 @@
       flake = {
         lib = import "${self}/lib/default.nix" {inherit inputs self;};
 
-        nixosConfigurations = {
-          gastropod = self.lib.mkNixOSMachine {
-            name = "gastropod";
-          };
-
-          nautilus = self.lib.mkNixOSMachine {
-            name = "nautilus";
-          };
-
-          scallop = self.lib.mkNixOSMachine {
-            name = "scallop";
-          };
-
-          mussel = self.lib.mkNixOSMachine {
-            system = "aarch64-linux";
-            name = "mussel";
-          };
+        nixosConfigurations = self.lib.mkNixOSMachines {
+          gastropod = {};
+          nautilus = {};
+          scallop = {};
+          mussel = {system = "aarch64-linux";};
         };
 
-        darwinConfigurations = {
-          "workbook" = self.lib.mkDarwinMachine {
-            name = "workbook";
+        darwinConfigurations = self.lib.mkDarwinMachines {
+          workbook = {
             system = "aarch64-darwin";
           };
         };

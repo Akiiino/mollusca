@@ -17,9 +17,7 @@ in {
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
       {
-        services.xserver = {
-          enable = true;
-          excludePackages = [pkgs.xterm];
+        services = {
           displayManager.hiddenUsers = builtins.attrNames (
             lib.filterAttrs (
               name: userConfig:
@@ -29,12 +27,17 @@ in {
             )
             config.users.users
           );
+          xserver = {
+            enable = true;
+            excludePackages = [pkgs.xterm];
+          };
         };
       }
       (lib.mkIf (cfg.desktopEnvironment == "plasma") {
-        services.xserver = {
-          displayManager.lightdm.enable = true;
-          desktopManager.plasma5.enable = true;
+        services = {
+          displayManager.sddm.enable = true;
+          displayManager.sddm.wayland.enable = true;
+          desktopManager.plasma6.enable = true;
         };
       })
       (lib.mkIf (cfg.desktopEnvironment == "gnome") {

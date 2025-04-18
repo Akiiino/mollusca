@@ -36,6 +36,5 @@
       requires = ["keycloak.service" "nginx.service"];
       after = ["keycloak.service" "nginx.service"];
     };
-
   };
 }

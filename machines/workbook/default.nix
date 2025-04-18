@@ -101,7 +101,7 @@ in {
 
         "${hmUser.xdg.stateHome}/gitsh/.keep".text = "";
 
-        "Audatic".source = hmUser.lib.file.mkOutOfStoreSymlink ("/mnt/home/npopov/Audatic");
+        "Audatic".source = hmUser.lib.file.mkOutOfStoreSymlink "/mnt/home/npopov/Audatic";
       };
 
       sessionVariables = {
@@ -302,24 +302,24 @@ in {
     XDG_DATA_HOME = hmUser.xdg.configHome;
 
     # todo: simplify with a module
-    IPYTHONDIR =          "${hmUser.xdg.configHome}/jupyter";
-    JUPYTER_CONFIG_DIR =  "${hmUser.xdg.configHome}/jupyter";
-    KERAS_HOME =          "${hmUser.xdg.configHome}/keras";
-    LESSKEY =             "${hmUser.xdg.configHome}/less/lesskey";
-    MPLCONFIGDIR =        "${hmUser.xdg.configHome}/matplotlib";
-    PARALLEL_HOME =       "${hmUser.xdg.configHome}/parallel";
-    VAULT_CONFIG_PATH =   "${hmUser.xdg.configHome}/vault/vault";
-    ZDOTDIR =             "${hmUser.xdg.configHome}/zsh";
- 
-    CARGO_HOME =          "${hmUser.xdg.dataHome}/cargo";
-    GNUPGHOME =           "${hmUser.xdg.dataHome}/gnupg";
-    LESSHISTFILE =        "${hmUser.xdg.dataHome}/less/history";
-    PASSAGE_DIR =         "${hmUser.xdg.dataHome}/passage";
-    PASSWORD_STORE_DIR =  "${hmUser.xdg.dataHome}/passwords";
-    POETRY_HOME =         "${hmUser.xdg.dataHome}/poetry";
-    UNISON =              "${hmUser.xdg.dataHome}/unison";
+    IPYTHONDIR = "${hmUser.xdg.configHome}/jupyter";
+    JUPYTER_CONFIG_DIR = "${hmUser.xdg.configHome}/jupyter";
+    KERAS_HOME = "${hmUser.xdg.configHome}/keras";
+    LESSKEY = "${hmUser.xdg.configHome}/less/lesskey";
+    MPLCONFIGDIR = "${hmUser.xdg.configHome}/matplotlib";
+    PARALLEL_HOME = "${hmUser.xdg.configHome}/parallel";
+    VAULT_CONFIG_PATH = "${hmUser.xdg.configHome}/vault/vault";
+    ZDOTDIR = "${hmUser.xdg.configHome}/zsh";
 
-	EDITOR = "kak";
+    CARGO_HOME = "${hmUser.xdg.dataHome}/cargo";
+    GNUPGHOME = "${hmUser.xdg.dataHome}/gnupg";
+    LESSHISTFILE = "${hmUser.xdg.dataHome}/less/history";
+    PASSAGE_DIR = "${hmUser.xdg.dataHome}/passage";
+    PASSWORD_STORE_DIR = "${hmUser.xdg.dataHome}/passwords";
+    POETRY_HOME = "${hmUser.xdg.dataHome}/poetry";
+    UNISON = "${hmUser.xdg.dataHome}/unison";
+
+    EDITOR = "kak";
     VISUAL = "kak";
     PAGER = "kak";
 
@@ -328,7 +328,7 @@ in {
     MYPY_CACHE_DIR = "/dev/null";
 
     UNISONLOCALHOSTNAME = "laptop";
-};
+  };
 
   system.stateVersion = 5;
 }

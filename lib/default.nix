@@ -7,7 +7,7 @@
   utils = import ./utils.nix {inherit self;};
   networking = import ./networking.nix {inherit self;};
 in {
-  inherit (machines) mkNixOSMachine mkDarwinMachine;
+  inherit (machines) mkNixOSMachine mkNixOSMachines mkDarwinMachine;
   inherit (utils) takeLast removePrefixOrThrow;
   inherit (networking) mkProxy mkVirtualHost mkCifs;
 }

@@ -17,6 +17,7 @@
     shotwell
     gyre-fonts
     localsend
+    prusa-slicer
   ];
   home.file = {
     ".local/share".source = config.lib.file.mkOutOfStoreSymlink (config.xdg.dataHome);

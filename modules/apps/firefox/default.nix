@@ -10,7 +10,8 @@
   ];
   programs.firefox = {
     enable = true;
-    policies = {  # doesn't work on darwin ;(
+    policies = {
+      # doesn't work on darwin ;(
       DisableFirefoxAccounts = true;
       DisableFirefoxStudies = true;
       DisablePocket = true;
@@ -30,14 +31,26 @@
       id = 0;
       name = "akiiino";
       isDefault = true;
-      extensions.packages = with self.inputs.firefox-addons.packages.x86_64-darwin; [
-        # TODO: save extension configs
-        keepass-helper
-        # tree-style-tab
-        sidebery
-        ublock-origin
-        vimium
-      ];
+      extensions.packages =
+        if pkgs.stdenv.isDarwin
+        then
+          (with self.inputs.firefox-addons.packages.x86_64-darwin; [
+            # TODO: save extension configs
+            keepass-helper
+            # tree-style-tab
+            sidebery
+            ublock-origin
+            vimium
+          ])
+        else
+          (with self.inputs.firefox-addons.packages.x86_64-linux; [
+            # TODO: save extension configs
+            keepass-helper
+            # tree-style-tab
+            sidebery
+            ublock-origin
+            vimium
+          ]);
       userChrome = ''
         #main-window[tabsintitlebar="true"]:not([extradragspace="true"]) #TabsToolbar > .toolbar-items {
           opacity: 0;
@@ -51,7 +64,7 @@
         #sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"] #sidebar-header {
           display: none;
         }
-        '';
+      '';
       containersForce = true;
       containers = {
         "Personal" = {
@@ -83,31 +96,31 @@
       arkenfox = {
         enable = true;
         enableAllSections = true;
-        "0100"."0102"."browser.startup.page".value = 3;  # resume previous session
-        "1000"."1003"."browser.sessionstore.privacy_level".value = 0;  # don't delete data on close
-        "2600"."2651"."browser.download.useDownloadDir".value = true;  # don't ask for downloads
-        "2600"."2652"."browser.download.alwaysOpenPanel".value = true;  # show download panel
-        "2600"."2654"."browser.download.always_ask_before_handling_new_types".value = false;  # don't ask for downloads
+        "0100"."0102"."browser.startup.page".value = 3; # resume previous session
+        "1000"."1003"."browser.sessionstore.privacy_level".value = 0; # don't delete data on close
+        "2600"."2651"."browser.download.useDownloadDir".value = true; # don't ask for downloads
+        "2600"."2652"."browser.download.alwaysOpenPanel".value = true; # show download panel
+        "2600"."2654"."browser.download.always_ask_before_handling_new_types".value = false; # don't ask for downloads
         "2800"."2811" = {
-            "privacy.clearOnShutdown.cache".value = true;
-            "privacy.clearOnShutdown_v2.cache".value = true;
-            "privacy.clearOnShutdown.downloads".value = true;
-            "privacy.clearOnShutdown.formdata".value = true;
-            "privacy.clearOnShutdown.history".value = false;
-            "privacy.clearOnShutdown_v2.historyFormDataAndDownloads".value = false;
-            "privacy.clearOnShutdown.siteSettings".value = false;
-            "privacy.clearOnShutdown_v2.siteSettings".value = false;
+          "privacy.clearOnShutdown.cache".value = true;
+          "privacy.clearOnShutdown_v2.cache".value = true;
+          "privacy.clearOnShutdown.downloads".value = true;
+          "privacy.clearOnShutdown.formdata".value = true;
+          "privacy.clearOnShutdown.history".value = false;
+          "privacy.clearOnShutdown_v2.historyFormDataAndDownloads".value = false;
+          "privacy.clearOnShutdown.siteSettings".value = false;
+          "privacy.clearOnShutdown_v2.siteSettings".value = false;
         };
         "2800"."2815" = {
-            "privacy.clearOnShutdown.cookies".value = false;
-            "privacy.clearOnShutdown.offlineApps".value = false;
-            "privacy.clearOnShutdown.sessions".value = false;
-            "privacy.clearOnShutdown_v2.cookiesAndStorage".value = false;
+          "privacy.clearOnShutdown.cookies".value = false;
+          "privacy.clearOnShutdown.offlineApps".value = false;
+          "privacy.clearOnShutdown.sessions".value = false;
+          "privacy.clearOnShutdown_v2.cookiesAndStorage".value = false;
         };
         "2800"."2840"."privacy.sanitize.timeSpan".value = "1";
         "5000"."5003"."signon.rememberSignons" = {
-            enable = true;
-            value = false;
+          enable = true;
+          value = false;
         };
         "5000"."5017" = {
           "extensions.formautofill.addresses.enabled" = {
@@ -150,52 +163,60 @@
         "media.gmp-widevinecdm.enabled" = false;
         "network.allow-experiments" = false;
         "security.ssl.disable_session_identifiers" = true;
-        "webgl.disabled" = true;
-        "webgl.renderer-string-override" = " ";
-        "webgl.vendor-string-override" = " ";
+        # "webgl.disabled" = true;  # breaks stuff
+        # "webgl.renderer-string-override" = " ";
+        # "webgl.vendor-string-override" = " ";
 
         # Manual
         # don't show history in suggestions
         "browser.urlbar.suggest.history" = false;
 
-        "privacy.annotate_channels.strict_list.enabled" = true;  # strict tracker blocking; disable if causes problems?
+        "privacy.annotate_channels.strict_list.enabled" = true; # strict tracker blocking; disable if causes problems?
 
-        "privacy.history.custom" = true;  # not needed anymore?
+        "privacy.history.custom" = true; # not needed anymore?
 
         # misc
-        "intl.regional_prefs.use_os_locales" = true;  # use OS locale
-        "layout.spellcheckDefault" = 0;  # no spellcheck
-        "browser.ml.chat.enabled" = false;  # no AI chat
-        "browser.translations.enable" = false;  # no translations
-        "browser.translations.automaticallyPopup" = false;  # no translations
-        "browser.translations.panelShown" = true;  # no translations
-        "extensions.screenshots.disabled" = true;  # no screenshots
-        "identity.fxaccounts.enabled" = false;  # no Firefox Sync
+        "intl.regional_prefs.use_os_locales" = true; # use OS locale
+        "layout.spellcheckDefault" = 0; # no spellcheck
+        "browser.ml.chat.enabled" = false; # no AI chat
+        "browser.translations.enable" = false; # no translations
+        "browser.translations.automaticallyPopup" = false; # no translations
+        "browser.translations.panelShown" = true; # no translations
+        "extensions.screenshots.disabled" = true; # no screenshots
+        "identity.fxaccounts.enabled" = false; # no Firefox Sync
 
-        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;  # enable userChrome.css
-        "media.videocontrols.picture-in-picture.video-toggle.has-used" = true;  # disable PiP reminder
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true; # enable userChrome.css
+        "media.videocontrols.picture-in-picture.video-toggle.has-used" = true; # disable PiP reminder
       };
       search = {
         force = true;
         engines = {
           "Nixpkgs" = {
-            urls = [{
-              template = "https://search.nixos.org/packages";
-              params = [
-                { name = "type"; value = "packages"; }
-                { name = "query"; value = "{searchTerms}"; }
-              ];
-            }];
+            urls = [
+              {
+                template = "https://search.nixos.org/packages";
+                params = [
+                  {
+                    name = "type";
+                    value = "packages";
+                  }
+                  {
+                    name = "query";
+                    value = "{searchTerms}";
+                  }
+                ];
+              }
+            ];
 
             icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-            definedAliases = [ "@np" ];
+            definedAliases = ["@np"];
           };
 
           "NixOS Wiki" = {
-            urls = [{ template = "https://wiki.nixos.org/index.php?search={searchTerms}"; }];
+            urls = [{template = "https://wiki.nixos.org/index.php?search={searchTerms}";}];
             iconUpdateURL = "https://wiki.nixos.org/favicon.png";
             updateInterval = 24 * 60 * 60 * 1000; # every day
-            definedAliases = [ "@nw" ];
+            definedAliases = ["@nw"];
           };
 
           "Bing".metaData.hidden = true;

@@ -1,6 +1,0 @@
-last_pom=$(tail -n 3 ~/poms)
-reply=$(osascript -e "display dialog \"$last_pom\" default answer \"\"" -e "text returned of the result")
-if [ -n "$reply" ]; then
-    date=$(date '+%m-%d %H:%M')
-    printf "%s: %s\n" "$date" "$reply" >> ~/poms
-fi

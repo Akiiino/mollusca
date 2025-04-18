@@ -13,60 +13,51 @@
       device = "/dev/sda";
       type = "disk";
       content = {
-        type = "table";
-        format = "gpt";
-        partitions = [
-          {
-            name = "boot";
-            start = "0";
-            end = "1M";
-            flags = ["bios_grub"];
-          }
-          {
-            name = "ESP";
-            start = "1M";
-            end = "512M";
-            bootable = true;
+        type = "gpt";
+        partitions = {
+          boot = {
+            size = "1M";
+            type = "EF02";  # BIOS boot partition
+            priority = 1;
+          };
+          ESP = {
+            size = "511M";
+            type = "EF00";  # EFI System Partition
+            priority = 2;
             content = {
               type = "filesystem";
               format = "vfat";
               mountpoint = "/boot";
             };
-          }
-          {
-            name = "nix";
-            start = "512M";
-            end = "70%";
-            part-type = "primary";
+          };
+          nix = {
+            size = "70%FREE";
+            priority = 3;
             content = {
               type = "filesystem";
               format = "ext4";
               mountpoint = "/nix";
             };
-          }
-          {
-            name = "home";
-            start = "70%";
-            end = "80%";
-            part-type = "primary";
+          };
+          home = {
+            size = "10%FREE";
+            priority = 4;
             content = {
               type = "filesystem";
               format = "ext4";
               mountpoint = "/home";
             };
-          }
-          {
-            name = "persist";
-            start = "80%";
-            end = "100%";
-            part-type = "primary";
+          };
+          persist = {
+            size = "20%FREE";
+            priority = 5;
             content = {
               type = "filesystem";
               format = "ext4";
               mountpoint = "/persist";
             };
-          }
-        ];
+          };
+        };
       };
     };
     nodev."/" = {

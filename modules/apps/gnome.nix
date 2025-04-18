@@ -15,7 +15,7 @@ with lib.hm.gvariant; {
       gtk-enable-primary-paste = false;
       gtk-im-module = "gtk-im-context-simple";
       show-battery-percentage = true;
-      text-scaling-factor = 1.25;
+      text-scaling-factor = 1.0;
       toolkit-accessibility = false;
     };
 

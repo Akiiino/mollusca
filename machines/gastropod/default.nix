@@ -31,6 +31,10 @@
 
   time.timeZone = "Europe/Berlin";
 
+  services.xserver = {
+    displayManager.gdm.enable = true;
+    desktopManager.gnome.enable = true;
+  };
   mollusca.gui = {
     enable = true;
     desktopEnvironment = "gnome";
@@ -42,7 +46,7 @@
 
   services.printing.enable = true;
 
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;

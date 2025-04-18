@@ -20,6 +20,19 @@
       };
     };
 
+  mkNixOSMachines = machines:
+    builtins.mapAttrs
+    (
+      name: config:
+        self.lib.mkNixOSMachine (
+          {
+            inherit name;
+          }
+          // config
+        )
+    )
+    machines;
+
   mkDarwinMachine = {
     name,
     system ? "x86_64-darwin",
@@ -40,4 +53,17 @@
         inherit self;
       };
     };
+
+  mkDarwinMachines = machines:
+    builtins.mapAttrs
+    (
+      name: config:
+        self.lib.mkDarwinMachine (
+          {
+            inherit name;
+          }
+          // config
+        )
+    )
+    machines;
 }
