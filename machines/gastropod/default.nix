@@ -56,6 +56,7 @@
   };
 
   services.gnome.core-utilities.enable = false;
+  environment.localBinInPath = true;
   environment.systemPackages = with pkgs; [
     gparted
     eog

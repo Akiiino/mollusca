@@ -93,9 +93,9 @@
     videoDrivers = ["nvidia"];
   };
   services.pulseaudio = {
-      enable = false;
-      support32Bit = true;
-    };
+    enable = false;
+    support32Bit = true;
+  };
   services.displayManager.autoLogin.user = "nautilus";
 
   nixpkgs.config.pulseaudio = true;

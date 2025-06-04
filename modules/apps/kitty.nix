@@ -87,6 +87,9 @@
       # scrollback_pager $XDG_CONFIG_HOME/kitty/kak-pager.sh INPUT_LINE_NUMBER CURSOR_LINE CURSOR_COLUMN
       kitty_mod = lib.mkDefault "super";
       macos_option_as_alt = "left";
+
+      clipboard_control = "write-clipboard write-primary read-clipboard read-primary";
+
       clear_all_shortcuts = true;
     };
     keybindings = {

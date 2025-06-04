@@ -17,12 +17,12 @@
         partitions = {
           boot = {
             size = "1M";
-            type = "EF02";  # BIOS boot partition
+            type = "EF02"; # BIOS boot partition
             priority = 1;
           };
           ESP = {
             size = "511M";
-            type = "EF00";  # EFI System Partition
+            type = "EF00"; # EFI System Partition
             priority = 2;
             content = {
               type = "filesystem";
