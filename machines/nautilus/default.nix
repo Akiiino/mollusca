@@ -30,7 +30,7 @@
   mollusca.isRemote = true;
   mollusca.gui = {
     enable = true;
-    desktopEnvironment = "gnome";
+    desktopEnvironment = "plasma";
   };
 
   # users.mutableUsers = false;
@@ -79,14 +79,16 @@
 
     nvidia = {
       modesetting.enable = true;
-      open = false;
+      open = true;
 
       nvidiaSettings = true;
-      powerManagement.enable = true;
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
+      powerManagement.enable = false;
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
     };
     bluetooth.enable = true;
+    bluetooth.powerOnBoot = true;
   };
+  services.blueman.enable = true;
 
   services.xserver = {
     enable = true;

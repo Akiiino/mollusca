@@ -20,8 +20,8 @@
     src = pkgs.fetchFromGitHub {
       owner = "Akiiino";
       repo = "clipb.kak";
-      rev = "9f76a14038f15b636d3eecef0542a3f796dbce71";
-      hash = "sha256-DZBov1TBO6KVlbDayqGeoDrQ5FPx+6FcxYzxKlJ2KRY=";
+      rev = "92f6ddb2933ba3855eece0b0013522b507b6167a";
+      hash = "sha256-iW+P8arMUnwGH75h7TtUL4/5ykZcWpDxwvGmsG+Rp8U=";
     };
     meta.homepage = "https://github.com/Akiiino/clipb.kak";
   };

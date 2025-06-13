@@ -28,8 +28,8 @@ in {
             config.users.users
           );
           xserver = {
-            enable = true;
-            excludePackages = [pkgs.xterm];
+            # enable = true;
+            # excludePackages = [pkgs.xterm];
           };
         };
       }
@@ -41,7 +41,7 @@ in {
         };
       })
       (lib.mkIf (cfg.desktopEnvironment == "gnome") {
-        services.xserver = {
+        services = {
           displayManager.gdm.enable = true;
           desktopManager.gnome.enable = true;
         };

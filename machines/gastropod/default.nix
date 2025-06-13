@@ -89,4 +89,5 @@
   networking.firewall.allowedUDPPorts = [34197 53317];
 
   services.xserver.wacom.enable = true;
+  services.fwupd.enable = true;
 }

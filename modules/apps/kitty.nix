@@ -204,6 +204,7 @@
       "kitty_mod+delete" = "clear_terminal reset active";
 
       "f1" = "new_window_with_cwd";
+      "ctrl+shift+f6" = "debug_config";
     };
   };
 }
