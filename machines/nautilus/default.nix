@@ -79,7 +79,7 @@
 
     nvidia = {
       modesetting.enable = true;
-      open = true;
+      open = false;
 
       nvidiaSettings = true;
       powerManagement.enable = false;
@@ -88,7 +88,6 @@
     bluetooth.enable = true;
     bluetooth.powerOnBoot = true;
   };
-  services.blueman.enable = true;
 
   services.xserver = {
     enable = true;
@@ -98,7 +97,7 @@
     enable = false;
     support32Bit = true;
   };
-  services.displayManager.autoLogin.user = "nautilus";
+  # services.displayManager.autoLogin.user = "nautilus";
 
   nixpkgs.config.pulseaudio = true;
 
@@ -110,7 +109,7 @@
     enable = true;
     remotePlay.openFirewall = true;
   };
-  environment.variables.DBUS_SYSTEM_BUS_ADDRESS = "steam";
+  # environment.variables.DBUS_SYSTEM_BUS_ADDRESS = "steam";
   environment.systemPackages = with pkgs; [
     ungoogled-chromium
     firefox
