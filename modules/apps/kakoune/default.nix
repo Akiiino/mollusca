@@ -14,16 +14,16 @@
       hash = "sha256-AJvh6NVFpbPsyzfeii/5muE+i4TwfxhwhDVgMLYOJCM=";
     };
   });
-  clipb-kak = pkgs.kakouneUtils.buildKakounePluginFrom2Nix {
-    pname = "clipb.kak";
-    version = "2025-05-27";
+  kakoune-osc52 = pkgs.kakouneUtils.buildKakounePluginFrom2Nix {
+    pname = "kakoune-osc52";
+    version = "2025-06-17";
     src = pkgs.fetchFromGitHub {
       owner = "Akiiino";
-      repo = "clipb.kak";
-      rev = "92f6ddb2933ba3855eece0b0013522b507b6167a";
-      hash = "sha256-iW+P8arMUnwGH75h7TtUL4/5ykZcWpDxwvGmsG+Rp8U=";
+      repo = "kakoune-osc52";
+      rev = "35dba5d777a3e786633d3995651e4283dc4825da";
+      hash = "sha256-V8AIQaqEy9AJAIFhSpjQ0hxEdkTq1QNppo8/rlwzVQw=";
     };
-    meta.homepage = "https://github.com/Akiiino/clipb.kak";
+    meta.homepage = "https://github.com/Akiiino/kakoune-osc52";
   };
   parinfer-rust = pkgs.rustPlatform.buildRustPackage {
     pname = "parinfer-rust";
@@ -54,17 +54,12 @@
     '';
   };
 in {
-  imports = [
-  ];
-  home.packages = lib.optionals pkgs.stdenv.isLinux [
-    pkgs.wl-clipboard
-  ];
   programs.kakoune = {
     enable = true;
     package = kakoune;
     defaultEditor = true;
     plugins = [
-      clipb-kak
+      kakoune-osc52
       pkgs.kakounePlugins.kak-ansi
       pkgs.kakounePlugins.powerline-kak
       parinfer-rust
@@ -132,7 +127,7 @@ in {
       ];
     };
     extraConfig = ''
-      source ${./clipb-config.kak}
+      source ${./kakoune-osc52-config.kak}
       source ${./powerline-config.kak}
 
       set-option global startup_info_version 20240518

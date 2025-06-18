@@ -26,6 +26,10 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelParams = [ 
+    "drm.edid_firmware=HDMI-A-2:edid/edid.bin"
+    "video=HDMI-A-2:3840x2160@60"
+  ];
 
   mollusca.isRemote = true;
   mollusca.gui = {
@@ -77,13 +81,19 @@
       ];
     };
 
+    firmware = [
+      (pkgs.runCommand "edid-firmware" {} ''
+        mkdir -p $out/lib/firmware/edid
+        cp ${./edid.bin} $out/lib/firmware/edid/edid.bin
+      '')
+    ];
     nvidia = {
       modesetting.enable = true;
-      open = false;
+      open = true;
 
       nvidiaSettings = true;
-      powerManagement.enable = false;
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
+      powerManagement.enable = true;
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
     };
     bluetooth.enable = true;
     bluetooth.powerOnBoot = true;
@@ -110,6 +120,7 @@
     remotePlay.openFirewall = true;
   };
   # environment.variables.DBUS_SYSTEM_BUS_ADDRESS = "steam";
+  environment.etc."edid/edid.bin".source = ./edid.bin;
   environment.systemPackages = with pkgs; [
     ungoogled-chromium
     firefox
