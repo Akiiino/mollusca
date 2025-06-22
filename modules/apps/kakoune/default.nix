@@ -8,10 +8,10 @@
   kakoune = pkgs.kakoune-unwrapped.overrideAttrs (oldAttrs: rec {
     version = "2025.06.03";
     src = pkgs.fetchFromGitHub {
-      owner = "mawww";
       repo = "kakoune";
-      rev = "v${version}";
-      hash = "sha256-AJvh6NVFpbPsyzfeii/5muE+i4TwfxhwhDVgMLYOJCM=";
+      owner = "Akiiino";
+      rev = "906eb9ebb691793778f89486207eafa425a09eff";
+      hash = "sha256-YJOUzufCfbiJASyXjjaq1+qntht1Ye0OFe+za8itD6k=";
     };
   });
   kakoune-osc52 = pkgs.kakouneUtils.buildKakounePluginFrom2Nix {
@@ -30,10 +30,10 @@
     version = "0.5.0";
 
     src = pkgs.fetchFromGitHub {
-      owner = "Akiiino";
+      owner = "eraserhd";
       repo = "parinfer-rust";
-      rev = "e9b4c3365a5327288f57a494c042bdbabeea1be0";
-      sha256 = "sha256-rS44hgB6Mi659MqIsu70b31nsZv0DVukrlB0Q8NjSO8=";
+      rev = "afe6b1176cd805c000713e23b654fbf4b9f4b156";
+      sha256 = "sha256-YKja8nIWmPBNsHboJGXGyZKsjFRZPUOd6rOpPinqg4M=";
     };
     useFetchCargoVendor = true;
     cargoHash = "sha256-sgqzAFZmfpacyjDOvJNyj3IwQGTTKcxV9bHzNCSm6Ig=";
@@ -59,10 +59,10 @@ in {
     package = kakoune;
     defaultEditor = true;
     plugins = [
-      kakoune-osc52
       pkgs.kakounePlugins.kak-ansi
       pkgs.kakounePlugins.powerline-kak
       parinfer-rust
+      kakoune-osc52
     ];
     config = {
       colorScheme = "gruvbox-light";

@@ -26,7 +26,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelParams = [ 
+  boot.kernelParams = [
     "drm.edid_firmware=HDMI-A-2:edid/edid.bin"
     "video=HDMI-A-2:3840x2160@60"
   ];
