@@ -234,9 +234,9 @@ in {
       location = hmUser.xdg.dataHome + "/Screenshots";
       type = "png";
     };
-    universalaccess = {
-      closeViewScrollWheelToggle = true;
-    };
+    # universalaccess = {
+    #   closeViewScrollWheelToggle = true;
+    # };  # SIP conflict?
     CustomSystemPreferences = {
     };
     CustomUserPreferences = {
@@ -278,11 +278,11 @@ in {
       };
       "com.apple.print.PrintingPrefs"."Quit When Finished" = true;
       # "com.apple.spotlight".orderedItems = [];
-      "com.apple.universalaccess" = {
-        closeViewSmoothImages = false;
-        closeViewScrollWheelModifiersInt = 524288;
-        reduceTransparency = false;
-      };
+      # "com.apple.universalaccess" = {
+      #   closeViewSmoothImages = false;
+      #   closeViewScrollWheelModifiersInt = 524288;
+      #   reduceTransparency = false;
+      # };  # SIP conflict?
     };
   };
 
