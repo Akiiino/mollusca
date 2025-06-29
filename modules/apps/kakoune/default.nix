@@ -81,7 +81,7 @@ in {
           name = "WinDisplay";
           option = ".*";
           commands = ''
-            evaluate-commands %sh{ echo "set-option -add global ui_options %{terminal_title=$(basename \"$kak_hook_param\")}" }
+            evaluate-commands %sh{ printf "%s" "set-option -add global ui_options %{terminal_title=$(basename "$kak_hook_param")}" }
           '';
           once = false;
         }
