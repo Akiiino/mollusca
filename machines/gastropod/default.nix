@@ -42,6 +42,9 @@
   mollusca.isRemote = true;
   mollusca.enableHM = true;
 
+  services.power-profiles-daemon.enable = true;
+  services.tlp.enable = false;
+
   services.thermald.enable = true;
 
   services.printing.enable = true;
