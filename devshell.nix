@@ -6,6 +6,7 @@
 pkgs.mkShell {
   name = "seashell";
   packages = with pkgs; [
+    kakoune
     bash
     git
     coreutils

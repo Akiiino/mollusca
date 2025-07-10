@@ -114,6 +114,7 @@
 
         nixosConfigurations = self.lib.mkNixOSMachines {
           gastropod = {};
+          aspersum = {};
           nautilus = {};
           scallop = {};
           mussel = {system = "aarch64-linux";};
