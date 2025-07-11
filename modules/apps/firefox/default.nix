@@ -31,26 +31,14 @@
       id = 0;
       name = "akiiino";
       isDefault = true;
-      extensions.packages =
-        if pkgs.stdenv.isDarwin
-        then
-          (with self.inputs.firefox-addons.packages.x86_64-darwin; [
-            # TODO: save extension configs
-            keepass-helper
-            # tree-style-tab
-            sidebery
-            ublock-origin
-            vimium
-          ])
-        else
-          (with self.inputs.firefox-addons.packages.x86_64-linux; [
-            # TODO: save extension configs
-            keepass-helper
-            # tree-style-tab
-            sidebery
-            ublock-origin
-            vimium
-          ]);
+      extensions.packages = with self.inputs.firefox-addons.packages."${pkgs.hostPlatform.system}"; [
+        # TODO: save extension configs
+        keepass-helper
+        # tree-style-tab
+        sidebery
+        ublock-origin
+        vimium
+      ];
       userChrome = ''
         #main-window[tabsintitlebar="true"]:not([extradragspace="true"]) #TabsToolbar > .toolbar-items {
           opacity: 0;
