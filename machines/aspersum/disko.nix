@@ -1,74 +1,84 @@
 {
+  modulesPath,
+  self,
+  ...
+}: {
+  imports = [
+    self.inputs.disko.nixosModules.disko
+  ];
   disko.devices = {
     disk = {
       main = {
         type = "disk";
-        device = "/dev/nvme0";
+        device = "/dev/nvme0n1";
         content = {
           type = "gpt";
           partitions = {
             ESP = {
+              size = "1G";
               type = "EF00";
-              size = "1000M";
               content = {
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
-                # mountOptions = [ "umask=0077" ];
+                mountOptions = [ "umask=0077" ];
               };
             };
-            swap = {
-              size = "80G";
-              content = {
-                type = "swap";
-              };
-            };
-            primary = {
+            luks = {
               size = "100%";
               content = {
-                type = "lvm_pv";
-                vg = "mainpool";
+                type = "luks";
+                name = "crypted";
+                passwordFile = "/tmp/secret.key"; # Interactive
+                settings = {
+                  allowDiscards = true;
+                };
+                content = {
+                  type = "btrfs";
+                  extraArgs = [ "-f" ];
+                  subvolumes = {
+                    "/root" = {
+                      mountpoint = "/";
+                      mountOptions = [
+                        "compress=zstd"
+                        "noatime"
+                      ];
+                    };
+                    "/persist" = {
+                      mountpoint = "/persist";
+                      mountOptions = [
+                        "compress=zstd"
+                        "noatime"
+                      ];
+                    };
+                    "/home" = {
+                      mountpoint = "/home";
+                      mountOptions = [
+                        "compress=zstd"
+                        "noatime"
+                      ];
+                    };
+                    "/nix" = {
+                      mountpoint = "/nix";
+                      mountOptions = [
+                        "compress=zstd"
+                        "noatime"
+                      ];
+                    };
+                    "/steam" = {
+                      mountpoint = "/home/akiiino/Steam";
+                      mountOptions = [
+                        "compress=zstd"
+                        "noatime"
+                      ];
+                    };
+                    "/swap" = {
+                      mountpoint = "/.swapvol";
+                      swap.swapfile.size = "80G";
+                    };
+                  };
+                };
               };
-            };
-          };
-        };
-      };
-    };
-    lvm_vg = {
-      mainpool = {
-        type = "lvm_vg";
-        lvs = {
-          nix = {
-            size = "100G";
-            content = {
-              type = "filesystem";
-              format = "ext4";
-              mountpoint = "/nix";
-              mountOptions = [
-                "noatime"
-              ];
-            };
-          };
-          root = {
-            size = "100G";
-            content = {
-              type = "filesystem";
-              format = "ext4";
-              mountpoint = "/";
-              mountOptions = [
-                "defaults"
-              ];
-            };
-          };
-          home = {
-            size = "100%FREE";
-            content = {
-              type = "filesystem";
-              format = "ext4";
-              mountpoint = "/home";
-              mountOptions = [
-                "defaults"
-              ];
             };
           };
         };
