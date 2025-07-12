@@ -94,4 +94,10 @@
 
   services.xserver.wacom.enable = true;
   services.fwupd.enable = true;
+
+  services.beesd.filesystems."crypted" = {
+    spec = "/dev/mapper/crypted";
+    hashTableSizeMB = 512;
+    extraOptions = ["--thread-count" "2"];
+  };
 }
