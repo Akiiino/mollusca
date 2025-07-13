@@ -27,19 +27,20 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.resumeDevice = "/dev/disk/by-uuid/b3688d3c-e0b0-4a29-9b99-14ae9d647bbb";
   boot.kernelParams = [
-    # "mem_sleep_default=deep"
+    "mem_sleep_default=deep"
     "amdgpu.sg_display=0"
-    # "rtc_cmos.use_acpi_alarm=1"  # restore if wakes up after 5 minutes
 
-    "resume=UUID=b3688d3c-e0b0-4a29-9b99-14ae9d647bbb"
+    "rtc_cmos.use_acpi_alarm=1"
+
     "resume_offset=533760"
   ];
 
-  # services.udev.extraRules = ''
-  #   ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
-  #   ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="disabled"
-  # '';
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="disabled"
+  '';
 
   systemd.sleep.extraConfig = ''
     HibernateDelaySec=30s
