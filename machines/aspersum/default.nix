@@ -5,6 +5,8 @@
   self,
   ...
 }: {
+  # TODO:
+  # configure Plasma to flip scroll and do suspend-then-hibernate
   imports = [
     self.inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series
     ./hardware-configuration.nix
@@ -32,17 +34,18 @@
     "amdgpu.sg_display=0"
 
     "resume_offset=533760"
+    "rtc_cmos.use_acpi_alarm=1"
   ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  services.logind.suspendKey = "hybrid-sleep";
-  services.logind.powerKey = "hybrid-sleep";
-  services.logind.hibernateKey = "hybrid-sleep";
-  services.logind.lidSwitch = "hybrid-sleep";
-  services.logind.lidSwitchExternalPower = "hybrid-sleep";
-  services.logind.lidSwitchDocked = "hybrid-sleep";
+  services.logind.suspendKey = "suspend-then-hibernate";
+  services.logind.powerKey = "suspend-then-hibernate";
+  services.logind.hibernateKey = "hibernate";  # Keep this as hibernate
+  services.logind.lidSwitch = "suspend-then-hibernate";
+  services.logind.lidSwitchExternalPower = "suspend-then-hibernate";
+  services.logind.lidSwitchDocked = "suspend-then-hibernate";
 
   systemd.sleep.extraConfig = ''
-    HibernateDelaySec=30s
+    HibernateDelaySec=1h
     SuspendState=mem
   '';
 
@@ -60,13 +63,9 @@
 
   time.timeZone = "Europe/Berlin";
 
-  services.xserver = {
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
-  };
   mollusca.gui = {
     enable = true;
-    desktopEnvironment = "gnome";
+    desktopEnvironment = "plasma";
   };
   mollusca.isRemote = true;
   mollusca.enableHM = true;
@@ -123,6 +122,7 @@
 
   services.xserver.wacom.enable = true;
   services.fwupd.enable = true;
+  services.fprintd.enable = true;
 
   services.beesd.filesystems."crypted" = {
     spec = "/dev/mapper/crypted";
