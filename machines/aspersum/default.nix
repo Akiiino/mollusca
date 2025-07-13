@@ -27,6 +27,29 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.kernelParams = [
+    "mem_sleep_default=deep"
+    # "rtc_cmos.use_acpi_alarm=1"  # restore if wakes up after 5 minutes
+  ];
+
+  services.udev.extraRules = ''
+    # ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
+    # ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="disabled"
+  '';
+
+  systemd.sleep.extraConfig = ''
+    SuspendState=deep
+  '';
+
+  powerManagement = {
+    enable = true;
+    powertop.enable = true;
+
+    powerDownCommands = ''
+      sync
+    '';
+  };
+
   networking.hostName = "aspersum";
   networking.networkmanager.enable = true;
 
@@ -81,6 +104,7 @@
     cheese
     dconf-editor
     gnome-remote-desktop
+    powertop
   ];
   environment.gnome.excludePackages = with pkgs; [gnome-tour];
 
