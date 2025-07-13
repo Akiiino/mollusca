@@ -27,7 +27,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "gastropod";
+  networking.hostName = "aspersum";
   networking.networkmanager.enable = true;
 
   time.timeZone = "Europe/Berlin";
