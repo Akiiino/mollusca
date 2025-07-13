@@ -36,6 +36,10 @@
 
     "resume_offset=533760"
   ];
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  services.logind.suspendKey = "hybrid-sleep";
+  services.logind.powerKey = "hybrid-sleep";
+  services.logind.hibernateKey = "hybrid-sleep";
 
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
