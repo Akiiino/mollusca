@@ -29,10 +29,7 @@
 
   boot.resumeDevice = "/dev/disk/by-uuid/b3688d3c-e0b0-4a29-9b99-14ae9d647bbb";
   boot.kernelParams = [
-    "mem_sleep_default=deep"
     "amdgpu.sg_display=0"
-
-    "rtc_cmos.use_acpi_alarm=1"
 
     "resume_offset=533760"
   ];
@@ -40,11 +37,9 @@
   services.logind.suspendKey = "hybrid-sleep";
   services.logind.powerKey = "hybrid-sleep";
   services.logind.hibernateKey = "hybrid-sleep";
-
-  services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="pci", DRIVER=="pcieport", ATTR{power/wakeup}="disabled"
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{power/wakeup}="disabled"
-  '';
+  services.logind.lidSwitch = "hybrid-sleep";
+  services.logind.lidSwitchExternalPower = "hybrid-sleep";
+  services.logind.lidSwitchDocked = "hybrid-sleep";
 
   systemd.sleep.extraConfig = ''
     HibernateDelaySec=30s
