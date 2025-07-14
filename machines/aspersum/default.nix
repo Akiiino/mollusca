@@ -86,31 +86,15 @@
     pulse.enable = true;
   };
 
-  services.gnome.core-utilities.enable = false;
+  # services.gnome.core-utilities.enable = false;
   environment.localBinInPath = true;
   environment.systemPackages = with pkgs; [
     gparted
-    eog
-    evince
-    nautilus
-    totem
-    gnome-bluetooth
-    gnome-calculator
-    gnome-screenshot
-    file-roller
-    gnome-clocks
-    gnome-music
-    gnome-tweaks
-    gnome-photos
-    gnome-calendar
-    gnome-power-manager
-    gedit
     cheese
-    dconf-editor
-    gnome-remote-desktop
     powertop
+    gnome-bluetooth
+    bluez
   ];
-  environment.gnome.excludePackages = with pkgs; [gnome-tour];
 
   programs = {
     steam.enable = true;
@@ -120,6 +104,7 @@
   networking.firewall.allowedTCPPorts = [5000 53317];
   networking.firewall.allowedUDPPorts = [34197 53317];
 
+  services.blueman.enable = true;
   services.xserver.wacom.enable = true;
   services.fwupd.enable = true;
   services.fprintd.enable = true;
