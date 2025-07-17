@@ -39,7 +39,7 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   services.logind.suspendKey = "suspend-then-hibernate";
   services.logind.powerKey = "suspend-then-hibernate";
-  services.logind.hibernateKey = "hibernate";  # Keep this as hibernate
+  services.logind.hibernateKey = "hibernate"; # Keep this as hibernate
   services.logind.lidSwitch = "suspend-then-hibernate";
   services.logind.lidSwitchExternalPower = "suspend-then-hibernate";
   services.logind.lidSwitchDocked = "suspend-then-hibernate";
@@ -86,14 +86,11 @@
     pulse.enable = true;
   };
 
-  # services.gnome.core-utilities.enable = false;
   environment.localBinInPath = true;
   environment.systemPackages = with pkgs; [
     gparted
     cheese
     powertop
-    gnome-bluetooth
-    bluez
   ];
 
   programs = {
@@ -104,7 +101,16 @@
   networking.firewall.allowedTCPPorts = [5000 53317];
   networking.firewall.allowedUDPPorts = [34197 53317];
 
-  services.blueman.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+        Experimental = true;
+      };
+    };
+  };
   services.xserver.wacom.enable = true;
   services.fwupd.enable = true;
   services.fprintd.enable = true;
