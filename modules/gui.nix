@@ -42,8 +42,8 @@ in {
       })
       (lib.mkIf (cfg.desktopEnvironment == "gnome") {
         services = {
-          displayManager.gdm.enable = true;
-          desktopManager.gnome.enable = true;
+          xserver.displayManager.gdm.enable = true;
+          xserver.desktopManager.gnome.enable = true;
         };
       })
     ]

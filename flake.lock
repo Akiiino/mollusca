@@ -439,51 +439,6 @@
         "url": "ssh://git@github.com/Akiiino/mollusca-secrets.git"
       }
     },
-    "nc-announcementcenter": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1711017776,
-        "narHash": "sha256-OxO+pOQTUXfhiQJQm5o16hdyX0P+p2mISr5BdylkGmM=",
-        "type": "tarball",
-        "url": "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.8.1/announcementcenter-v6.8.1.tar.gz"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.8.1/announcementcenter-v6.8.1.tar.gz"
-      }
-    },
-    "nc-oidc_login": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1740855977,
-        "narHash": "sha256-avz6yw4AADOtSwrwUqqCQu7orOKfPKYLdVIVaalWLnY=",
-        "owner": "pulsejet",
-        "repo": "nextcloud-oidc-login",
-        "rev": "b8a4aa8ccece4a01210e59df910748021615f831",
-        "type": "github"
-      },
-      "original": {
-        "owner": "pulsejet",
-        "repo": "nextcloud-oidc-login",
-        "type": "github"
-      }
-    },
-    "nc-previewgenerator": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1721238168,
-        "narHash": "sha256-bQOZrMSBTe+gFHzkhw5WjZjethaxsklSxh3Z/C9zS+s=",
-        "owner": "akiiino",
-        "repo": "previewgenerator",
-        "rev": "ef4f6b068347147e1bd5096de2896013833fa4e6",
-        "type": "github"
-      },
-      "original": {
-        "owner": "akiiino",
-        "repo": "previewgenerator",
-        "type": "github"
-      }
-    },
     "nh": {
       "inputs": {
         "nixpkgs": "nixpkgs_5"
@@ -586,6 +541,22 @@
       "original": {
         "owner": "NixOS",
         "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-2505": {
+      "locked": {
+        "lastModified": 1751274312,
+        "narHash": "sha256-/bVBlRpECLVzjV19t5KMdMFWSwKLtb5RyXdjz3LJT+g=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "50ab793786d9de88ee30ec4e4c24fb4236fc2674",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-24.11",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -739,14 +710,12 @@
         "impermanence": "impermanence",
         "mac-app-util": "mac-app-util",
         "mollusca-secrets": "mollusca-secrets",
-        "nc-announcementcenter": "nc-announcementcenter",
-        "nc-oidc_login": "nc-oidc_login",
-        "nc-previewgenerator": "nc-previewgenerator",
         "nh": "nh",
         "nixcasks": "nixcasks",
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_6",
+        "nixpkgs-2505": "nixpkgs-2505",
         "secondbrain": "secondbrain",
         "stevenBlackHosts": "stevenBlackHosts"
       }

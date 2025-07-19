@@ -22,7 +22,7 @@ in {
     users.groups.nextcloud.gid = 992;
     services.nextcloud = {
       enable = true;
-      package = pkgs.nextcloud28;
+      package = pkgs.nextcloud29;
       hostName = config.mkSubdomain "nextcloud";
       home = "/persist/var/lib/nextcloud";
       datadir = "/persist/nextcloud_data";
@@ -42,7 +42,7 @@ in {
       };
       extraApps = {
         inherit
-          (pkgs.nextcloud28Packages.apps)
+          (pkgs.nextcloud29Packages.apps)
           polls
           forms
           # unsplash
@@ -55,10 +55,9 @@ in {
           bookmarks
           deck
           groupfolders
+          # oidc_login
+          previewgenerator
           ;
-        oidc_login = self.inputs.nc-oidc_login;
-        previewgenerator = self.inputs.nc-previewgenerator;
-        announcementcenter = self.inputs.nc-announcementcenter;
       };
       secretFile = config.age.secrets.nextcloudOidcSecret.path;
       extraOptions = {

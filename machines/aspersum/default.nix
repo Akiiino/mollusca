@@ -35,6 +35,13 @@
 
     "resume_offset=533760"
     "rtc_cmos.use_acpi_alarm=1"
+
+    "quiet"
+    "splash"
+    "intremap=on"
+    "boot.shell_on_fail"
+    "udev.log_priority=3"
+    "rd.systemd.show_status=auto"
   ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
   services.logind.suspendKey = "suspend-then-hibernate";
@@ -43,6 +50,15 @@
   services.logind.lidSwitch = "suspend-then-hibernate";
   services.logind.lidSwitchExternalPower = "suspend-then-hibernate";
   services.logind.lidSwitchDocked = "suspend-then-hibernate";
+  boot = {
+    # silence first boot output
+    consoleLogLevel = 3;
+    initrd.verbose = false;
+    initrd.systemd.enable = true;
+
+    # plymouth, showing after LUKS unlock
+    plymouth.enable = true;
+  };
 
   systemd.sleep.extraConfig = ''
     HibernateDelaySec=1h

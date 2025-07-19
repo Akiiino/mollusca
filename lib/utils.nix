@@ -1,4 +1,4 @@
-{self}: let
+{self, ...}: let
   lib = self.inputs.nixpkgs.lib;
 in {
   takeLast = count: xs:

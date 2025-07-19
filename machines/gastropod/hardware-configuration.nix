@@ -24,8 +24,8 @@
   boot.kernelModules = ["kvm-intel"];
   boot.kernelParams = [
     ''acpi_osi="!Windows 2020"''
-    "mem_sleep_default=deep"    # force S3 deep sleep
-    "nvme.noacpi=1"             # prevent NVMe disconnect during sleep
+    "mem_sleep_default=deep" # force S3 deep sleep
+    "nvme.noacpi=1" # prevent NVMe disconnect during sleep
     "rtc_cmos.use_acpi_alarm=1" # fix wake issues with AC power changes
   ];
   boot.extraModulePackages = [];

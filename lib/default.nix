@@ -1,13 +1,14 @@
-{
+params @ {
   inputs,
   self,
+  ...
 }: let
   lib = inputs.nixpkgs.lib;
-  machines = import ./machines.nix {inherit self;};
-  utils = import ./utils.nix {inherit self;};
-  networking = import ./networking.nix {inherit self;};
+  machines = import ./machines.nix params;
+  utils = import ./utils.nix params;
+  networking = import ./networking.nix params;
 in {
-  inherit (machines) mkNixOSMachine mkNixOSMachines mkDarwinMachine;
+  inherit (machines) mkNixOSMachine mkNixOSMachines mkDarwinMachine mkDarwinMachines;
   inherit (utils) takeLast removePrefixOrThrow;
   inherit (networking) mkProxy mkVirtualHost mkCifs;
 }

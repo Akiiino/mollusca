@@ -1,24 +1,30 @@
-{self}: rec {
+{
+  self,
+  withSystem,
+  ...
+}: rec {
   mkNixOSMachine = {
     name,
     system ? "x86_64-linux",
     disabledModules ? [],
     extraModules ? [],
+    pkgs ? self.inputs.nixpkgs,
   }:
-    self.inputs.nixpkgs.lib.nixosSystem {
-      inherit system;
-      modules =
-        [
-          "${self}/modules/base/all.nix"
-          "${self}/modules/base/nixos.nix"
-          "${self}/machines/${name}"
-          {inherit disabledModules;}
-        ]
-        ++ extraModules;
-      specialArgs = {
-        inherit self;
-      };
-    };
+    withSystem system ({inputs', ...}:
+      pkgs.lib.nixosSystem {
+        inherit system;
+        modules =
+          [
+            "${self}/modules/base/all.nix"
+            "${self}/modules/base/nixos.nix"
+            "${self}/machines/${name}"
+            {inherit disabledModules;}
+          ]
+          ++ extraModules;
+        specialArgs = {
+          inherit self inputs';
+        };
+      });
 
   mkNixOSMachines = machines:
     builtins.mapAttrs

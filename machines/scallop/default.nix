@@ -17,7 +17,7 @@
     ./services/postgresql.nix
     ./services/secondbrain.nix
     ./services/tailscale.nix
-    ./services/foundry.nix
+    # ./services/foundry.nix
 
     "${self}/users/akiiino"
 

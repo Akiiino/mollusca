@@ -2,6 +2,7 @@
   inputs = {
     # Nix
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-2505.url = "github:NixOS/nixpkgs/nixos-24.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
     haumea = {
       url = "github:nix-community/haumea/v0.2.2";
@@ -75,25 +76,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     foundryvtt.url = "github:reckenrode/nix-foundryvtt";
-
-    # Nextcloud apps
-    nc-announcementcenter = {
-      url = "https://github.com/nextcloud-releases/announcementcenter/releases/download/v6.8.1/announcementcenter-v6.8.1.tar.gz";
-      flake = false;
-    };
-    nc-oidc_login = {
-      url = "github:pulsejet/nextcloud-oidc-login";
-      flake = false;
-    };
-    nc-previewgenerator = {
-      url = "github:akiiino/previewgenerator";
-      flake = false;
-    };
   };
 
   outputs = inputs @ {
     self,
     nixpkgs,
+    nixpkgs-2505,
     agenix,
     darwin,
     flake-parts,
@@ -106,17 +94,17 @@
     nixos-generators,
     ...
   }:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+    flake-parts.lib.mkFlake {inherit inputs;} ({withSystem, ...}: {
       systems = ["x86_64-linux" "x86_64-darwin" "aarch64-darwin"];
 
       flake = {
-        lib = import "${self}/lib/default.nix" {inherit inputs self;};
+        lib = import "${self}/lib/default.nix" {inherit inputs self withSystem;};
 
         nixosConfigurations = self.lib.mkNixOSMachines {
           gastropod = {};
           aspersum = {};
           nautilus = {};
-          scallop = {};
+          scallop = {pkgs = nixpkgs-2505;};
           mussel = {system = "aarch64-linux";};
         };
 
@@ -134,5 +122,5 @@
           musselSD = self.nixosConfigurations.mussel.config.formats.sd-aarch64;
         };
       };
-    };
+    });
 }
