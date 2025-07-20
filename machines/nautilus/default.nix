@@ -6,7 +6,8 @@
   nixos-hardware,
   modulesPath,
   ...
-}: {
+}:
+{
   imports = [
     ./hardware-configuration.nix
     ./disko.nix
@@ -21,7 +22,7 @@
   ];
 
   nix.settings.auto-optimise-store = true;
-  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -41,7 +42,7 @@
   users.users.nautilus = {
     isNormalUser = true;
     password = "";
-    extraGroups = ["audio"];
+    extraGroups = [ "audio" ];
     # uid = 1002;
     # group = "users";
     openssh.authorizedKeys.keys = [
@@ -52,7 +53,7 @@
   users.users.akiiino = {
     isNormalUser = true;
     password = "";
-    extraGroups = ["audio"];
+    extraGroups = [ "audio" ];
     # uid = 1002;
     # group = "users";
     openssh.authorizedKeys.keys = [
@@ -82,7 +83,7 @@
     };
 
     firmware = [
-      (pkgs.runCommand "edid-firmware" {} ''
+      (pkgs.runCommand "edid-firmware" { } ''
         mkdir -p $out/lib/firmware/edid
         cp ${./edid.bin} $out/lib/firmware/edid/edid.bin
       '')
@@ -101,25 +102,24 @@
 
   services.xserver = {
     enable = true;
-    videoDrivers = ["nvidia"];
+    videoDrivers = [ "nvidia" ];
   };
   services.pulseaudio = {
     enable = false;
     support32Bit = true;
   };
-  # services.displayManager.autoLogin.user = "nautilus";
+  services.displayManager.autoLogin.user = "nautilus";
 
   nixpkgs.config.pulseaudio = true;
 
-  networking.firewall.allowedTCPPorts = [11111];
-  networking.firewall.allowedUDPPorts = [11111];
+  networking.firewall.allowedTCPPorts = [ 11111 ];
+  networking.firewall.allowedUDPPorts = [ 11111 ];
 
   programs.zsh.enable = true;
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
   };
-  # environment.variables.DBUS_SYSTEM_BUS_ADDRESS = "steam";
   environment.etc."edid/edid.bin".source = ./edid.bin;
   environment.systemPackages = with pkgs; [
     ungoogled-chromium

@@ -2,7 +2,8 @@
   modulesPath,
   self,
   ...
-}: {
+}:
+{
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     self.inputs.disko.nixosModules.disko
@@ -66,8 +67,13 @@
     efiSupport = true;
     efiInstallAsRemovable = true;
   };
-  boot.initrd.availableKernelModules = ["ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi"];
-  boot.initrd.kernelModules = ["nvme"];
+  boot.initrd.availableKernelModules = [
+    "ata_piix"
+    "uhci_hcd"
+    "xen_blkfront"
+    "vmw_pvscsi"
+  ];
+  boot.initrd.kernelModules = [ "nvme" ];
   fileSystems."/home/akiiino/SteamLibrary" = {
     device = "/dev/disk/by-partlabel/disk-main-steam";
   };

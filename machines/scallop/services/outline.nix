@@ -3,9 +3,11 @@
   self,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.services.outline;
-in {
+in
+{
   config = {
     age.secrets.keycloakDBPass = {
       file = "${self}/secrets/keycloak_db_pass.age";
@@ -43,8 +45,8 @@ in {
       };
     };
     systemd.services."outline" = {
-      requires = ["minio.service"];
-      after = ["minio.service"];
+      requires = [ "minio.service" ];
+      after = [ "minio.service" ];
     };
 
     services.nginx.virtualHosts = self.lib.mkProxy {

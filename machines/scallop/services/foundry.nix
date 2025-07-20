@@ -4,9 +4,11 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.services.foundryvtt;
-in {
+in
+{
   imports = [
     self.inputs.foundryvtt.nixosModules.foundryvtt
   ];

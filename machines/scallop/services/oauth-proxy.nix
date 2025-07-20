@@ -3,7 +3,8 @@
   self,
   lib,
   ...
-}: {
+}:
+{
   config = {
     age.secrets.oauth2-proxy.file = "${self}/secrets/oauth2-proxy_keycloak.age";
     services.oauth2-proxy = {
@@ -15,7 +16,7 @@
       provider = "keycloak-oidc";
       redirectURL = "https://${config.mkSubdomain "oauth2"}/oauth2/callback";
 
-      email.domains = ["*"];
+      email.domains = [ "*" ];
       reverseProxy = true;
       httpAddress = "http://127.0.0.1:4180";
 
@@ -33,8 +34,14 @@
     };
 
     systemd.services."oauth2-proxy" = {
-      requires = ["keycloak.service" "nginx.service"];
-      after = ["keycloak.service" "nginx.service"];
+      requires = [
+        "keycloak.service"
+        "nginx.service"
+      ];
+      after = [
+        "keycloak.service"
+        "nginx.service"
+      ];
     };
   };
 }

@@ -4,9 +4,11 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.services.minio;
-in {
+in
+{
   config = {
     age.secrets.keycloakDBPass = {
       file = "${self}/secrets/keycloak_db_pass.age";
@@ -24,30 +26,32 @@ in {
     };
 
     age.secrets.minioCifsPassword.file = "${self}/secrets/cifs_users/minio.age";
-    fileSystems.${builtins.head cfg.dataDir} = let
-      username = config.mollusca.secrets.cifsUsers.minio;
-      passwordFile = config.age.secrets.minioCifsPassword.path;
-      minio_uid = builtins.toString config.users.users.minio.uid;
-      minio_gid = builtins.toString config.users.groups.minio.gid;
-    in {
-      device = "//${username}.your-storagebox.de/${username}";
-      fsType = "cifs";
-      options = [
-        "user=${username}"
-        "credentials=${passwordFile}"
-        "seal"
-        "x-systemd.automount"
-        "noauto"
-        "x-systemd.idle-timeout=60"
-        "x-systemd.device-timeout=5s"
-        "x-systemd.mount-timeout=5s"
-        "uid=${minio_uid}"
-        "gid=${minio_gid}"
-        "file_mode=0750"
-        "dir_mode=0750"
-        "mfsymlinks"
-      ];
-    };
+    fileSystems.${builtins.head cfg.dataDir} =
+      let
+        username = config.mollusca.secrets.cifsUsers.minio;
+        passwordFile = config.age.secrets.minioCifsPassword.path;
+        minio_uid = builtins.toString config.users.users.minio.uid;
+        minio_gid = builtins.toString config.users.groups.minio.gid;
+      in
+      {
+        device = "//${username}.your-storagebox.de/${username}";
+        fsType = "cifs";
+        options = [
+          "user=${username}"
+          "credentials=${passwordFile}"
+          "seal"
+          "x-systemd.automount"
+          "noauto"
+          "x-systemd.idle-timeout=60"
+          "x-systemd.device-timeout=5s"
+          "x-systemd.mount-timeout=5s"
+          "uid=${minio_uid}"
+          "gid=${minio_gid}"
+          "file_mode=0750"
+          "dir_mode=0750"
+          "mfsymlinks"
+        ];
+      };
 
     services.nginx.virtualHosts =
       self.lib.mkProxy {

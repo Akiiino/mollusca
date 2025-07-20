@@ -4,7 +4,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   options.mollusca = {
     isRemote = lib.mkEnableOption "remote operation & rebuilds";
     useTailscale = lib.mkEnableOption "using Tailscale";
@@ -22,14 +23,17 @@
 
       users.users.builder = {
         isNormalUser = true;
-        extraGroups = ["wheel" "video"];
+        extraGroups = [
+          "wheel"
+          "video"
+        ];
         openssh.authorizedKeys.keys = [
           (builtins.readFile "${self}/secrets/keys/akiiino.pub")
         ];
       };
 
       security.sudo.wheelNeedsPassword = false;
-      services.displayManager.hiddenUsers = ["builder"];
+      services.displayManager.hiddenUsers = [ "builder" ];
     })
     (lib.mkIf (config.mollusca.isRemote && config.mollusca.useTailscale) {
       age.secrets.tailscaleKey = {

@@ -4,9 +4,11 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.services.nextcloud;
-in {
+in
+{
   config = {
     age.secrets.nextcloudRootPass = {
       file = "${self}/secrets/nextcloud_root_pass.age";
@@ -33,7 +35,7 @@ in {
         dbhost = "/run/postgresql";
         adminpassFile = config.age.secrets.nextcloudRootPass.path;
         defaultPhoneRegion = "DE";
-        extraTrustedDomains = [(config.mkSubdomain "nc")];
+        extraTrustedDomains = [ (config.mkSubdomain "nc") ];
         overwriteProtocol = "https";
       };
       phpOptions = {
@@ -41,8 +43,7 @@ in {
         "opcache.interned_strings_buffer" = "128";
       };
       extraApps = {
-        inherit
-          (pkgs.nextcloud29Packages.apps)
+        inherit (pkgs.nextcloud29Packages.apps)
           polls
           forms
           # unsplash
@@ -75,7 +76,10 @@ in {
           groups = "nextCloudGroups";
           login_filter = "nextCloudGroups";
         };
-        oidc_login_filter_allowed_values = ["nextcloud" "admin"];
+        oidc_login_filter_allowed_values = [
+          "nextcloud"
+          "admin"
+        ];
 
         allow_user_to_change_display_name = false;
         lost_password_link = "disabled";
@@ -109,9 +113,10 @@ in {
     };
 
     age.secrets.nextcloudCifsPassword.file = "${self}/secrets/cifs_users/nextcloud.age";
-    fileSystems.${cfg.datadir} = let
-      username = config.mollusca.secrets.cifsUsers.nextcloud;
-    in
+    fileSystems.${cfg.datadir} =
+      let
+        username = config.mollusca.secrets.cifsUsers.nextcloud;
+      in
       self.lib.mkCifs {
         location = "${username}.your-storagebox.de/${username}";
         uid = builtins.toString config.users.users.nextcloud.uid;
@@ -130,8 +135,14 @@ in {
     };
 
     systemd.services."nextcloud-setup" = {
-      requires = ["postgresql.service" "nginx.service"];
-      after = ["postgresql.service" "nginx.service"];
+      requires = [
+        "postgresql.service"
+        "nginx.service"
+      ];
+      after = [
+        "postgresql.service"
+        "nginx.service"
+      ];
     };
 
     services.nginx.virtualHosts = self.lib.mkVirtualHost {

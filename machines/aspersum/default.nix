@@ -3,12 +3,12 @@
   pkgs,
   lib,
   self,
+  inputs,
   ...
-}: {
-  # TODO:
-  # configure Plasma to flip scroll and do suspend-then-hibernate
+}:
+{
   imports = [
-    self.inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series
+    inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series
     ./hardware-configuration.nix
     ./disko.nix
     "${self}/users/akiiino"
@@ -20,43 +20,39 @@
   ];
 
   users.users.akiiino = {
-    extraGroups = ["adbusers"];
+    extraGroups = [ "adbusers" ];
     hashedPassword = "$6$nwRe8GAT99X9XVMD$EI8wRSBQF.zw6Evh7UVFKxfu/K9v2.i4hb1unxSnf26e50glpz6SkuVR9MQYr7/m.1IqgrstKvnPAVPa1i/JB0";
   };
   nix.settings.auto-optimise-store = true;
-  boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  boot.resumeDevice = "/dev/disk/by-uuid/b3688d3c-e0b0-4a29-9b99-14ae9d647bbb";
-  boot.kernelParams = [
-    "amdgpu.sg_display=0"
-
-    "resume_offset=533760"
-    "rtc_cmos.use_acpi_alarm=1"
-
-    "quiet"
-    "splash"
-    "intremap=on"
-    "boot.shell_on_fail"
-    "udev.log_priority=3"
-    "rd.systemd.show_status=auto"
-  ];
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  services.logind.suspendKey = "suspend-then-hibernate";
-  services.logind.powerKey = "suspend-then-hibernate";
-  services.logind.hibernateKey = "hibernate"; # Keep this as hibernate
-  services.logind.lidSwitch = "suspend-then-hibernate";
-  services.logind.lidSwitchExternalPower = "suspend-then-hibernate";
-  services.logind.lidSwitchDocked = "suspend-then-hibernate";
   boot = {
-    # silence first boot output
+    kernelPackages = pkgs.linuxPackages_latest;
+    binfmt.emulatedSystems = [ "aarch64-linux" ];
+
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+
+    resumeDevice = "/dev/disk/by-uuid/b3688d3c-e0b0-4a29-9b99-14ae9d647bbb";
+    kernelParams = [
+      "amdgpu.sg_display=0"
+
+      "resume_offset=533760"
+      "rtc_cmos.use_acpi_alarm=1"
+
+      "quiet"
+      "splash"
+      "intremap=on"
+      "boot.shell_on_fail"
+      "udev.log_priority=3"
+      "rd.systemd.show_status=auto"
+    ];
+
     consoleLogLevel = 3;
     initrd.verbose = false;
     initrd.systemd.enable = true;
 
-    # plymouth, showing after LUKS unlock
     plymouth.enable = true;
   };
 
@@ -74,39 +70,65 @@
     '';
   };
 
-  networking.hostName = "aspersum";
-  networking.networkmanager.enable = true;
+  networking = {
+    hostName = "aspersum";
+    networkmanager.enable = true;
+    firewall = {
+      allowedTCPPorts = [
+        5000
+        53317
+      ];
+      allowedUDPPorts = [
+        34197
+        53317
+      ];
+    };
+  };
 
   time.timeZone = "Europe/Berlin";
 
-  mollusca.gui = {
-    enable = true;
-    desktopEnvironment = "plasma";
+  mollusca = {
+    gui = {
+      enable = true;
+      desktopEnvironment = "plasma";
+    };
+    isRemote = true;
+    enableHM = true;
   };
-  mollusca.isRemote = true;
-  mollusca.enableHM = true;
 
-  services.power-profiles-daemon.enable = true;
-  services.tlp.enable = false;
+  services = {
+    power-profiles-daemon.enable = true;
+    thermald.enable = true;
+    printing.enable = true;
+    pulseaudio.enable = false;
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
+    xserver.wacom.enable = true;
+    fwupd.enable = true;
+    fprintd.enable = true;
 
-  services.thermald.enable = true;
+    beesd.filesystems."crypted" = {
+      spec = "/dev/mapper/crypted";
+      hashTableSizeMB = 512;
+      extraOptions = [
+        "--thread-count"
+        "2"
+      ];
+    };
 
-  services.printing.enable = true;
+  };
 
-  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
 
   environment.localBinInPath = true;
   environment.systemPackages = with pkgs; [
     gparted
     cheese
-    powertop
+    usbutils
   ];
 
   programs = {
@@ -114,8 +136,6 @@
     zsh.enable = true;
     adb.enable = true;
   };
-  networking.firewall.allowedTCPPorts = [5000 53317];
-  networking.firewall.allowedUDPPorts = [34197 53317];
 
   hardware.bluetooth = {
     enable = true;
@@ -126,14 +146,5 @@
         Experimental = true;
       };
     };
-  };
-  services.xserver.wacom.enable = true;
-  services.fwupd.enable = true;
-  services.fprintd.enable = true;
-
-  services.beesd.filesystems."crypted" = {
-    spec = "/dev/mapper/crypted";
-    hashTableSizeMB = 512;
-    extraOptions = ["--thread-count" "2"];
   };
 }

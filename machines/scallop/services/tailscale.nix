@@ -3,10 +3,11 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   mollusca.useTailscale = true;
   mollusca.isExitNode = true;
-  services.tailscale.extraUpFlags = ["--hostname scallop"];
+  services.tailscale.extraUpFlags = [ "--hostname scallop" ];
   environment.persistence."/persist".directories = lib.singleton {
     directory = "/var/lib/tailscale";
     user = "root";
@@ -16,7 +17,7 @@
   boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
   networking.firewall = {
     enable = true;
-    trustedInterfaces = ["tailscale0"];
-    allowedUDPPorts = [config.services.tailscale.port];
+    trustedInterfaces = [ "tailscale0" ];
+    allowedUDPPorts = [ config.services.tailscale.port ];
   };
 }

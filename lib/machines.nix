@@ -1,75 +1,60 @@
 {
   self,
+  inputs,
   withSystem,
   ...
-}: rec {
-  mkNixOSMachine = {
-    name,
-    system ? "x86_64-linux",
-    disabledModules ? [],
-    extraModules ? [],
-    pkgs ? self.inputs.nixpkgs,
-  }:
-    withSystem system ({inputs', ...}:
-      pkgs.lib.nixosSystem {
+}:
+rec {
+  mkMachine =
+    {
+      name,
+      os ? "nixos",
+      system ? if os == "darwin" then "aarch64-darwin" else "x86_64-linux",
+      disabledModules ? [ ],
+      extraModules ? [ ],
+    }:
+    withSystem system (
+      { inputs', ... }:
+      let
+        systemBuilder =
+          if os == "darwin" then inputs.darwin.lib.darwinSystem else inputs.nixpkgs.lib.nixosSystem;
+      in
+      systemBuilder {
         inherit system;
         modules =
           [
             "${self}/modules/base/all.nix"
-            "${self}/modules/base/nixos.nix"
             "${self}/machines/${name}"
-            {inherit disabledModules;}
+            { inherit disabledModules; }
           ]
+          ++ (if os == "darwin" then [ "${self}/modules/base/darwin.nix" ] else [ ])
+          ++ (if os == "nixos" then [ "${self}/modules/base/nixos.nix" ] else [ ])
           ++ extraModules;
         specialArgs = {
-          inherit self inputs';
+          inherit self inputs inputs';
         };
-      });
+      }
+    );
 
-  mkNixOSMachines = machines:
-    builtins.mapAttrs
-    (
-      name: config:
-        self.lib.mkNixOSMachine (
-          {
-            inherit name;
-          }
-          // config
-        )
+  mkNixOSMachines = builtins.mapAttrs (
+    name: config:
+    mkMachine (
+      {
+        inherit name;
+        os = "nixos";
+      }
+      // config
     )
-    machines;
+  );
 
-  mkDarwinMachine = {
-    name,
-    system ? "x86_64-darwin",
-    disabledModules ? [],
-    extraModules ? [],
-  }:
-    self.inputs.darwin.lib.darwinSystem {
-      inherit system;
-      modules =
-        [
-          "${self}/modules/base/all.nix"
-          "${self}/modules/base/darwin.nix"
-          "${self}/machines/${name}"
-          {inherit disabledModules;}
-        ]
-        ++ extraModules;
-      specialArgs = {
-        inherit self;
-      };
-    };
-
-  mkDarwinMachines = machines:
-    builtins.mapAttrs
-    (
-      name: config:
-        self.lib.mkDarwinMachine (
-          {
-            inherit name;
-          }
-          // config
-        )
+  mkDarwinMachines = builtins.mapAttrs (
+    name: config:
+    mkMachine (
+      {
+        os = "darwin";
+        inherit name;
+      }
+      // config
     )
-    machines;
+  );
 }

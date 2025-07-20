@@ -4,10 +4,11 @@
   lib,
   self,
   ...
-}: {
+}:
+{
   users.users.rinkaru = {
     isNormalUser = true;
-    extraGroups = ["wheel"];
+    extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = [
       (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
     ];

@@ -3,9 +3,11 @@
   self,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.services.keycloak;
-in {
+in
+{
   config = {
     age.secrets.keycloakDBPass.file = "${self}/secrets/keycloak_db_pass.age";
 
@@ -26,8 +28,8 @@ in {
       };
     };
     systemd.services."keycloak" = {
-      requires = ["nginx.service"];
-      after = ["nginx.service"];
+      requires = [ "nginx.service" ];
+      after = [ "nginx.service" ];
     };
 
     services.nginx.virtualHosts = self.lib.mkProxy {

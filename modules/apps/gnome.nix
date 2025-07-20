@@ -1,11 +1,21 @@
 # Generated via dconf2nix: https://github.com/gvolpe/dconf2nix
-{lib, ...}:
-with lib.hm.gvariant; {
+{ lib, ... }:
+with lib.hm.gvariant;
+{
   dconf.settings = {
     "org/gnome/desktop/input-sources" = {
       per-window = false;
-      sources = [(mkTuple ["xkb" "de+us"]) (mkTuple ["xkb" "ru+mac"])];
-      xkb-options = ["terminate:ctrl_alt_bksp"];
+      sources = [
+        (mkTuple [
+          "xkb"
+          "de+us"
+        ])
+        (mkTuple [
+          "xkb"
+          "ru+mac"
+        ])
+      ];
+      xkb-options = [ "terminate:ctrl_alt_bksp" ];
     };
 
     "org/gnome/desktop/interface" = {
@@ -24,10 +34,12 @@ with lib.hm.gvariant; {
       two-finger-scrolling-enabled = true;
     };
 
-    "org/gnome/desktop/screensaver" = {lock-delay = mkUint32 0;};
+    "org/gnome/desktop/screensaver" = {
+      lock-delay = mkUint32 0;
+    };
 
     "org/gnome/desktop/search-providers" = {
-      disabled = ["org.gnome.clocks.desktop"];
+      disabled = [ "org.gnome.clocks.desktop" ];
       sort-order = [
         "org.gnome.Contacts.desktop"
         "org.gnome.Documents.desktop"
@@ -35,14 +47,18 @@ with lib.hm.gvariant; {
       ];
     };
 
-    "org/gnome/desktop/session" = {idle-delay = mkUint32 900;};
+    "org/gnome/desktop/session" = {
+      idle-delay = mkUint32 900;
+    };
 
     "org/gnome/desktop/wm/preferences" = {
       button-layout = "appmenu:minimize,maximize,close";
       focus-mode = "sloppy";
     };
 
-    "org/gnome/desktop/remote-desktop/rdp" = {screen-share-mode = "extend";};
+    "org/gnome/desktop/remote-desktop/rdp" = {
+      screen-share-mode = "extend";
+    };
 
     "org/gnome/mutter" = {
       attach-modal-dialogs = true;
@@ -57,9 +73,13 @@ with lib.hm.gvariant; {
       welcome-dialog-last-shown-version = "41.4";
     };
 
-    "org/gnome/shell/world-clocks" = {locations = "@av []";};
+    "org/gnome/shell/world-clocks" = {
+      locations = "@av []";
+    };
 
-    "org/gnome/tweaks" = {show-extensions-notice = false;};
+    "org/gnome/tweaks" = {
+      show-extensions-notice = false;
+    };
 
     "org/gtk/settings/file-chooser" = {
       date-format = "regular";
@@ -72,8 +92,14 @@ with lib.hm.gvariant; {
       sort-directories-first = true;
       sort-order = "ascending";
       type-format = "category";
-      window-position = mkTuple [26 23];
-      window-size = mkTuple [1128 673];
+      window-position = mkTuple [
+        26
+        23
+      ];
+      window-size = mkTuple [
+        1128
+        673
+      ];
     };
 
     "org/gnome/nautilus/preferences" = {
@@ -81,6 +107,8 @@ with lib.hm.gvariant; {
       search-filter-time-type = "last_modified";
     };
 
-    "org/gnome/nautilus/list-view" = {use-tree-view = true;};
+    "org/gnome/nautilus/list-view" = {
+      use-tree-view = true;
+    };
   };
 }

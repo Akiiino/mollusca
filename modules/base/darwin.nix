@@ -2,7 +2,8 @@
   self,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     self.inputs.mollusca-secrets.darwinModules.secrets
     self.inputs.agenix.darwinModules.default
@@ -13,5 +14,5 @@
   environment.extraSetup = ''
     ln -sv ${pkgs.path} $out/nixpkgs
   '';
-  nix.nixPath = pkgs.lib.mkForce ["nixpkgs=/run/current-system/sw/nixpkgs"];
+  nix.nixPath = pkgs.lib.mkForce [ "nixpkgs=/run/current-system/sw/nixpkgs" ];
 }

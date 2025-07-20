@@ -4,7 +4,8 @@
   lib,
   self,
   ...
-}: let
+}:
+let
   kakoune = pkgs.kakoune-unwrapped.overrideAttrs (oldAttrs: rec {
     version = "2025.06.03";
     src = pkgs.fetchFromGitHub {
@@ -53,7 +54,8 @@
         plugin/parinfer.vim > $rtpPath/parinfer.vim
     '';
   };
-in {
+in
+{
   programs.kakoune = {
     enable = true;
     package = kakoune;

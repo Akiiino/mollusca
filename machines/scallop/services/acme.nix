@@ -3,9 +3,11 @@
   self,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.security.acme;
-in {
+in
+{
   config = {
     environment.persistence."/persist".directories = lib.singleton {
       directory = "/var/lib/acme";
@@ -19,7 +21,7 @@ in {
     security.acme = {
       acceptTerms = true;
       certs.${config.domain} = {
-        extraDomainNames = [(config.mkSubdomain "*")];
+        extraDomainNames = [ (config.mkSubdomain "*") ];
         email = config.mollusca.secrets.acmeEmail;
         dnsProvider = "hetzner";
         credentialsFile = config.age.secrets.hetznerAPIKey.path;

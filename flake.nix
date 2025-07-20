@@ -2,12 +2,7 @@
   inputs = {
     # Nix
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-2505.url = "github:NixOS/nixpkgs/nixos-24.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    haumea = {
-      url = "github:nix-community/haumea/v0.2.2";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -68,7 +63,7 @@
       flake = false;
     };
     firefox-addons = {
-      url = gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons;
+      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     arkenfox = {
@@ -78,48 +73,52 @@
     foundryvtt.url = "github:reckenrode/nix-foundryvtt";
   };
 
-  outputs = inputs @ {
-    self,
-    nixpkgs,
-    nixpkgs-2505,
-    agenix,
-    darwin,
-    flake-parts,
-    haumea,
-    home-manager,
-    impermanence,
-    nixos-hardware,
-    secondbrain,
-    stevenBlackHosts,
-    nixos-generators,
-    ...
-  }:
-    flake-parts.lib.mkFlake {inherit inputs;} ({withSystem, ...}: {
-      systems = ["x86_64-linux" "x86_64-darwin" "aarch64-darwin"];
+  outputs =
+    inputs@{
+      self,
+      flake-parts,
+      nixpkgs,
+      ...
+    }:
+    flake-parts.lib.mkFlake { inherit inputs; } (
+      { withSystem, ... }:
+      {
+        systems = [
+          "x86_64-linux"
+          "aarch64-linux"
+          "x86_64-darwin"
+          "aarch64-darwin"
+        ];
 
-      flake = {
-        lib = import "${self}/lib/default.nix" {inherit inputs self withSystem;};
+        flake = {
+          lib = import "${self}/lib/default.nix" {
+            inherit inputs self withSystem;
+            inherit (self) lib;
+            nixlib = nixpkgs.lib;
+          };
 
-        nixosConfigurations = self.lib.mkNixOSMachines {
-          aspersum = {};
-          nautilus = {};
-          scallop = {pkgs = nixpkgs-2505;};
-          mussel = {system = "aarch64-linux";};
-        };
+          nixosConfigurations = self.lib.mkNixOSMachines {
+            aspersum = { };
+            nautilus = { };
+            mussel = {
+              system = "aarch64-linux";
+            };
+          };
 
-        darwinConfigurations = self.lib.mkDarwinMachines {
-          workbook = {
-            system = "aarch64-darwin";
+          darwinConfigurations = self.lib.mkDarwinMachines {
+            workbook = { };
           };
         };
-      };
 
-      perSystem = {pkgs, ...}: {
-        formatter = pkgs.alejandra;
-        devShells.default = import "${self}/devshell.nix" {inherit self pkgs inputs;};
-        packages = {
-          musselSD = self.nixosConfigurations.mussel.config.formats.sd-aarch64;
-        };
-      };
-    });
+        perSystem =
+          { pkgs, inputs', ... }:
+          {
+            formatter = pkgs.nixfmt-tree;
+            devShells.default = import "${self}/devshell.nix" { inherit pkgs inputs'; };
+            packages = {
+              musselSD = self.nixosConfigurations.mussel.config.formats.sd-aarch64;
+            };
+          };
+      }
+    );
 }

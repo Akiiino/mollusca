@@ -5,7 +5,8 @@
   self,
   nixpkgs,
   ...
-}: let
+}:
+let
   username = config.mollusca.secrets.workUsername;
   homeDirectory = "/Users/" + username;
   hmUser = config.home-manager.users."${username}";
@@ -13,11 +14,12 @@
     inherit nixpkgs pkgs;
     osVersion = "sequoia";
   };
-in {
+in
+{
   programs.zsh.enable = true;
 
   users.users.${username}.home = homeDirectory;
-  home-manager.extraSpecialArgs = {inherit self;};
+  home-manager.extraSpecialArgs = { inherit self; };
   home-manager.users."${username}" = {
     imports = [
       self.inputs.mac-app-util.homeManagerModules.default
@@ -65,7 +67,8 @@ in {
           "git" = "! cd -- \${GIT_PREFIX:-.} && git";
           "fpull" = "! f() { git fetch origin \"$1\":\"$1\"; }; f";
           "remote-main" = "! git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'";
-          "move-branch" = "! f() { ONTO=$1 BRANCH=\${2:-$(git branch --show-current)} FROM=\${3:-$(git remote-main)}; git rebase --onto $ONTO $(git merge-base $FROM $BRANCH) $BRANCH; }; f";
+          "move-branch" =
+            "! f() { ONTO=$1 BRANCH=\${2:-$(git branch --show-current)} FROM=\${3:-$(git remote-main)}; git rebase --onto $ONTO $(git merge-base $FROM $BRANCH) $BRANCH; }; f";
         };
         extraConfig = {
           gitsh.historyFile = hmUser.xdg.stateHome + "/gitsh/history";
@@ -109,8 +112,10 @@ in {
       };
 
       packages = [
-        (self.inputs.autoraise.packages.x86_64-darwin.autoraise.override {experimental_focus_first = true;})
-        (pkgs.unison.override {enableX11 = false;})
+        (self.inputs.autoraise.packages.x86_64-darwin.autoraise.override {
+          experimental_focus_first = true;
+        })
+        (pkgs.unison.override { enableX11 = false; })
 
         pkgs.coreutils
         pkgs.curl
@@ -245,7 +250,7 @@ in {
         AppleHighlightColor = "0.698039 0.843137 1.000000 Blue";
         AppleLocale = "en_DE";
         NSToolbarTitleViewRolloverDelay = 0;
-        NSUserDictionaryReplacementItems = [];
+        NSUserDictionaryReplacementItems = [ ];
       };
       "com.apple.TextEdit" = {
         PlainTextEncoding = 4;
@@ -260,8 +265,8 @@ in {
       "com.apple.dock" = {
         largesize = 100;
         magnification = true;
-        persistent-apps = [];
-        persistent-others = [];
+        persistent-apps = [ ];
+        persistent-others = [ ];
         pinning = "start";
       };
       "com.apple.finder" = {

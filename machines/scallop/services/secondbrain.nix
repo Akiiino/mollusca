@@ -2,8 +2,9 @@
   config,
   self,
   ...
-}: {
-  imports = [self.inputs.secondbrain.nixosModules.CTO];
+}:
+{
+  imports = [ self.inputs.secondbrain.nixosModules.CTO ];
   age.secrets.secondbrainNCPassword = {
     file = "${self}/secrets/secondbrain_nc_password.age";
     owner = "CTO";
@@ -17,7 +18,13 @@
     dayLookahead = 0;
   };
   systemd.services."CTO" = {
-    requires = ["nginx.service" "phpfpm-nextcloud.service"];
-    after = ["nginx.service" "phpfpm-nextcloud.service"];
+    requires = [
+      "nginx.service"
+      "phpfpm-nextcloud.service"
+    ];
+    after = [
+      "nginx.service"
+      "phpfpm-nextcloud.service"
+    ];
   };
 }

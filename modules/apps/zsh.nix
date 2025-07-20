@@ -4,7 +4,8 @@
   lib,
   self,
   ...
-}: {
+}:
+{
   programs.zsh = {
     enable = true;
     dotDir = self.lib.removePrefixOrThrow config.home.homeDirectory (config.xdg.configHome + "/zsh");

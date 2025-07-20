@@ -4,13 +4,18 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.mollusca.gui;
-in {
+in
+{
   options.mollusca.gui = {
     enable = lib.mkEnableOption "GUI";
     desktopEnvironment = lib.mkOption {
-      type = lib.types.enum ["gnome" "plasma"];
+      type = lib.types.enum [
+        "gnome"
+        "plasma"
+      ];
       description = "What desktop environment to use.";
     };
   };
@@ -21,11 +26,10 @@ in {
           displayManager.hiddenUsers = builtins.attrNames (
             lib.filterAttrs (
               name: userConfig:
-                (userConfig.password == null)
-                && (userConfig.hashedPassword == null)
-                && (userConfig.passwordFile == null)
-            )
-            config.users.users
+              (userConfig.password == null)
+              && (userConfig.hashedPassword == null)
+              && (userConfig.passwordFile == null)
+            ) config.users.users
           );
           xserver = {
             # enable = true;

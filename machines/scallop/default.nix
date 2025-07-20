@@ -4,7 +4,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   imports = [
     ./disko.nix
     ./services/acme.nix
@@ -94,6 +95,9 @@
     networking.hostName = "scallop";
     networking.domain = "";
 
-    networking.firewall.allowedTCPPorts = [80 443];
+    networking.firewall.allowedTCPPorts = [
+      80
+      443
+    ];
   };
 }

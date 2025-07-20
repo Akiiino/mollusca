@@ -4,9 +4,11 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.services.postgresql;
-in {
+in
+{
   config = {
     environment.persistence."/persist".directories = lib.singleton {
       directory = cfg.dataDir;

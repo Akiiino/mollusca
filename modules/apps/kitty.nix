@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   programs.kitty = {
     enable = true;
     themeFile = "gruvbox-light";

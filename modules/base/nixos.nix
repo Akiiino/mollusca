@@ -2,7 +2,8 @@
   self,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     self.inputs.nixos-generators.nixosModules.all-formats
     self.inputs.mollusca-secrets.nixosModules.secrets
@@ -21,5 +22,5 @@
     stateVersion = "23.11";
   };
   programs.zsh.enable = true;
-  nix.nixPath = ["nixpkgs=/run/current-system/nixpkgs"];
+  nix.nixPath = [ "nixpkgs=/run/current-system/nixpkgs" ];
 }

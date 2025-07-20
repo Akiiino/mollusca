@@ -4,7 +4,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   imports = [
     "${self}/modules/raspberrypi.nix"
     ./adblock.nix
@@ -26,5 +27,8 @@
     uid = builtins.toString config.users.users.jellyfin.uid;
     gid = builtins.toString config.users.groups.jellyfin.gid;
   };
-  networking.firewall.allowedTCPPorts = [8080 8081];
+  networking.firewall.allowedTCPPorts = [
+    8080
+    8081
+  ];
 }
