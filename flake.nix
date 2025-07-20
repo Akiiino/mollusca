@@ -101,7 +101,6 @@
         lib = import "${self}/lib/default.nix" {inherit inputs self withSystem;};
 
         nixosConfigurations = self.lib.mkNixOSMachines {
-          gastropod = {};
           aspersum = {};
           nautilus = {};
           scallop = {pkgs = nixpkgs-2505;};
