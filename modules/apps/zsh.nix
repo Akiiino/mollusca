@@ -22,7 +22,7 @@
       icat = "kitty +kitten icat";
     };
 
-    initExtra = ''
+    initContent = ''
       setopt NO_CASE_GLOB
       kitty + complete setup zsh | source /dev/stdin
 
