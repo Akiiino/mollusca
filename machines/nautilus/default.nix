@@ -30,10 +30,6 @@
     };
     binfmt.emulatedSystems = [ "aarch64-linux" ];
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      "drm.edid_firmware=HDMI-A-2:edid/edid.bin"
-      "video=HDMI-A-2:3840x2160@60"
-    ];
   };
 
   mollusca = {
@@ -91,12 +87,6 @@
       ];
     };
 
-    firmware = [
-      (pkgs.runCommand "edid-firmware" { } ''
-        mkdir -p $out/lib/firmware/edid
-        cp ${./edid.bin} $out/lib/firmware/edid/edid.bin
-      '')
-    ];
     nvidia = {
       modesetting.enable = true;
       open = true;
@@ -128,7 +118,6 @@
       remotePlay.openFirewall = true;
     };
   };
-  environment.etc."edid/edid.bin".source = ./edid.bin;
   environment.systemPackages = with pkgs; [
     ungoogled-chromium
     firefox
