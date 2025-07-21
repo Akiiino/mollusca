@@ -32,6 +32,7 @@
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
+      timeout = 0;
     };
 
     resumeDevice = "/dev/disk/by-uuid/b3688d3c-e0b0-4a29-9b99-14ae9d647bbb";
@@ -41,21 +42,20 @@
       "resume_offset=533760"
       "rtc_cmos.use_acpi_alarm=1"
 
-      "quiet"
-      "splash"
-      "intremap=on"
-      "boot.shell_on_fail"
-      "udev.log_priority=3"
-      "rd.systemd.show_status=auto"
+      # "quiet"
+      # "splash"
+      # "boot.shell_on_fail"
+      # "udev.log_priority=3"
+      # "rd.systemd.show_status=auto"
 
       "amd_pstate=active"
     ];
 
-    consoleLogLevel = 3;
-    initrd.verbose = false;
-    initrd.systemd.enable = true;
+    # consoleLogLevel = 3;
+    # initrd.verbose = false;
+    # initrd.systemd.enable = true;
 
-    plymouth.enable = true;
+    # plymouth.enable = true;
   };
 
   systemd.sleep.extraConfig = ''

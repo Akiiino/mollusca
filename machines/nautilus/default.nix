@@ -22,50 +22,59 @@
   ];
 
   nix.settings.auto-optimise-store = true;
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelParams = [
-    "drm.edid_firmware=HDMI-A-2:edid/edid.bin"
-    "video=HDMI-A-2:3840x2160@60"
-  ];
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    binfmt.emulatedSystems = [ "aarch64-linux" ];
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [
+      "drm.edid_firmware=HDMI-A-2:edid/edid.bin"
+      "video=HDMI-A-2:3840x2160@60"
+    ];
+  };
 
-  mollusca.isRemote = true;
-  mollusca.gui = {
-    enable = true;
-    desktopEnvironment = "plasma";
+  mollusca = {
+    isRemote = true;
+    gui = {
+      enable = true;
+      desktopEnvironment = "plasma";
+    };
   };
 
   # users.mutableUsers = false;
-  users.users.nautilus = {
-    isNormalUser = true;
-    password = "";
-    extraGroups = [ "audio" ];
-    # uid = 1002;
-    # group = "users";
-    openssh.authorizedKeys.keys = [
-      (builtins.readFile "${self}/secrets/keys/akiiino.pub")
-      (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
-    ];
-  };
-  users.users.akiiino = {
-    isNormalUser = true;
-    password = "";
-    extraGroups = [ "audio" ];
-    # uid = 1002;
-    # group = "users";
-    openssh.authorizedKeys.keys = [
-      (builtins.readFile "${self}/secrets/keys/akiiino.pub")
-      (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
-    ];
+  users.users = {
+    nautilus = {
+      isNormalUser = true;
+      password = "";
+      extraGroups = [ "audio" ];
+      openssh.authorizedKeys.keys = [
+        (builtins.readFile "${self}/secrets/keys/akiiino.pub")
+        (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
+      ];
+    };
+    akiiino = {
+      isNormalUser = true;
+      password = "";
+      extraGroups = [ "audio" ];
+      openssh.authorizedKeys.keys = [
+        (builtins.readFile "${self}/secrets/keys/akiiino.pub")
+        (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
+      ];
+    };
   };
   # users.groups.users.gid = 100;
 
   networking = {
     hostName = "nautilus";
     networkmanager.enable = true;
+
+    firewall = {
+      allowedTCPPorts = [ 11111 ];
+      allowedUDPPorts = [ 11111 ];
+    };
   };
 
   time.timeZone = "Europe/Berlin";
@@ -100,25 +109,24 @@
     bluetooth.powerOnBoot = true;
   };
 
-  services.xserver = {
-    enable = true;
-    videoDrivers = [ "nvidia" ];
+  services = {
+    xserver = {
+      enable = true;
+      videoDrivers = [ "nvidia" ];
+    };
+    pulseaudio = {
+      enable = false;
+      support32Bit = true;
+    };
+    displayManager.autoLogin.user = "nautilus";
   };
-  services.pulseaudio = {
-    enable = false;
-    support32Bit = true;
-  };
-  services.displayManager.autoLogin.user = "nautilus";
 
-  nixpkgs.config.pulseaudio = true;
-
-  networking.firewall.allowedTCPPorts = [ 11111 ];
-  networking.firewall.allowedUDPPorts = [ 11111 ];
-
-  programs.zsh.enable = true;
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true;
+  programs = {
+    zsh.enable = true;
+    steam = {
+      enable = true;
+      remotePlay.openFirewall = true;
+    };
   };
   environment.etc."edid/edid.bin".source = ./edid.bin;
   environment.systemPackages = with pkgs; [
