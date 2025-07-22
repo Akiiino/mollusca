@@ -49,6 +49,8 @@
       # "rd.systemd.show_status=auto"
 
       "amd_pstate=active"
+
+      "mem_sleep_default=deep"
     ];
 
     # consoleLogLevel = 3;
@@ -58,10 +60,10 @@
     # plymouth.enable = true;
   };
 
-  systemd.sleep.extraConfig = ''
-    HibernateDelaySec=1h
-    SuspendState=mem
-  '';
+  # systemd.sleep.extraConfig = ''
+  #   HibernateDelaySec=1h
+  #   SuspendState=mem
+  # '';
 
   powerManagement = {
     enable = true;
