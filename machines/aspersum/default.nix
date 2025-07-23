@@ -49,8 +49,6 @@
       # "rd.systemd.show_status=auto"
 
       "amd_pstate=active"
-
-      "mem_sleep_default=deep"
     ];
 
     # consoleLogLevel = 3;
@@ -81,10 +79,13 @@
       allowedTCPPorts = [
         5000
         53317
+        22000  # Syncthing
       ];
       allowedUDPPorts = [
         34197
         53317
+        21027  # Syncthing
+        22000  # Syncthing
       ];
     };
   };
@@ -123,7 +124,6 @@
         "2"
       ];
     };
-
   };
 
   security.rtkit.enable = true;
@@ -133,6 +133,8 @@
     gparted
     cheese
     usbutils
+    btdu
+    powertop
   ];
 
   programs = {

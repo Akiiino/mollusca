@@ -34,6 +34,7 @@
           "${self}/modules/apps/direnv.nix"
           "${self}/modules/apps/starship.nix"
           "${self}/modules/apps/kakoune"
+          "${self}/modules/apps/syncthing"
           "${self}/users/akiiino/home.nix"
         ];
         programs.kitty.settings.kitty_mod = "ctrl+shift";

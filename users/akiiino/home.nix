@@ -19,6 +19,10 @@
     gyre-fonts
     localsend
     prusa-slicer
+
+    gdu
+    htop
+    fdupes
   ];
   home.file = {
     ".local/share".source = config.lib.file.mkOutOfStoreSymlink (config.xdg.dataHome);
