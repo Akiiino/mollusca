@@ -65,7 +65,7 @@
 
   powerManagement = {
     enable = true;
-    powertop.enable = true;
+    # powertop.enable = true;
 
     powerDownCommands = ''
       sync
@@ -134,7 +134,7 @@
     cheese
     usbutils
     btdu
-    powertop
+    # powertop
   ];
 
   programs = {
