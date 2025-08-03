@@ -42,30 +42,24 @@
       "resume_offset=533760"
       "rtc_cmos.use_acpi_alarm=1"
 
-      # "quiet"
-      # "splash"
-      # "boot.shell_on_fail"
-      # "udev.log_priority=3"
-      # "rd.systemd.show_status=auto"
+      "quiet"
+      "splash"
+      "boot.shell_on_fail"
+      "udev.log_priority=3"
+      "rd.systemd.show_status=auto"
 
       "amd_pstate=active"
     ];
 
-    # consoleLogLevel = 3;
-    # initrd.verbose = false;
-    # initrd.systemd.enable = true;
+    consoleLogLevel = 3;
+    initrd.verbose = false;
+    initrd.systemd.enable = true;
 
-    # plymouth.enable = true;
+    plymouth.enable = true;
   };
-
-  # systemd.sleep.extraConfig = ''
-  #   HibernateDelaySec=1h
-  #   SuspendState=mem
-  # '';
 
   powerManagement = {
     enable = true;
-    # powertop.enable = true;
 
     powerDownCommands = ''
       sync
@@ -79,13 +73,13 @@
       allowedTCPPorts = [
         5000
         53317
-        22000  # Syncthing
+        22000 # Syncthing
       ];
       allowedUDPPorts = [
         34197
         53317
-        21027  # Syncthing
-        22000  # Syncthing
+        21027 # Syncthing
+        22000 # Syncthing
       ];
     };
   };
@@ -114,7 +108,6 @@
     };
     xserver.wacom.enable = true;
     fwupd.enable = true;
-    fprintd.enable = true;
 
     beesd.filesystems."crypted" = {
       spec = "/dev/mapper/crypted";
@@ -134,7 +127,6 @@
     cheese
     usbutils
     btdu
-    # powertop
   ];
 
   programs = {
@@ -143,13 +135,19 @@
     adb.enable = true;
   };
 
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-    settings = {
-      General = {
-        Enable = "Source,Sink,Media,Socket";
-        Experimental = true;
+  hardware = {
+    framework.laptop13.audioEnhancement = {
+      enable = true;
+      hideRawDevice = false;
+    };
+    bluetooth = {
+      enable = true;
+      powerOnBoot = true;
+      settings = {
+        General = {
+          Enable = "Source,Sink,Media,Socket";
+          Experimental = true;
+        };
       };
     };
   };

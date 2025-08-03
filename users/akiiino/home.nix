@@ -23,6 +23,7 @@
     gdu
     htop
     fdupes
+    koreader
   ];
   home.file = {
     ".local/share".source = config.lib.file.mkOutOfStoreSymlink (config.xdg.dataHome);
