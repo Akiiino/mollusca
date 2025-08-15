@@ -35,7 +35,6 @@
       extensions.packages = with self.inputs.firefox-addons.packages."${pkgs.hostPlatform.system}"; [
         # TODO: save extension configs
         keepass-helper
-        # tree-style-tab
         sidebery
         ublock-origin
         vimium
