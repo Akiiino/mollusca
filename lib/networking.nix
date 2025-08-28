@@ -13,7 +13,8 @@ rec {
         forceSSL = true;
         enableACME = nixlib.mkForce false;
         useACMEHost = domain;
-      } // vhostConfig;
+      }
+      // vhostConfig;
     };
 
   mkProxy =
@@ -29,16 +30,16 @@ rec {
         locations."/" = {
           proxyPass = "http://127.0.0.1:${builtins.toString port}";
           proxyWebsockets = true;
-          extraConfig =
-            ''
-              proxy_pass_header Authorization;
-              proxy_busy_buffers_size 512k;
-              proxy_buffers 4 512k;
-              proxy_buffer_size 256k;
-            ''
-            + extraConfig;
+          extraConfig = ''
+            proxy_pass_header Authorization;
+            proxy_busy_buffers_size 512k;
+            proxy_buffers 4 512k;
+            proxy_buffer_size 256k;
+          ''
+          + extraConfig;
         };
-      } // extraVhostConfig;
+      }
+      // extraVhostConfig;
     };
 
   mkCifs =
@@ -67,6 +68,7 @@ rec {
         "file_mode=${file_mode}"
         "dir_mode=${dir_mode}"
         "mfsymlinks"
-      ] ++ nixlib.optional (credentialsFile != null) "credentials=${credentialsFile}";
+      ]
+      ++ nixlib.optional (credentialsFile != null) "credentials=${credentialsFile}";
     };
 }

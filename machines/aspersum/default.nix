@@ -119,6 +119,17 @@
     };
   };
 
+  systemd.user.services.solaar = {
+    description = "Solaar, the open source driver for Logitech devices";
+    wantedBy = [ "graphical-session.target" ];
+    after = [ "dbus.service" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${lib.getExe' pkgs.solaar "solaar"} --window hide";
+      Restart = "on-failure";
+      RestartSec = "5";
+    };
+  };
   security.rtkit.enable = true;
 
   environment.localBinInPath = true;
@@ -127,6 +138,7 @@
     cheese
     usbutils
     btdu
+    solaar
   ];
 
   programs = {
@@ -149,6 +161,10 @@
           Experimental = true;
         };
       };
+    };
+    logitech.wireless = {
+      enable = true;
+      enableGraphical = lib.mkForce false;
     };
   };
 }

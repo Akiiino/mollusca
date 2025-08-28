@@ -21,15 +21,14 @@ rec {
       in
       systemBuilder {
         inherit system;
-        modules =
-          [
-            "${self}/modules/base/all.nix"
-            "${self}/machines/${name}"
-            { inherit disabledModules; }
-          ]
-          ++ (if os == "darwin" then [ "${self}/modules/base/darwin.nix" ] else [ ])
-          ++ (if os == "nixos" then [ "${self}/modules/base/nixos.nix" ] else [ ])
-          ++ extraModules;
+        modules = [
+          "${self}/modules/base/all.nix"
+          "${self}/machines/${name}"
+          { inherit disabledModules; }
+        ]
+        ++ (if os == "darwin" then [ "${self}/modules/base/darwin.nix" ] else [ ])
+        ++ (if os == "nixos" then [ "${self}/modules/base/nixos.nix" ] else [ ])
+        ++ extraModules;
         specialArgs = {
           inherit self inputs inputs';
         };
