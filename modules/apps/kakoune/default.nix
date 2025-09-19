@@ -21,8 +21,8 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "Akiiino";
       repo = "kakoune-osc52";
-      rev = "35dba5d777a3e786633d3995651e4283dc4825da";
-      hash = "sha256-V8AIQaqEy9AJAIFhSpjQ0hxEdkTq1QNppo8/rlwzVQw=";
+      rev = "664fc2b4e58188b0f1d2faea3cd8a2d66bfe6d62";
+      hash = "sha256-aqI31Z0i+LlSrlnc9Q1FJmdAOndmcLFBsyatRaiWv34=";
     };
     meta.homepage = "https://github.com/Akiiino/kakoune-osc52";
   };
@@ -98,10 +98,7 @@ in
           name = "WinSetOption";
           option = "filetype=(markdown)";
           commands = ''
-            set-option buffer lintcmd "sh -c 'command -v proselint || echo ${lib.getExe pkgs.proselint}'"
-            hook buffer BufWritePost .* %{
-                lint-buffer
-            }
+            source ${./markdown.kak} "${lib.getExe pkgs.proselint}"
           '';
           once = false;
         }
@@ -131,6 +128,7 @@ in
     extraConfig = ''
       source ${./kakoune-osc52-config.kak}
       source ${./powerline-config.kak}
+      source ${./utils.kak}
 
       set-option global startup_info_version 20240518
       set-option -add global ui_options terminal_set_title=true

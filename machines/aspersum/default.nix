@@ -123,6 +123,10 @@
     description = "Solaar, the open source driver for Logitech devices";
     wantedBy = [ "graphical-session.target" ];
     after = [ "dbus.service" ];
+    environment = {
+      LANG = "en_US.UTF-8";
+      LC_ALL = "en_US.UTF-8";
+    };
     serviceConfig = {
       Type = "simple";
       ExecStart = "${lib.getExe' pkgs.solaar "solaar"} --window hide";
@@ -134,11 +138,11 @@
 
   environment.localBinInPath = true;
   environment.systemPackages = with pkgs; [
-    gparted
     cheese
     usbutils
     btdu
     solaar
+    kdePackages.partitionmanager
   ];
 
   programs = {

@@ -18,6 +18,8 @@
     shotwell
     gyre-fonts
     localsend
+    openscad
+    freecad-wayland
     prusa-slicer
 
     gdu
