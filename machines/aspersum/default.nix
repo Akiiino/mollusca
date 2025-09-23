@@ -26,7 +26,7 @@
   nix.settings.auto-optimise-store = true;
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_6_6;
     binfmt.emulatedSystems = [ "aarch64-linux" ];
 
     loader = {
@@ -38,6 +38,7 @@
     resumeDevice = "/dev/disk/by-uuid/b3688d3c-e0b0-4a29-9b99-14ae9d647bbb";
     kernelParams = [
       "amdgpu.sg_display=0"
+      "pcie_aspm=off"
 
       "resume_offset=533760"
       "rtc_cmos.use_acpi_alarm=1"
@@ -57,6 +58,10 @@
 
     plymouth.enable = true;
   };
+
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="27c6", ATTRS{idProduct}=="*", TEST=="power/persist", ATTR{power/persist}="1"
+  '';
 
   powerManagement = {
     enable = true;
