@@ -26,7 +26,7 @@
   nix.settings.auto-optimise-store = true;
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_6_6;
+    kernelPackages = pkgs.linuxPackages_latest;
     binfmt.emulatedSystems = [ "aarch64-linux" ];
 
     loader = {
