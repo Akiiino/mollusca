@@ -59,9 +59,12 @@
     plymouth.enable = true;
   };
 
-  services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="27c6", ATTRS{idProduct}=="*", TEST=="power/persist", ATTR{power/persist}="1"
-  '';
+  services.udev = {
+      packages = [ pkgs.sane-airscan ];
+      extraRules = ''
+        ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="27c6", ATTRS{idProduct}=="*", TEST=="power/persist", ATTR{power/persist}="1"
+      '';
+  };
 
   powerManagement = {
     enable = true;
@@ -103,7 +106,10 @@
   services = {
     power-profiles-daemon.enable = true;
     thermald.enable = true;
-    printing.enable = true;
+    printing = {
+        enable = true;
+        drivers = [(pkgs.callPackage "${self}/packages/cups-brother-dcpl3520cdw.nix" { })];
+    };
     pulseaudio.enable = false;
     pipewire = {
       enable = true;
@@ -174,6 +180,10 @@
     logitech.wireless = {
       enable = true;
       enableGraphical = lib.mkForce false;
+    };
+    sane = {
+        enable = true;
+        extraBackends = [ pkgs.sane-airscan ];
     };
   };
 }
