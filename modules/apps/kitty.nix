@@ -11,7 +11,7 @@
     font = {
       package = pkgs.iosevka;
       name = "Iosevka Medium Extended";
-      size = lib.mkDefault 18;
+      size = lib.mkDefault 14;
     };
     environment = {
       "PATH" = "\${PATH}:/usr/local/bin:/bin";

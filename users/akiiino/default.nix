@@ -18,8 +18,6 @@
         (builtins.readFile "${self}/secrets/keys/akiiino.pub")
       ];
     };
-    home-manager.backupFileExtension = "backup";
-    home-manager.extraSpecialArgs = { inherit self; };
     home-manager.users.akiiino = lib.mkIf config.mollusca.enableHM (
       { ... }:
       {

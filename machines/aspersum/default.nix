@@ -13,11 +13,6 @@
     ./disko.nix
     "${self}/users/akiiino"
   ];
-  fonts.packages = [
-    pkgs.fira-code
-    pkgs.nerd-fonts.hack
-    pkgs.iosevka
-  ];
 
   users.users.akiiino = {
     extraGroups = [ "adbusers" ];
@@ -165,7 +160,6 @@
 
   programs = {
     steam.enable = true;
-    zsh.enable = true;
     adb.enable = true;
   };
 

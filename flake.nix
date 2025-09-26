@@ -104,10 +104,6 @@
               system = "aarch64-linux";
             };
           };
-
-          darwinConfigurations = self.lib.mkDarwinMachines {
-            workbook = { };
-          };
         };
 
         perSystem =
