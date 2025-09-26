@@ -8,37 +8,22 @@
 let
   kakoune = pkgs.kakoune-unwrapped.overrideAttrs (oldAttrs: rec {
     version = "2025.06.03";
-    src = pkgs.fetchFromGitHub {
-      repo = "kakoune";
-      owner = "mawww";
-      rev = "e3263887653ce5ec817c1aad51389c9600dfeabe";
-      hash = "sha256-wDYQ1OVEKeE19UDFfCVS71AdsowCPuft3Jksu47tPJA=";
-    };
+    src = self.inputs.kakoune;
   });
   kakoune-osc52 = pkgs.kakouneUtils.buildKakounePluginFrom2Nix {
     pname = "kakoune-osc52";
     version = "2025-06-17";
-    src = pkgs.fetchFromGitHub {
-      owner = "Akiiino";
-      repo = "kakoune-osc52";
-      rev = "664fc2b4e58188b0f1d2faea3cd8a2d66bfe6d62";
-      hash = "sha256-aqI31Z0i+LlSrlnc9Q1FJmdAOndmcLFBsyatRaiWv34=";
-    };
+    src = self.inputs.kakoune-osc52;
     meta.homepage = "https://github.com/Akiiino/kakoune-osc52";
   };
   parinfer-rust = pkgs.rustPlatform.buildRustPackage {
     pname = "parinfer-rust";
     version = "0.5.0";
-
-    src = pkgs.fetchFromGitHub {
-      owner = "eraserhd";
-      repo = "parinfer-rust";
-      rev = "afe6b1176cd805c000713e23b654fbf4b9f4b156";
-      sha256 = "sha256-YKja8nIWmPBNsHboJGXGyZKsjFRZPUOd6rOpPinqg4M=";
-    };
+    src = self.inputs.parinfer-rust;
     useFetchCargoVendor = true;
-    cargoHash = "sha256-sgqzAFZmfpacyjDOvJNyj3IwQGTTKcxV9bHzNCSm6Ig=";
-
+    cargoLock = {
+      lockFile = "${self.inputs.parinfer-rust}/Cargo.lock";
+    };
     nativeBuildInputs = [
       pkgs.llvmPackages.clang
       pkgs.rustPlatform.bindgenHook

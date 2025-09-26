@@ -376,6 +376,38 @@
         "type": "github"
       }
     },
+    "kakoune": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1758156334,
+        "narHash": "sha256-wDYQ1OVEKeE19UDFfCVS71AdsowCPuft3Jksu47tPJA=",
+        "owner": "mawww",
+        "repo": "kakoune",
+        "rev": "e3263887653ce5ec817c1aad51389c9600dfeabe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mawww",
+        "repo": "kakoune",
+        "type": "github"
+      }
+    },
+    "kakoune-osc52": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1756457426,
+        "narHash": "sha256-aqI31Z0i+LlSrlnc9Q1FJmdAOndmcLFBsyatRaiWv34=",
+        "owner": "Akiiino",
+        "repo": "kakoune-osc52",
+        "rev": "664fc2b4e58188b0f1d2faea3cd8a2d66bfe6d62",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Akiiino",
+        "repo": "kakoune-osc52",
+        "type": "github"
+      }
+    },
     "mac-app-util": {
       "inputs": {
         "cl-nix-lite": "cl-nix-lite",
@@ -654,6 +686,22 @@
         "type": "github"
       }
     },
+    "parinfer-rust": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1749132460,
+        "narHash": "sha256-YKja8nIWmPBNsHboJGXGyZKsjFRZPUOd6rOpPinqg4M=",
+        "owner": "eraserhd",
+        "repo": "parinfer-rust",
+        "rev": "afe6b1176cd805c000713e23b654fbf4b9f4b156",
+        "type": "github"
+      },
+      "original": {
+        "owner": "eraserhd",
+        "repo": "parinfer-rust",
+        "type": "github"
+      }
+    },
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -687,6 +735,8 @@
         "gitsh": "gitsh",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
+        "kakoune": "kakoune",
+        "kakoune-osc52": "kakoune-osc52",
         "mac-app-util": "mac-app-util",
         "mollusca-secrets": "mollusca-secrets",
         "nh": "nh",
@@ -694,6 +744,7 @@
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_7",
+        "parinfer-rust": "parinfer-rust",
         "secondbrain": "secondbrain",
         "stevenBlackHosts": "stevenBlackHosts"
       }

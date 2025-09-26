@@ -106,10 +106,7 @@
       nssmdns4 = true;
       openFirewall = true;
     };
-    printing = {
-        enable = true;
-        drivers = [pkgs.cups-brother-dcpl3550cdw];
-    };
+    printing.enable = true;
     pulseaudio.enable = false;
     pipewire = {
       enable = true;
