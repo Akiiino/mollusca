@@ -3,9 +3,6 @@
   nixpkgs = {
     config.allowUnfree = true;
     overlays = import "${self}/overlays" { flake = self; };
-    config.permittedInsecurePackages = [
-      "nextcloud-28.0.14"
-    ];
   };
   nix = {
       settings = {

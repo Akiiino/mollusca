@@ -10,9 +10,9 @@ let
     version = "2025.06.03";
     src = pkgs.fetchFromGitHub {
       repo = "kakoune";
-      owner = "Akiiino";
-      rev = "906eb9ebb691793778f89486207eafa425a09eff";
-      hash = "sha256-YJOUzufCfbiJASyXjjaq1+qntht1Ye0OFe+za8itD6k=";
+      owner = "mawww";
+      rev = "e3263887653ce5ec817c1aad51389c9600dfeabe";
+      hash = "sha256-wDYQ1OVEKeE19UDFfCVS71AdsowCPuft3Jksu47tPJA=";
     };
   });
   kakoune-osc52 = pkgs.kakouneUtils.buildKakounePluginFrom2Nix {

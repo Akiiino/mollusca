@@ -93,7 +93,7 @@
 
       nvidiaSettings = true;
       powerManagement.enable = true;
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
     };
     bluetooth.enable = true;
     bluetooth.powerOnBoot = true;

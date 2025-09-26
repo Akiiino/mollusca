@@ -39,6 +39,9 @@
     };
   };
   config = {
+    nixpkgs.config.permittedInsecurePackages = [
+      "nextcloud-28.0.14"
+    ];
     mollusca.isRemote = true;
 
     services.nginx.virtualHosts = self.lib.mkProxy {
