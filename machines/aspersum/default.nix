@@ -106,9 +106,14 @@
   services = {
     power-profiles-daemon.enable = true;
     thermald.enable = true;
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      openFirewall = true;
+    };
     printing = {
         enable = true;
-        drivers = [(pkgs.callPackage "${self}/packages/cups-brother-dcpl3520cdw.nix" { })];
+        drivers = [pkgs.cups-brother-dcpl3550cdw];
     };
     pulseaudio.enable = false;
     pipewire = {
@@ -154,6 +159,8 @@
     btdu
     solaar
     kdePackages.partitionmanager
+    kdePackages.skanlite
+    (kdePackages.skanpage.override { tesseractLanguages = [ "eng" "deu" "rus" ]; })
   ];
 
   programs = {
