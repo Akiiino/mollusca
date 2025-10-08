@@ -57,7 +57,6 @@
       extraGroups = [ "audio" ];
       openssh.authorizedKeys.keys = [
         (builtins.readFile "${self}/secrets/keys/akiiino.pub")
-        (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
       ];
     };
   };

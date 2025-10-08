@@ -5,7 +5,7 @@
     overlays = import "${self}/overlays" { flake = self; };
   };
   nix = {
-      settings = {
+    settings = {
       experimental-features = [
         "nix-command"
         "flakes"

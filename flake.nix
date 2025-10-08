@@ -75,12 +75,12 @@
       url = "github:mawww/kakoune";
       flake = false;
     };
-    
+
     kakoune-osc52 = {
       url = "github:Akiiino/kakoune-osc52";
       flake = false;
     };
-    
+
     parinfer-rust = {
       url = "github:eraserhd/parinfer-rust";
       flake = false;

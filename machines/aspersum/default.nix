@@ -54,12 +54,7 @@
     plymouth.enable = true;
   };
 
-  services.udev = {
-      packages = [ pkgs.sane-airscan ];
-      extraRules = ''
-        ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="27c6", ATTRS{idProduct}=="*", TEST=="power/persist", ATTR{power/persist}="1"
-      '';
-  };
+  # services.udev.packages = [ pkgs.sane-airscan ];  # remove if still works
 
   powerManagement = {
     enable = true;
@@ -113,6 +108,11 @@
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
+      wireplumber.extraConfig.no-ucm = {  # FIXME: https://github.com/NixOS/nixos-hardware/issues/1603
+        "monitor.alsa.properties" = {
+          "alsa.use-ucm" = false;
+        };
+      };
     };
     xserver.wacom.enable = true;
     fwupd.enable = true;
@@ -145,14 +145,20 @@
   security.rtkit.enable = true;
 
   environment.localBinInPath = true;
-  environment.systemPackages = with pkgs; [
-    cheese
-    usbutils
-    btdu
-    solaar
-    kdePackages.partitionmanager
-    kdePackages.skanlite
-    (kdePackages.skanpage.override { tesseractLanguages = [ "eng" "deu" "rus" ]; })
+  environment.systemPackages = [
+    pkgs.cheese
+    pkgs.usbutils
+    pkgs.btdu
+    pkgs.solaar
+    pkgs.kdePackages.partitionmanager
+    pkgs.kdePackages.skanlite
+    (pkgs.kdePackages.skanpage.override {
+      tesseractLanguages = [
+        "eng"
+        "deu"
+        "rus"
+      ];
+    })
   ];
 
   programs = {
@@ -180,8 +186,9 @@
       enableGraphical = lib.mkForce false;
     };
     sane = {
-        enable = true;
-        extraBackends = [ pkgs.sane-airscan ];
+      enable = true;
+      extraBackends = [ pkgs.sane-airscan ];
+      disabledDefaultBackends = [ "escl" ];
     };
   };
 }

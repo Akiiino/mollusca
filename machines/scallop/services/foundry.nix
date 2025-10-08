@@ -38,8 +38,8 @@ in
       mode = "u=rwx,g=,o=";
     };
     services.nginx.virtualHosts = self.lib.mkProxy {
+      inherit (cfg) port;
       fqdn = cfg.hostName;
-      port = cfg.port;
     };
   };
 }
