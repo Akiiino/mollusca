@@ -34,7 +34,7 @@
             };
             content = {
               type = "btrfs";
-              extraArgs = [ "-f" ];
+              extraArgs = [ "-f" "-L" "CRYPTED" ];
               subvolumes = {
                 "/root" = {
                   mountpoint = "/";

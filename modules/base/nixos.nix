@@ -11,6 +11,7 @@
     self.inputs.home-manager.nixosModules.default
     "${self}/modules/remote.nix"
     "${self}/modules/gui.nix"
+    "${self}/modules/plymouth.nix"
   ];
 
   users.mutableUsers = false;

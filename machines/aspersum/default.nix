@@ -27,34 +27,21 @@
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
-      timeout = 0;
     };
 
-    resumeDevice = "/dev/disk/by-uuid/b3688d3c-e0b0-4a29-9b99-14ae9d647bbb";
+    resumeDevice = "/dev/disk/by-label/CRYPTED";
     kernelParams = [
       "amdgpu.sg_display=0"
       "pcie_aspm=off"
 
-      "resume_offset=533760"
+      "resume_offset=533760"  # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile
       "rtc_cmos.use_acpi_alarm=1"
-
-      "quiet"
-      "splash"
-      "boot.shell_on_fail"
-      "udev.log_priority=3"
-      "rd.systemd.show_status=auto"
 
       "amd_pstate=active"
     ];
 
-    consoleLogLevel = 3;
-    initrd.verbose = false;
     initrd.systemd.enable = true;
-
-    plymouth.enable = true;
   };
-
-  # services.udev.packages = [ pkgs.sane-airscan ];  # remove if still works
 
   powerManagement = {
     enable = true;
@@ -91,6 +78,7 @@
     };
     isRemote = true;
     enableHM = true;
+    plymouth.enable = true;
   };
 
   services = {

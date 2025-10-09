@@ -38,6 +38,7 @@
       enable = true;
       desktopEnvironment = "plasma";
     };
+    plymouth.enable = true;
   };
 
   # users.mutableUsers = false;
