@@ -20,10 +20,7 @@ let
     pname = "parinfer-rust";
     version = "0.5.0";
     src = self.inputs.parinfer-rust;
-    useFetchCargoVendor = true;
-    cargoLock = {
-      lockFile = "${self.inputs.parinfer-rust}/Cargo.lock";
-    };
+    cargoLock.lockFile = "${self.inputs.parinfer-rust}/Cargo.lock";
     nativeBuildInputs = [
       pkgs.llvmPackages.clang
       pkgs.rustPlatform.bindgenHook

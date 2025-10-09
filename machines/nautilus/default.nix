@@ -39,6 +39,7 @@
       desktopEnvironment = "plasma";
     };
     plymouth.enable = true;
+    logitech.wireless.enable = true;
   };
 
   # users.mutableUsers = false;

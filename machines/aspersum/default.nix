@@ -35,21 +35,14 @@
       "pcie_aspm=off"
 
       "resume_offset=533760"  # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile
-      "rtc_cmos.use_acpi_alarm=1"
 
-      "amd_pstate=active"
+      "rtc_cmos.use_acpi_alarm=1"
     ];
 
     initrd.systemd.enable = true;
   };
 
-  powerManagement = {
-    enable = true;
-
-    powerDownCommands = ''
-      sync
-    '';
-  };
+  powerManagement.enable = true;
 
   networking = {
     hostName = "aspersum";
@@ -79,6 +72,7 @@
     isRemote = true;
     enableHM = true;
     plymouth.enable = true;
+    logitech.wireless.enable = true;
   };
 
   services = {
@@ -90,17 +84,14 @@
       openFirewall = true;
     };
     printing.enable = true;
-    pulseaudio.enable = false;
     pipewire = {
       enable = true;
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
-      wireplumber.extraConfig.no-ucm = {  # FIXME: https://github.com/NixOS/nixos-hardware/issues/1603
-        "monitor.alsa.properties" = {
-          "alsa.use-ucm" = false;
-        };
-      };
+
+      # FIXME: https://github.com/NixOS/nixos-hardware/issues/1603
+      wireplumber.extraConfig.no-ucm."monitor.alsa.properties"."alsa.use-ucm" = false;
     };
     xserver.wacom.enable = true;
     fwupd.enable = true;
@@ -115,21 +106,6 @@
     };
   };
 
-  systemd.user.services.solaar = {
-    description = "Solaar, the open source driver for Logitech devices";
-    wantedBy = [ "graphical-session.target" ];
-    after = [ "dbus.service" ];
-    environment = {
-      LANG = "en_US.UTF-8";
-      LC_ALL = "en_US.UTF-8";
-    };
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${lib.getExe' pkgs.solaar "solaar"} --window hide";
-      Restart = "on-failure";
-      RestartSec = "5";
-    };
-  };
   security.rtkit.enable = true;
 
   environment.localBinInPath = true;
@@ -137,7 +113,6 @@
     pkgs.cheese
     pkgs.usbutils
     pkgs.btdu
-    pkgs.solaar
     pkgs.kdePackages.partitionmanager
     pkgs.kdePackages.skanlite
     (pkgs.kdePackages.skanpage.override {
@@ -168,10 +143,6 @@
           Experimental = true;
         };
       };
-    };
-    logitech.wireless = {
-      enable = true;
-      enableGraphical = lib.mkForce false;
     };
     sane = {
       enable = true;

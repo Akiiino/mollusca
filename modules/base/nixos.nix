@@ -9,9 +9,8 @@
     self.inputs.mollusca-secrets.nixosModules.secrets
     self.inputs.agenix.nixosModules.default
     self.inputs.home-manager.nixosModules.default
-    "${self}/modules/remote.nix"
-    "${self}/modules/gui.nix"
-    "${self}/modules/plymouth.nix"
+
+    "${self}/modules/mollusca"
   ];
 
   users.mutableUsers = false;
