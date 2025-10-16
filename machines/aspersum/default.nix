@@ -104,7 +104,9 @@
         "2"
       ];
     };
+    opensnitch.enable = true;
   };
+  home-manager.users.akiiino.services.opensnitch-ui.enable = true;
 
   security.rtkit.enable = true;
 

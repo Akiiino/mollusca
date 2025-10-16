@@ -7,6 +7,10 @@
   imports = [
     self.inputs.disko.nixosModules.disko
   ];
+  services.btrfs.autoScrub = {
+    enable = true;
+    interval = "monthly";
+  };
   disko.devices.disk.main = {
     type = "disk";
     device = "/dev/nvme0n1";
@@ -34,7 +38,11 @@
             };
             content = {
               type = "btrfs";
-              extraArgs = [ "-f" "-L" "CRYPTED" ];
+              extraArgs = [
+                "-f"
+                "-L"
+                "CRYPTED"
+              ];
               subvolumes = {
                 "/root" = {
                   mountpoint = "/";

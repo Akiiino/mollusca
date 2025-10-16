@@ -9,7 +9,8 @@ let
   cfg = config.mollusca.logitech;
 in
 {
-  options.mollusca.logitech.wireless.enable = lib.mkEnableOption "support for Logitech wireless devices";
+  options.mollusca.logitech.wireless.enable =
+    lib.mkEnableOption "support for Logitech wireless devices";
   config = lib.mkIf cfg.wireless.enable {
     hardware.logitech.wireless.enable = true;
     systemd.user.services.solaar = {

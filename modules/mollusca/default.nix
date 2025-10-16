@@ -6,4 +6,3 @@
     ./logitech.nix
   ];
 }
-
