@@ -23,6 +23,7 @@
       openscad-unstable
       freecad-wayland
       prusa-slicer
+      thunderbird
 
       gdu
       htop
