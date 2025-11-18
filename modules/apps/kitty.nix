@@ -15,8 +15,8 @@
     };
     environment = {
       "PATH" = "\${PATH}:/usr/local/bin:/bin";
-      "LC_ALL" = "en_US.UTF-8";
-      "LANG" = "en_US.UTF-8";
+      # "LC_ALL" = "en_US.UTF-8";
+      # "LANG" = "en_US.UTF-8";
     };
     settings = {
       font_family = "Iosevka Medium Extended";
