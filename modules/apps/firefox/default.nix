@@ -32,7 +32,7 @@
       id = 0;
       name = "akiiino";
       isDefault = true;
-      extensions.packages = with self.inputs.firefox-addons.packages."${pkgs.hostPlatform.system}"; [
+      extensions.packages = with self.inputs.firefox-addons.packages."${pkgs.stdenv.hostPlatform.system}"; [
         # TODO: save extension configs
         keepass-helper
         sidebery

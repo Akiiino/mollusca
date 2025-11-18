@@ -13,6 +13,6 @@ pkgs.mkShell {
     nix-prefetch-scripts
     inputs'.agenix.packages.agenix
     inputs'.gitsh.packages.gitsh
-    inputs'.nh.packages.nh
+    nh
   ];
 }

@@ -1,13 +1,14 @@
 {
   pkgs,
   config,
+  self,
   ...
 }:
 {
   home = {
     packages = with pkgs; [
       gimp
-      tdesktop
+      telegram-desktop
       signal-desktop
       spotify
       keepassxc

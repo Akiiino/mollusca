@@ -2,6 +2,7 @@
   inputs = {
     # Nix
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-2505.url = "github:NixOS/nixpkgs/nixos-25.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -24,7 +25,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     mac-app-util.url = "github:hraban/mac-app-util";
-    nh.url = "github:viperML/nh";
 
     # Secrets
     agenix = {

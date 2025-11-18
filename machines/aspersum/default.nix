@@ -31,6 +31,7 @@
 
     resumeDevice = "/dev/disk/by-label/CRYPTED";
     kernelParams = [
+      "amdgpu.dcdebugmask=0x410"  # remove if flicker persists
       "amdgpu.sg_display=0"
       "pcie_aspm=off"
 
@@ -95,6 +96,15 @@
     };
     xserver.wacom.enable = true;
     fwupd.enable = true;
+    # libinput = {
+    #   enable = true;
+    #   touchpad = {
+    #     disableWhileTyping = false;
+    #     additionalOptions = ''
+    #       Option "PalmDetect" "0"
+    #     '';
+    #   };
+    # };
 
     beesd.filesystems."crypted" = {
       spec = "/dev/mapper/crypted";
@@ -124,11 +134,17 @@
         "rus"
       ];
     })
+    (pkgs.tic-80.override {withPro = true;})
   ];
 
   programs = {
     steam.enable = true;
     adb.enable = true;
+    nh = {
+        enable = true;
+        clean.enable = true;
+        clean.extraArgs = "--keep-since 14d --keep 5";
+      };
   };
 
   hardware = {

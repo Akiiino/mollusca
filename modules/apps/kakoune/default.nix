@@ -45,6 +45,7 @@ in
     plugins = [
       pkgs.kakounePlugins.kak-ansi
       pkgs.kakounePlugins.powerline-kak
+      pkgs.kakounePlugins.openscad-kak
       parinfer-rust
       kakoune-osc52
     ];
