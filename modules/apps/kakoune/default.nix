@@ -3,6 +3,7 @@
   pkgs,
   lib,
   self,
+  inputs',
   ...
 }:
 let
@@ -10,32 +11,6 @@ let
     version = "2025.06.03";
     src = self.inputs.kakoune;
   });
-  kakoune-osc52 = pkgs.kakouneUtils.buildKakounePluginFrom2Nix {
-    pname = "kakoune-osc52";
-    version = "2025-06-17";
-    src = self.inputs.kakoune-osc52;
-    meta.homepage = "https://github.com/Akiiino/kakoune-osc52";
-  };
-  parinfer-rust = pkgs.rustPlatform.buildRustPackage {
-    pname = "parinfer-rust";
-    version = "0.5.0";
-    src = self.inputs.parinfer-rust;
-    cargoLock.lockFile = "${self.inputs.parinfer-rust}/Cargo.lock";
-    nativeBuildInputs = [
-      pkgs.llvmPackages.clang
-      pkgs.rustPlatform.bindgenHook
-    ];
-
-    postInstall = ''
-      mkdir -p $out/share/kak/autoload/plugins
-      cp rc/parinfer.kak $out/share/kak/autoload/plugins/
-
-      rtpPath=$out/plugin
-      mkdir -p $rtpPath
-      sed "s,let s:libdir = .*,let s:libdir = '${placeholder "out"}/lib'," \
-        plugin/parinfer.vim > $rtpPath/parinfer.vim
-    '';
-  };
 in
 {
   programs.kakoune = {
@@ -46,8 +21,8 @@ in
       pkgs.kakounePlugins.kak-ansi
       pkgs.kakounePlugins.powerline-kak
       pkgs.kakounePlugins.openscad-kak
-      parinfer-rust
-      kakoune-osc52
+      inputs'.parinfer-rust.packages.parinfer-rust
+      inputs'.kak-yac.packages.kak-yac
     ];
     config = {
       colorScheme = "gruvbox-light";
@@ -109,12 +84,13 @@ in
       ];
     };
     extraConfig = ''
-      source ${./kakoune-osc52-config.kak}
       source ${./powerline-config.kak}
       source ${./utils.kak}
 
       set-option global startup_info_version 20240518
       set-option -add global ui_options terminal_set_title=true
+
+      yac-enable
 
       define-command -docstring "Prepare windows for IDE mode" ide %{
           rename-client main

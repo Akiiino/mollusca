@@ -1,4 +1,4 @@
-{ self, pkgs, ... }:
+{ self, pkgs, inputs', ... }:
 {
   nixpkgs = {
     config.allowUnfree = true;
@@ -19,7 +19,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = { inherit self; };
+    extraSpecialArgs = { inherit self inputs'; };
     backupFileExtension = "backup";
   };
   fonts.packages = [

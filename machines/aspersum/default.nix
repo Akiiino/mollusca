@@ -3,6 +3,7 @@
   pkgs,
   lib,
   self,
+  self',
   inputs,
   ...
 }:
@@ -12,7 +13,14 @@
     ./hardware-configuration.nix
     ./disko.nix
     "${self}/users/akiiino"
+    self.inputs.crossmacro.nixosModules.default
   ];
+
+  documentation.nixos = {
+    enable = true;
+    options.warningsAreErrors = false;
+    includeAllModules = true;
+  };
 
   users.users.akiiino = {
     extraGroups = [ "adbusers" ];
@@ -31,9 +39,9 @@
 
     resumeDevice = "/dev/disk/by-label/CRYPTED";
     kernelParams = [
-      "amdgpu.dcdebugmask=0x410"  # remove if flicker persists
-      "amdgpu.sg_display=0"
-      "pcie_aspm=off"
+      # "amdgpu.dcdebugmask=0x410"  # remove if flicker persists
+      # "amdgpu.sg_display=0"
+      # "pcie_aspm=off"
 
       "resume_offset=533760"  # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile
 
@@ -77,6 +85,13 @@
   };
 
   services = {
+    udev.extraRules = ''
+      # 2.4GHz/Dongle
+      KERNEL=="hidraw*", ATTRS{idVendor}=="2dc8", MODE="0660", TAG+="uaccess"
+      # Bluetooth
+      KERNEL=="hidraw*", KERNELS=="*2DC8:*", MODE="0660", TAG+="uaccess"
+    '';
+
     power-profiles-daemon.enable = true;
     thermald.enable = true;
     avahi = {
@@ -84,14 +99,17 @@
       nssmdns4 = true;
       openFirewall = true;
     };
-    printing.enable = true;
+    printing = {
+        enable = true;
+        drivers = [self'.packages.cups-brother-dcpl3520cdw];
+    };
     pipewire = {
       enable = true;
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
 
-      # FIXME: https://github.com/NixOS/nixos-hardware/issues/1603
+      # TODO: https://github.com/NixOS/nixos-hardware/issues/1603
       wireplumber.extraConfig.no-ucm."monitor.alsa.properties"."alsa.use-ucm" = false;
     };
     xserver.wacom.enable = true;
@@ -138,6 +156,10 @@
   ];
 
   programs = {
+    crossmacro = {
+        enable = true;
+        addUsersToInputGroup = true;
+    };
     steam.enable = true;
     adb.enable = true;
     nh = {

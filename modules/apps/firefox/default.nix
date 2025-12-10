@@ -178,6 +178,9 @@
       };
       search = {
         force = true;
+        default = "Kagi";
+        privateDefault = "ddg";
+        order = ["Kagi" "Nixpkgs" "NixOS Wiki"];
         engines = {
           "Nixpkgs" = {
             urls = [
@@ -202,15 +205,33 @@
 
           "NixOS Wiki" = {
             urls = [ { template = "https://wiki.nixos.org/index.php?search={searchTerms}"; } ];
-            icon = "https://wiki.nixos.org/favicon.png";
-            updateInterval = 24 * 60 * 60 * 1000; # every day
+            icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+            updateInterval = 24 * 60 * 60 * 1000;
             definedAliases = [ "@nw" ];
+          };
+
+          "Kagi" = {
+            icon = "https://kagi.com/favicon.ico";
+            updateInterval = 24 * 60 * 60 * 1000;
+            definedAliases = [ "@k" ];
+            urls = [
+              {
+                template = "https://kagi.com/search";
+                params = [
+                  {
+                    name = "q";
+                    value = "{searchTerms}";
+                  }
+                ];
+              }
+            ];
           };
 
           "bing".metaData.hidden = true;
           "google".metaData.hidden = true;
           "ecosia".metaData.hidden = true;
           "wikipedia".metaData.hidden = true;
+          "perplexity".metaData.hidden = true;
         };
       };
     };

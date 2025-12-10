@@ -14,7 +14,7 @@ rec {
       extraModules ? [ ],
     }:
     withSystem system (
-      { inputs', ... }:
+      { self', inputs', ... }:
       let
         systemBuilder =
           if os == "darwin" then inputs.darwin.lib.darwinSystem else inputs.nixpkgs.lib.nixosSystem;
@@ -30,7 +30,7 @@ rec {
         ++ (if os == "nixos" then [ "${self}/modules/base/nixos.nix" ] else [ ])
         ++ extraModules;
         specialArgs = {
-          inherit self inputs inputs';
+          inherit self self' inputs inputs';
         };
       }
     );

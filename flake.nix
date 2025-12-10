@@ -1,8 +1,7 @@
 {
   inputs = {
     # Nix
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-2505.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -76,14 +75,19 @@
       flake = false;
     };
 
-    kakoune-osc52 = {
-      url = "github:Akiiino/kakoune-osc52";
-      flake = false;
+    kak-yac = {
+      url = "github:Akiiino/kak-yac";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     parinfer-rust = {
       url = "github:eraserhd/parinfer-rust";
-      flake = false;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    crossmacro = {
+      url = "github:alper-han/CrossMacro";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -127,6 +131,8 @@
             devShells.default = import "${self}/devshell.nix" { inherit pkgs inputs'; };
             packages = {
               musselSD = self.nixosConfigurations.mussel.config.formats.sd-aarch64;
+              nixos-manual = self.nixosConfigurations.aspersum.config.system.build.manual.manualHTML;
+              cups-brother-dcpl3520cdw = pkgs.callPackage ./packages/cups-brother-dcpl3520cdw.nix { };
             };
           };
       }
