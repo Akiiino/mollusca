@@ -125,8 +125,17 @@
         };
 
         perSystem =
-          { pkgs, inputs', ... }:
           {
+            pkgs,
+            system,
+            inputs',
+            ...
+          }:
+          {
+            _module.args.pkgs = import nixpkgs {
+              inherit system;
+              config.allowUnfree = true;
+            };
             formatter = pkgs.nixfmt-tree;
             devShells.default = import "${self}/devshell.nix" { inherit pkgs inputs'; };
             packages = {
