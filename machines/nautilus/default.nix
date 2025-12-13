@@ -45,6 +45,7 @@
     };
     plymouth.enable = true;
     logitech.wireless.enable = true;
+    eightbitdo.enable = true;
   };
 
   # users.mutableUsers = false;
@@ -112,16 +113,6 @@
   };
 
   services = {
-    udev.extraRules = ''
-      # 2.4GHz/Dongle
-      KERNEL=="hidraw*", ATTRS{idVendor}=="2dc8", MODE="0660", TAG+="uaccess"
-      # Bluetooth
-      KERNEL=="hidraw*", KERNELS=="*2DC8:*", MODE="0660", TAG+="uaccess"
-
-      # Allow members of input group to access input devices
-      KERNEL=="event*", SUBSYSTEM=="input", MODE="0660", GROUP="input"
-      KERNEL=="uinput", SUBSYSTEM=="misc", MODE="0660", GROUP="input"
-    '';
     xserver = {
       enable = true;
       videoDrivers = [ "nvidia" ];
