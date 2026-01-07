@@ -5,6 +5,7 @@
   self,
   self',
   inputs,
+  inputs',
   ...
 }:
 {
@@ -13,8 +14,14 @@
     ./hardware-configuration.nix
     ./disko.nix
     "${self}/users/akiiino"
-    self.inputs.crossmacro.nixosModules.default
+    inputs.fiveETools.nixosModules.default
   ];
+
+  services.fiveETools = {
+      enable = true;
+      package = inputs'.fiveETools.packages.fiveEToolsWithImages;
+  };
+
 
   documentation.nixos = {
     enable = true;
@@ -108,15 +115,6 @@
     };
     xserver.wacom.enable = true;
     fwupd.enable = true;
-    # libinput = {
-    #   enable = true;
-    #   touchpad = {
-    #     disableWhileTyping = false;
-    #     additionalOptions = ''
-    #       Option "PalmDetect" "0"
-    #     '';
-    #   };
-    # };
 
     beesd.filesystems."crypted" = {
       spec = "/dev/mapper/crypted";

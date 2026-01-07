@@ -20,7 +20,6 @@
     "${self}/users/akiiino"
     "${self}/users/rinkaru"
     ./bigscreen.nix
-    self.inputs.crossmacro.nixosModules.default
   ];
 
   nix.settings.auto-optimise-store = true;
@@ -139,5 +138,6 @@
     firefox
     keepassxc
     onboard
+    vacuum-tube
   ];
 }

@@ -9,6 +9,7 @@
     self.inputs.mollusca-secrets.nixosModules.secrets
     self.inputs.agenix.nixosModules.default
     self.inputs.home-manager.nixosModules.default
+    self.inputs.crossmacro.nixosModules.default
 
     "${self}/modules/mollusca"
   ];

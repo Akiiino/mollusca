@@ -61,5 +61,5 @@ in
   environment.plasma6.excludePackages = with pkgs; [
     # kdePackages.xwaylandvideobridge
   ];
-  # services.displayManager.defaultSession = "plasma-bigscreen-wayland";
+  services.displayManager.defaultSession = "plasma-bigscreen-wayland";
 }

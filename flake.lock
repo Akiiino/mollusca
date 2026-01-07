@@ -184,6 +184,23 @@
         "type": "gitlab"
       }
     },
+    "fiveETools": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1766519829,
+        "narHash": "sha256-wGb4FpSngCLk8zuwv4tCGY5sWTOqYxZhF2sxjE4qG/A=",
+        "path": "/home/akiiino/5etools/",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/akiiino/5etools/",
+        "type": "path"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -763,6 +780,7 @@
         "darwin": "darwin",
         "disko": "disko",
         "firefox-addons": "firefox-addons",
+        "fiveETools": "fiveETools",
         "flake-parts": "flake-parts",
         "foundryvtt": "foundryvtt",
         "gitsh": "gitsh",

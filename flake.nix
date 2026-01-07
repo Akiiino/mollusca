@@ -1,5 +1,9 @@
 {
   inputs = {
+    fiveETools = {
+      url = "path:/home/akiiino/5etools/";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Nix
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
