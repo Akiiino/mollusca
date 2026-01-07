@@ -122,6 +122,7 @@
           nixosConfigurations = self.lib.mkNixOSMachines {
             aspersum = { };
             nautilus = { };
+            pecten = { };
             mussel = {
               system = "aarch64-linux";
             };

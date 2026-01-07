@@ -33,16 +33,10 @@
     extraGroups = [ "adbusers" ];
     hashedPassword = "$6$nwRe8GAT99X9XVMD$EI8wRSBQF.zw6Evh7UVFKxfu/K9v2.i4hb1unxSnf26e50glpz6SkuVR9MQYr7/m.1IqgrstKvnPAVPa1i/JB0";
   };
-  nix.settings.auto-optimise-store = true;
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     binfmt.emulatedSystems = [ "aarch64-linux" ];
-
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
 
     resumeDevice = "/dev/disk/by-label/CRYPTED";
     kernelParams = [

@@ -11,6 +11,8 @@
         "flakes"
       ];
       use-xdg-base-directories = true;
+      trusted-users = [ "builder" ];
+      auto-optimise-store = true;
     };
     extraOptions = ''
       extra-nix-path = nixpkgs=flake:nixpkgs

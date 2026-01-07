@@ -21,5 +21,9 @@
       })
     ];
     services.hardware.argonone.enable = true;
+    boot.loader = {
+      systemd-boot.enable = false;
+      efi.canTouchEfiVariables = false;
+    };
   };
 }

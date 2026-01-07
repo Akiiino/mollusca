@@ -1,68 +1,16 @@
 let
   akiiino = builtins.readFile keys/akiiino.pub;
-  scallop = builtins.readFile keys/scallop.pub;
   nautilus = builtins.readFile keys/nautilus.pub;
   gastropod = builtins.readFile keys/gastropod.pub;
   mussel = builtins.readFile keys/mussel.pub;
+  pecten = builtins.readFile keys/pecten.pub;
 in
 {
-  "hetzner.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "nextcloud_root_pass.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "nextcloud_oidc_secret.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "oauth2-proxy.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "oauth2-proxy_keycloak.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "secondbrain_nc_password.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "keycloak_db_pass.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "komga_client_secret.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "minio.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "outline.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "outline_OIDC.age".publicKeys = [
-    akiiino
-    scallop
-  ];
   "tailscale.age".publicKeys = [
     akiiino
-    scallop
     nautilus
     gastropod
     mussel
-  ];
-  "cifs_users/nextcloud.age".publicKeys = [
-    akiiino
-    scallop
-  ];
-  "cifs_users/minio.age".publicKeys = [
-    akiiino
-    scallop
+    pecten
   ];
 }

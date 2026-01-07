@@ -1,6 +1,7 @@
 {
   self,
   pkgs,
+  lib,
   ...
 }:
 {
@@ -10,9 +11,18 @@
     self.inputs.agenix.nixosModules.default
     self.inputs.home-manager.nixosModules.default
     self.inputs.crossmacro.nixosModules.default
+    self.inputs.disko.nixosModules.disko
 
     "${self}/modules/mollusca"
   ];
+
+  boot = {
+    tmp.cleanOnBoot = true;
+    loader = {
+      systemd-boot.enable = lib.mkDefault true;
+      efi.canTouchEfiVariables = lib.mkDefault true;
+    };
+  };
 
   users.mutableUsers = false;
   i18n = {
@@ -27,7 +37,7 @@
     };
   };
   system = {
-    extraSystemBuilderCmds = ''
+    systemBuilderCommands = ''
       ln -sv ${pkgs.path} $out/nixpkgs
     '';
     stateVersion = "23.11";
@@ -36,4 +46,10 @@
     nix-ld.enable = true;
   };
   nix.nixPath = [ "nixpkgs=/run/current-system/nixpkgs" ];
+  services.openssh = {
+    settings = {
+      PasswordAuthentication = lib.mkForce false;
+      PermitRootLogin = lib.mkForce "no";
+    };
+  };
 }

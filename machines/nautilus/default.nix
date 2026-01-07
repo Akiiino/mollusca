@@ -22,14 +22,8 @@
     ./bigscreen.nix
   ];
 
-  nix.settings.auto-optimise-store = true;
-
   boot = {
     kernelParams = [ "amd_pstate=active" ];
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
     binfmt.emulatedSystems = [ "aarch64-linux" ];
     kernelPackages = pkgs.linuxPackages_latest;
   };

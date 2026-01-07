@@ -91,8 +91,6 @@
       networkConfig.DHCP = "ipv4";
     };
 
-    nix.settings.auto-optimise-store = true;
-
     boot.tmp.cleanOnBoot = true;
     zramSwap.enable = true;
     networking.hostName = "scallop";

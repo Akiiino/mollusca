@@ -1,12 +1,4 @@
 {
-  modulesPath,
-  self,
-  ...
-}:
-{
-  imports = [
-    self.inputs.disko.nixosModules.disko
-  ];
   services.btrfs.autoScrub = {
     enable = true;
     interval = "monthly";
