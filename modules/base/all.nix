@@ -11,7 +11,7 @@
         "flakes"
       ];
       use-xdg-base-directories = true;
-      trusted-users = [ "builder" ];
+      trusted-users = [ "@wheel" ];
       auto-optimise-store = true;
     };
     extraOptions = ''

@@ -22,7 +22,6 @@
       package = inputs'.fiveETools.packages.fiveEToolsWithImages;
   };
 
-
   documentation.nixos = {
     enable = true;
     options.warningsAreErrors = false;
@@ -56,7 +55,6 @@
 
   networking = {
     hostName = "aspersum";
-    networkmanager.enable = true;
     firewall = {
       allowedTCPPorts = [
         5000
@@ -84,6 +82,7 @@
     plymouth.enable = true;
     logitech.wireless.enable = true;
     eightbitdo.enable = true;
+    bluetooth.enable = true;
   };
 
   services = {
@@ -159,16 +158,6 @@
     framework.laptop13.audioEnhancement = {
       enable = true;
       hideRawDevice = false;
-    };
-    bluetooth = {
-      enable = true;
-      powerOnBoot = true;
-      settings = {
-        General = {
-          Enable = "Source,Sink,Media,Socket";
-          Experimental = true;
-        };
-      };
     };
     sane = {
       enable = true;

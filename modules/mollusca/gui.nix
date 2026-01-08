@@ -36,7 +36,9 @@ in
             # excludePackages = [pkgs.xterm];
           };
         };
+        networking.networkmanager.enable = true;
       }
+
       (lib.mkIf (cfg.desktopEnvironment == "plasma") {
         services = {
           displayManager.sddm.enable = true;
@@ -50,6 +52,7 @@ in
           elisa
         ];
       })
+
       (lib.mkIf (cfg.desktopEnvironment == "gnome") {
         services = {
           xserver.displayManager.gdm.enable = true;

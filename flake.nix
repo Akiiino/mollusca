@@ -123,6 +123,7 @@
             aspersum = { };
             nautilus = { };
             pecten = { };
+            actinella = { };
             mussel = {
               system = "aarch64-linux";
             };

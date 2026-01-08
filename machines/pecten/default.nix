@@ -24,8 +24,6 @@
     grub.enable = true;
   };
 
-  services.tailscale.extraUpFlags = [ "--hostname=pecten" ];
-
   networking = {
     hostName = "pecten";
   };

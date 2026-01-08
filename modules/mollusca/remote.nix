@@ -39,7 +39,7 @@
         openFirewall = true;
         useRoutingFeatures = "server";
         authKeyFile = config.age.secrets.tailscaleKey.path;
-        extraUpFlags = lib.optional config.mollusca.isExitNode "--advertise-exit-node";
+        extraUpFlags = ["--hostname=${config.networking.hostName}"] ++ lib.optional config.mollusca.isExitNode "--advertise-exit-node";
       };
       networking.firewall.trustedInterfaces = [ config.services.tailscale.interfaceName ];
     })

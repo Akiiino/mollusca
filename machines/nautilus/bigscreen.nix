@@ -52,7 +52,7 @@ in
   ];
   environment.systemPackages = [
     plasma-tv
-    plasma-remotecontrollers
+    # plasma-remotecontrollers
   ];
   services.udev.extraRules = ''
     SUBSYSTEM=="misc", KERNEL=="uinput", MODE="0660", GROUP="input"

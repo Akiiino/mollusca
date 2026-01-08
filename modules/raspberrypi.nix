@@ -14,12 +14,12 @@
     "${toString modulesPath}/installer/sd-card/sd-image-aarch64.nix"
   ];
   config = {
-    # TODO: remove if the breakage is fixed
-    nixpkgs.overlays = [
-      (final: super: {
-        makeModulesClosure = x: super.makeModulesClosure (x // { allowMissing = true; });
-      })
-    ];
+    # # TODO: remove if the breakage is fixed
+    # nixpkgs.overlays = [
+    #   (final: super: {
+    #     makeModulesClosure = x: super.makeModulesClosure (x // { allowMissing = true; });
+    #   })
+    # ];
     services.hardware.argonone.enable = true;
     boot.loader = {
       systemd-boot.enable = false;

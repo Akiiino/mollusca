@@ -39,9 +39,9 @@
     plymouth.enable = true;
     logitech.wireless.enable = true;
     eightbitdo.enable = true;
+    bluetooth.enable = true;
   };
 
-  # users.mutableUsers = false;
   users.users = {
     nautilus = {
       isNormalUser = true;
@@ -71,7 +71,6 @@
 
   networking = {
     hostName = "nautilus";
-    networkmanager.enable = true;
 
     firewall = {
       allowedTCPPorts = [ 11111 ];
@@ -101,8 +100,6 @@
       powerManagement.enable = true;
       package = config.boot.kernelPackages.nvidiaPackages.stable;
     };
-    bluetooth.enable = true;
-    bluetooth.powerOnBoot = true;
   };
 
   services = {
