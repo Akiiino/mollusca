@@ -39,7 +39,7 @@
   programs = {
     crossmacro = {
         enable = true;
-        addUsersToInputGroup = true;
+        users = ["actinella"];
     };
     steam.enable = true;
     nh = {
@@ -62,6 +62,7 @@
     onboard
     vacuum-tube
     kitty
+    jellyfin-media-player
   ];
 
   users.users = {
@@ -90,6 +91,7 @@
         "--backend pulseaudio"
         "--zeroconf-port 5354"
         "--device-type speaker"
+        "--initial-volume 100"
       ];
       Restart = "always";
       RestartSec = 5;
@@ -108,6 +110,17 @@
       alsa.support32Bit = true;
       pulse.enable = true;
       wireplumber.enable = true;
+    };
+    pinchflat = {
+      enable = true;
+      mediaDir = "/var/lib/pinchflat/media";
+      port = 8945;
+      openFirewall = true;
+      selfhosted = true;
+    };
+    jellyfin = {
+        enable = true;
+        openFirewall = true;
     };
   };
   boot.extraModprobeConfig = ''

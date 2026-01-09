@@ -117,7 +117,7 @@
   programs = {
     crossmacro = {
         enable = true;
-        addUsersToInputGroup = true;
+        users = ["akiiino" "nautilus"];
     };
     steam = {
       enable = true;

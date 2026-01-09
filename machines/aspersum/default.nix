@@ -137,13 +137,13 @@
         "rus"
       ];
     })
-    (pkgs.tic-80.override {withPro = true;})
+    # (pkgs.tic-80.override {withPro = true;})
   ];
 
   programs = {
     crossmacro = {
         enable = true;
-        addUsersToInputGroup = true;
+        users = ["akiiino"];
     };
     steam.enable = true;
     adb.enable = true;

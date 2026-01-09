@@ -8,7 +8,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
     home-manager = {
-      url = "github:nix-community/home-manager/master";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -21,13 +21,25 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    impermanence.url = "github:nix-community/impermanence";
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    mac-app-util.url = "github:hraban/mac-app-util";
+    mac-app-util = {
+      url = "github:hraban/mac-app-util";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.cl-nix-lite.inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "";
+      };
+      inputs.treefmt-nix.follows = "";
+    };
 
     # Secrets
     agenix = {
@@ -53,8 +65,7 @@
     };
     gitsh = {
       url = "github:akiiino/gitsh-flake";
-      # inputs.nixpkgs.follows = "nixpkgs";
-      # inputs.flake-parts.follows = "flake-parts";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     secondbrain = {
       url = "github:akiiino/secondbrain";
@@ -72,8 +83,8 @@
     arkenfox = {
       url = "github:dwarfmaster/arkenfox-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pre-commit.inputs.nixpkgs.follows = "nixpkgs";
     };
-    foundryvtt.url = "github:reckenrode/nix-foundryvtt";
     kakoune = {
       url = "github:mawww/kakoune";
       flake = false;
@@ -91,6 +102,7 @@
 
     crossmacro = {
       url = "github:alper-han/CrossMacro";
+      inputs.flake-parts.follows = "flake-parts";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
