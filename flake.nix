@@ -136,9 +136,9 @@
             nautilus = { };
             pecten = { };
             actinella = { };
-            mussel = {
-              system = "aarch64-linux";
-            };
+            # mussel = {
+            #   system = "aarch64-linux";
+            # };
           };
         };
 
@@ -157,7 +157,7 @@
             formatter = pkgs.nixfmt-tree;
             devShells.default = import "${self}/devshell.nix" { inherit pkgs inputs'; };
             packages = {
-              musselSD = self.nixosConfigurations.mussel.config.formats.sd-aarch64;
+              # musselSD = self.nixosConfigurations.mussel.config.formats.sd-aarch64;
               nixos-manual = self.nixosConfigurations.aspersum.config.system.build.manual.manualHTML;
               cups-brother-dcpl3520cdw = pkgs.callPackage ./packages/cups-brother-dcpl3520cdw.nix { };
             };

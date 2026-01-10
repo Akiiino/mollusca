@@ -6,111 +6,174 @@
   inputs,
   ...
 }:
+let
+  kodiPackage = pkgs.kodi-gbm.withPackages (
+    p: with p; [
+      # jellyfin
+      jellycon
+
+      inputstream-adaptive
+      inputstreamhelper
+
+      # a4ksubtitles
+
+      invidious
+    ]
+  );
+  librespotWithAvahi = pkgs.librespot.override {
+    withAvahi = true;
+    withMDNS = false;
+  };
+in
 {
   imports = [
     inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
+    inputs.home-manager.nixosModules.home-manager
     ./hardware-configuration.nix
     ./disko.nix
-    ../nautilus/bigscreen.nix
   ];
 
   mollusca = {
     isRemote = true;
     useTailscale = true;
     isExitNode = true;
-    gui = {
-      enable = true;
-      desktopEnvironment = "plasma";
-    };
     plymouth.enable = true;
-    logitech.wireless.enable = true;
-    eightbitdo.enable = true;
     bluetooth.enable = true;
-    cec = {
-      enable = true;
-      connector = "card1-DP-2";
-    };
-  };
-
-  services = {
-    fwupd.enable = true;
   };
 
   programs = {
-    crossmacro = {
-        enable = true;
-        users = ["actinella"];
-    };
-    steam.enable = true;
     nh = {
-        enable = true;
-        clean.enable = true;
-        clean.extraArgs = "--keep-since 14d --keep 5";
-      };
+      enable = true;
+      clean.enable = true;
+      clean.extraArgs = "--keep-since 14d --keep 5";
+    };
   };
 
   time.timeZone = "Europe/Berlin";
 
-  networking = {
-    hostName = "actinella";
-  };
-
   environment.systemPackages = with pkgs; [
-    ungoogled-chromium
-    firefox
-    keepassxc
-    onboard
-    vacuum-tube
-    kitty
-    jellyfin-media-player
+    libcec
+    kodiPackage
   ];
 
-  users.users = {
-    actinella = {
-      isNormalUser = true;
-      password = "";
-      extraGroups = [
-        "audio"
-      ];
-      openssh.authorizedKeys.keys = [
-        (builtins.readFile "${self}/secrets/keys/akiiino.pub")
-        (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
-      ];
-    };
+  users.users.actinella = {
+    isNormalUser = true;
+    password = "";
+    extraGroups = [
+      "audio"
+      "video"
+      "input" # kodi-gbm keyboard/remote input
+      "render" # GPU acceleration
+    ];
+    openssh.authorizedKeys.keys = [
+      (builtins.readFile "${self}/secrets/keys/akiiino.pub")
+      (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
+    ];
   };
+
+  home-manager.users.actinella =
+    { pkgs, ... }:
+    {
+      home.stateVersion = "25.11";
+
+      programs.kodi = {
+        enable = true;
+        package = kodiPackage;
+
+        settings = {
+          services = {
+            devicename = "actinella";
+
+            webserver = "true";
+            webserverport = "8080";
+            webserverusername = "kodi";
+            webserverpassword = "kodi";
+
+            esallinterfaces = "true";
+            esenabled = "true";
+          };
+
+          general = {
+            addonupdates = "2";
+            addonnotifications = "false";
+          };
+
+          videolibrary = {
+            showemptytvshows = "true";
+            cleanonupdate = "true";
+          };
+
+          locale = {
+            timezonecountry = "Germany";
+            timezone = "Europe/Berlin";
+          };
+        };
+      };
+    };
 
   systemd.user.services.librespot = {
     description = "Librespot Spotify Connect";
     wantedBy = [ "default.target" ];
-    after = [ "pipewire.service" "pulseaudio.service" ];
+    after = [
+      "pipewire.service"
+      "pulseaudio.service"
+    ];
     serviceConfig = {
       ExecStart = builtins.concatStringsSep " " [
-        "${pkgs.librespot}/bin/librespot"
+        "${librespotWithAvahi}/bin/librespot"
         "--name 'actinella'"
         "--bitrate 320"
         "--backend pulseaudio"
         "--zeroconf-port 5354"
         "--device-type speaker"
         "--initial-volume 100"
+        "--zeroconf-backend avahi"
       ];
       Restart = "always";
       RestartSec = 5;
     };
   };
+
   services = {
-    displayManager.autoLogin.user = "actinella";
+    fwupd.enable = true;
+
+    greetd = {
+      enable = true;
+      settings.default_session = {
+        command = lib.getExe' kodiPackage "kodi-standalone";
+        user = "actinella";
+      };
+    };
+
     avahi = {
       enable = true;
       nssmdns4 = true;
       openFirewall = true;
+      publish = {
+        enable = true;
+        addresses = true;
+        workstation = true;
+        userServices = true;
+      };
     };
+
     pipewire = {
       enable = true;
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
       wireplumber.enable = true;
+
+      extraConfig.pipewire."10-sample-rates"."context.properties"."default.clock.allowed-rates" = [
+        44100
+        48000
+        88200
+        96000
+        176400
+        192000
+      ];
     };
+
     pinchflat = {
       enable = true;
       mediaDir = "/var/lib/pinchflat/media";
@@ -118,17 +181,90 @@
       openFirewall = true;
       selfhosted = true;
     };
+
     jellyfin = {
-        enable = true;
-        openFirewall = true;
+      enable = true;
+      openFirewall = true;
     };
   };
+
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      intel-media-driver # VA-API driver for Tiger Lake (11th gen)
+      intel-compute-runtime # OpenCL support
+      libvdpau-va-gl # VDPAU via VA-API
+    ];
+  };
+
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "iHD";
+  };
+
   boot.extraModprobeConfig = ''
     options snd_intel_dspcfg dsp_driver=3
-  '';  # for audio through HDMI card
-  networking.firewall = {
-    allowedTCPPorts = [ 5354 ];
-    allowedUDPPorts = [ 5353 ];
-  };
-}
+  ''; # for audio through HDMI card
 
+  age.secrets.AmityTowerPassword.file = "${self}/secrets/AmityTower.age";
+  networking = {
+    hostName = "actinella";
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [
+        5354 # librespot
+        8080 # Kodi web interface
+        9090 # Kodi JSON-RPC
+      ];
+      allowedUDPPorts = [
+        5353 # mDNS (Avahi)
+        8080 # Kodi EventServer
+      ];
+    };
+    networkmanager = {
+      enable = true;
+      ensureProfiles = {
+        environmentFiles = [ config.age.secrets.AmityTowerPassword.path ];
+        profiles = {
+          home-wifi = {
+            connection = {
+              id = "Amity Tower";
+              type = "wifi";
+              autoconnect = true;
+            };
+            wifi = {
+              ssid = "Amity Tower";
+              mode = "infrastructure";
+            };
+            wifi-security = {
+              auth-alg = "open";
+              key-mgmt = "wpa-psk";
+              psk = "$PASSWORD";
+            };
+            ipv4.method = "auto";
+            ipv6.method = "auto";
+          };
+        };
+      };
+    };
+  };
+
+  boot.supportedFilesystems = [ "nfs" ];
+
+  fileSystems."/mnt/media" = {
+    device = "MyCloudEX2Ultra.local:/nfs/Media";
+    fsType = "nfs";
+    options = [
+      "x-systemd.automount" # Mount on first access
+      "noauto" # Don't mount at boot
+      "x-systemd.idle-timeout=600" # Unmount after 10min idle
+      "nfsvers=3" # Use NFSv4.2 for best performance
+      "hard" # hang if NAS is unavailable
+      "timeo=50" # 5 second timeout
+      "retrans=4" # 4 retries before giving up
+      "_netdev" # Wait for network
+    ];
+  };
+
+  # boot.kernelParams = [ "consoleblank=0" ];
+
+}
