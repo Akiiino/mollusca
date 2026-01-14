@@ -4,6 +4,7 @@
     config.allowUnfree = true;
     overlays = import "${self}/overlays" { flake = self; };
   };
+
   nix = {
     settings = {
       experimental-features = [
@@ -18,16 +19,21 @@
       extra-nix-path = nixpkgs=flake:nixpkgs
     '';
   };
+
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit self inputs'; };
     backupFileExtension = "backup";
   };
+
   fonts.packages = [
     pkgs.fira-code
     pkgs.nerd-fonts.hack
     pkgs.iosevka
   ];
+
+  time.timeZone = "Europe/Berlin";
+
   programs.zsh.enable = true;
 }

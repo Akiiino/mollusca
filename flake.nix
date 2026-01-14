@@ -83,7 +83,7 @@
     arkenfox = {
       url = "github:dwarfmaster/arkenfox-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.pre-commit.inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pre-commit.follows = "";
     };
     kakoune = {
       url = "github:mawww/kakoune";
@@ -136,9 +136,9 @@
             nautilus = { };
             pecten = { };
             actinella = { };
-            # mussel = {
-            #   system = "aarch64-linux";
-            # };
+            mussel = {
+              system = "aarch64-linux";
+            };
           };
         };
 

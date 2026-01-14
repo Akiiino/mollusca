@@ -10,6 +10,11 @@
     isRemote = lib.mkEnableOption "remote operation & rebuilds";
     useTailscale = lib.mkEnableOption "using Tailscale";
     isExitNode = lib.mkEnableOption "using this Tailscale node as exit node";
+    advertiseRoutes = lib.mkOption {
+      type = lib.types.str;
+      default = null;
+      description = "Routes to advertise";
+    };
   };
   config = lib.mkMerge [
     (lib.mkIf config.mollusca.isRemote {
@@ -39,7 +44,8 @@
         openFirewall = true;
         useRoutingFeatures = "server";
         authKeyFile = config.age.secrets.tailscaleKey.path;
-        extraUpFlags = ["--hostname=${config.networking.hostName}"] ++ lib.optional config.mollusca.isExitNode "--advertise-exit-node";
+        extraUpFlags = ["--hostname=${config.networking.hostName}"];
+        extraSetFlags = (lib.optional config.mollusca.isExitNode "--advertise-exit-node") ++ (lib.optional (! (builtins.isNull config.mollusca.advertiseRoutes)) "--advertise-routes=${config.mollusca.advertiseRoutes}");
       };
       networking.firewall.trustedInterfaces = [ config.services.tailscale.interfaceName ];
     })

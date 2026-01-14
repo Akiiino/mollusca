@@ -12,7 +12,8 @@
   ];
 
   mollusca.isRemote = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
+  boot.supportedFilesystems.zfs = lib.mkForce false;
   networking = {
     hostName = "mussel";
     domain = "";

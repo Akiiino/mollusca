@@ -15,11 +15,11 @@
   ];
   config = {
     # # TODO: remove if the breakage is fixed
-    # nixpkgs.overlays = [
-    #   (final: super: {
-    #     makeModulesClosure = x: super.makeModulesClosure (x // { allowMissing = true; });
-    #   })
-    # ];
+    nixpkgs.overlays = [
+      (final: super: {
+        makeModulesClosure = x: super.makeModulesClosure (x // { allowMissing = true; });
+      })
+    ];
     services.hardware.argonone.enable = true;
     boot.loader = {
       systemd-boot.enable = false;

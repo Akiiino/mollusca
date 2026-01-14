@@ -70,8 +70,6 @@
     };
   };
 
-  time.timeZone = "Europe/Berlin";
-
   mollusca = {
     gui = {
       enable = true;
@@ -102,9 +100,6 @@
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
-
-      # TODO: https://github.com/NixOS/nixos-hardware/issues/1603
-      wireplumber.extraConfig.no-ucm."monitor.alsa.properties"."alsa.use-ucm" = false;
     };
     xserver.wacom.enable = true;
     fwupd.enable = true;
@@ -141,17 +136,8 @@
   ];
 
   programs = {
-    crossmacro = {
-        enable = true;
-        users = ["akiiino"];
-    };
     steam.enable = true;
     adb.enable = true;
-    nh = {
-        enable = true;
-        clean.enable = true;
-        clean.extraArgs = "--keep-since 14d --keep 5";
-      };
   };
 
   hardware = {
@@ -164,5 +150,22 @@
       extraBackends = [ pkgs.sane-airscan ];
       disabledDefaultBackends = [ "escl" ];
     };
+  };
+
+  boot.supportedFilesystems = [ "nfs" ];
+
+  fileSystems."/mnt/media" = {
+    device = "MyCloudEX2Ultra.local:/nfs/Media";
+    fsType = "nfs";
+    options = [
+      "x-systemd.automount" # Mount on first access
+      "noauto" # Don't mount at boot
+      "x-systemd.idle-timeout=600" # Unmount after 10min idle
+      "nfsvers=3" # Use NFSv4.2 for best performance
+      "hard" # hang if NAS is unavailable
+      "timeo=50" # 5 second timeout
+      "retrans=4" # 4 retries before giving up
+      "_netdev" # Wait for network
+    ];
   };
 }

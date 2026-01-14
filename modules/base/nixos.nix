@@ -44,6 +44,13 @@
   };
   programs = {
     nix-ld.enable = true;
+    nh = {
+      enable = true;
+      clean = {
+        enable = true;
+        extraArgs = "--keep-since 14d --keep 5";
+      };
+    };
   };
   nix.nixPath = [ "nixpkgs=/run/current-system/nixpkgs" ];
   services.openssh = {

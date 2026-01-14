@@ -15,8 +15,6 @@ let
       inputstream-adaptive
       inputstreamhelper
 
-      # a4ksubtitles
-
       invidious
     ]
   );
@@ -37,19 +35,10 @@ in
     isRemote = true;
     useTailscale = true;
     isExitNode = true;
+    advertiseRoutes = "192.168.1.0/24";
     plymouth.enable = true;
     bluetooth.enable = true;
   };
-
-  programs = {
-    nh = {
-      enable = true;
-      clean.enable = true;
-      clean.extraArgs = "--keep-since 14d --keep 5";
-    };
-  };
-
-  time.timeZone = "Europe/Berlin";
 
   environment.systemPackages = with pkgs; [
     libcec
@@ -134,6 +123,11 @@ in
     };
   };
 
+  systemd.targets.sleep.enable = false;
+  systemd.targets.suspend.enable = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
+
   services = {
     fwupd.enable = true;
 
@@ -163,15 +157,6 @@ in
       alsa.support32Bit = true;
       pulse.enable = true;
       wireplumber.enable = true;
-
-      extraConfig.pipewire."10-sample-rates"."context.properties"."default.clock.allowed-rates" = [
-        44100
-        48000
-        88200
-        96000
-        176400
-        192000
-      ];
     };
 
     pinchflat = {
@@ -188,22 +173,27 @@ in
     };
   };
 
+  users.users.jellyfin = {
+    extraGroups = [ "render" "video" ];
+  };
+
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
-      intel-media-driver # VA-API driver for Tiger Lake (11th gen)
+      intel-media-driver # For Broadwell and newer (ca. 2014+)
       intel-compute-runtime # OpenCL support
       libvdpau-va-gl # VDPAU via VA-API
+      vpl-gpu-rt # something for Jellyfin
     ];
   };
 
-  environment.sessionVariables = {
-    LIBVA_DRIVER_NAME = "iHD";
-  };
+  environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
+  systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD";  # Jellyfin hardware transcoding
 
   boot.extraModprobeConfig = ''
     options snd_intel_dspcfg dsp_driver=3
-  ''; # for audio through HDMI card
+    options i915 enable_guc=2
+  ''; # for audio through HDMI card and GuC
 
   age.secrets.AmityTowerPassword.file = "${self}/secrets/AmityTower.age";
   networking = {

@@ -78,8 +78,6 @@
     };
   };
 
-  time.timeZone = "Europe/Berlin";
-
   hardware = {
     graphics = {
       enable = true;
