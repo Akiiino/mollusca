@@ -14,12 +14,17 @@
     "${toString modulesPath}/installer/sd-card/sd-image-aarch64.nix"
   ];
   config = {
-    # # TODO: remove if the breakage is fixed
+    # # TODO: https://github.com/NixOS/nixpkgs/issues/154163
     nixpkgs.overlays = [
       (final: super: {
         makeModulesClosure = x: super.makeModulesClosure (x // { allowMissing = true; });
       })
     ];
+    fileSystems."/" = {
+      device = "/dev/disk/by-label/NIXOS_SD";
+      fsType = "ext4";
+      options = [ "noatime" ];
+    };
     services.hardware.argonone.enable = true;
     boot.loader = {
       systemd-boot.enable = false;
