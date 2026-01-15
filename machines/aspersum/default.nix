@@ -18,8 +18,8 @@
   ];
 
   services.fiveETools = {
-      enable = true;
-      package = inputs'.fiveETools.packages.fiveEToolsWithImages;
+    enable = true;
+    package = inputs'.fiveETools.packages.fiveEToolsWithImages;
   };
 
   documentation.nixos = {
@@ -43,7 +43,7 @@
       # "amdgpu.sg_display=0"
       # "pcie_aspm=off"
 
-      "resume_offset=533760"  # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile
+      "resume_offset=533760" # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile
 
       "rtc_cmos.use_acpi_alarm=1"
     ];
@@ -92,8 +92,8 @@
       openFirewall = true;
     };
     printing = {
-        enable = true;
-        drivers = [self'.packages.cups-brother-dcpl3520cdw];
+      enable = true;
+      drivers = [ self'.packages.cups-brother-dcpl3520cdw ];
     };
     pipewire = {
       enable = true;

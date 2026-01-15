@@ -29,11 +29,11 @@
     defaultLocale = "en_US.UTF-8";
     extraLocales = "all";
     extraLocaleSettings = {
-      LC_NUMERIC="en_IE.UTF-8";
-      LC_TIME="en_IE.UTF-8";
-      LC_MONETARY="de_DE.UTF-8";
-      LC_PAPER="en_IE.UTF-8";
-      LC_MEASUREMENT="en_IE.UTF-8";
+      LC_NUMERIC = "en_IE.UTF-8";
+      LC_TIME = "en_IE.UTF-8";
+      LC_MONETARY = "de_DE.UTF-8";
+      LC_PAPER = "en_IE.UTF-8";
+      LC_MEASUREMENT = "en_IE.UTF-8";
     };
   };
   system = {

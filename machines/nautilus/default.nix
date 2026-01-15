@@ -114,8 +114,11 @@
 
   programs = {
     crossmacro = {
-        enable = true;
-        users = ["akiiino" "nautilus"];
+      enable = true;
+      users = [
+        "akiiino"
+        "nautilus"
+      ];
     };
     steam = {
       enable = true;

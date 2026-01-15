@@ -174,7 +174,10 @@ in
   };
 
   users.users.jellyfin = {
-    extraGroups = [ "render" "video" ];
+    extraGroups = [
+      "render"
+      "video"
+    ];
   };
 
   hardware.graphics = {
@@ -188,7 +191,7 @@ in
   };
 
   environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
-  systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD";  # Jellyfin hardware transcoding
+  systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD"; # Jellyfin hardware transcoding
 
   boot.extraModprobeConfig = ''
     options snd_intel_dspcfg dsp_driver=3

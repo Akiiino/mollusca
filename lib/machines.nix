@@ -30,7 +30,12 @@ rec {
         ++ (if os == "nixos" then [ "${self}/modules/base/nixos.nix" ] else [ ])
         ++ extraModules;
         specialArgs = {
-          inherit self self' inputs inputs';
+          inherit
+            self
+            self'
+            inputs
+            inputs'
+            ;
         };
       }
     );

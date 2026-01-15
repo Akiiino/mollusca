@@ -9,8 +9,7 @@ let
   cfg = config.mollusca.eightbitdo;
 in
 {
-  options.mollusca.eightbitdo.enable =
-    lib.mkEnableOption "full support for 8BitDo gamepads";
+  options.mollusca.eightbitdo.enable = lib.mkEnableOption "full support for 8BitDo gamepads";
   config = lib.mkIf cfg.enable {
     services.udev.extraRules = ''
       # 2.4GHz/Dongle

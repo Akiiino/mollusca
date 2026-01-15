@@ -65,7 +65,11 @@ in
       bindsTo = [ "dev-cec0.device" ];
       serviceConfig = {
         Type = "exec";
-        ExecStart = "${pkgs.v4l-utils}/bin/cec-ctl --device=0 --playback --phys-addr-from-edid-poll=/sys/class/drm/${cfg.connector}/edid" + (lib.optionalString (! (builtins.isNull cfg.osdName)) " --osd-name=${lib.escapeShellArg cfg.osdName}");
+        ExecStart =
+          "${pkgs.v4l-utils}/bin/cec-ctl --device=0 --playback --phys-addr-from-edid-poll=/sys/class/drm/${cfg.connector}/edid"
+          + (lib.optionalString (
+            !(builtins.isNull cfg.osdName)
+          ) " --osd-name=${lib.escapeShellArg cfg.osdName}");
       };
     };
   };

@@ -44,8 +44,15 @@
         openFirewall = true;
         useRoutingFeatures = "server";
         authKeyFile = config.age.secrets.tailscaleKey.path;
-        extraUpFlags = ["--hostname=${config.networking.hostName}"] ++ config.services.tailscale.extraSetFlags;
-        extraSetFlags = (lib.optional config.mollusca.isExitNode "--advertise-exit-node") ++ (lib.optional (! (builtins.isNull config.mollusca.advertiseRoutes)) "--advertise-routes=${config.mollusca.advertiseRoutes}");
+        extraUpFlags = [
+          "--hostname=${config.networking.hostName}"
+        ]
+        ++ config.services.tailscale.extraSetFlags;
+        extraSetFlags =
+          (lib.optional config.mollusca.isExitNode "--advertise-exit-node")
+          ++ (lib.optional (
+            !(builtins.isNull config.mollusca.advertiseRoutes)
+          ) "--advertise-routes=${config.mollusca.advertiseRoutes}");
         disableUpstreamLogging = true;
         disableTaildrop = true;
       };

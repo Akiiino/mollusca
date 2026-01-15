@@ -32,13 +32,14 @@
       id = 0;
       name = "akiiino";
       isDefault = true;
-      extensions.packages = with self.inputs.firefox-addons.packages."${pkgs.stdenv.hostPlatform.system}"; [
-        # TODO: save extension configs
-        keepass-helper
-        sidebery
-        ublock-origin
-        vimium
-      ];
+      extensions.packages =
+        with self.inputs.firefox-addons.packages."${pkgs.stdenv.hostPlatform.system}"; [
+          # TODO: save extension configs
+          keepass-helper
+          sidebery
+          ublock-origin
+          vimium
+        ];
       userChrome = ''
         #main-window[tabsintitlebar="true"]:not([extradragspace="true"]) #TabsToolbar > .toolbar-items {
           opacity: 0;
@@ -180,7 +181,11 @@
         force = true;
         default = "Kagi";
         privateDefault = "ddg";
-        order = ["Kagi" "Nixpkgs" "NixOS Wiki"];
+        order = [
+          "Kagi"
+          "Nixpkgs"
+          "NixOS Wiki"
+        ];
         engines = {
           "Nixpkgs" = {
             urls = [
