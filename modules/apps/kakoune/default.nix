@@ -114,8 +114,6 @@ in
       define-command undefine-command -params 1 -docstring "Undefine a command by replacing it with a hidden nop" %{
           define-command -override -hidden "%arg{1}" "nop"
       }
-
-      #set-option global rainbow_colors rgb:CC241D rgb:D65D0E rgb:98971A rgb:D79921 rgb:458588 rgb:B16286
     '';
   };
 }

@@ -11,7 +11,7 @@
     useTailscale = lib.mkEnableOption "using Tailscale";
     isExitNode = lib.mkEnableOption "using this Tailscale node as exit node";
     advertiseRoutes = lib.mkOption {
-      type = lib.types.str;
+      type = lib.types.nullOr lib.types.str;
       default = null;
       description = "Routes to advertise";
     };
@@ -35,7 +35,7 @@
       services.displayManager.hiddenUsers = [ "builder" ];
     })
 
-    (lib.mkIf (config.mollusca.isRemote && config.mollusca.useTailscale) {
+    (lib.mkIf config.mollusca.useTailscale {
       age.secrets.tailscaleKey = {
         file = "${self}/secrets/tailscale.age";
       };

@@ -9,8 +9,8 @@
 let
   kodiPackage = pkgs.kodi-gbm.withPackages (
     p: with p; [
-      # jellyfin
-      jellycon
+      jellyfin
+      # jellycon
 
       inputstream-adaptive
       inputstreamhelper

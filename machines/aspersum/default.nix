@@ -162,7 +162,7 @@
       "noauto" # Don't mount at boot
       "x-systemd.idle-timeout=600" # Unmount after 10min idle
       "nfsvers=3" # Use NFSv4.2 for best performance
-      "hard" # hang if NAS is unavailable
+      "soft" # don't hang if NAS is unavailable
       "timeo=50" # 5 second timeout
       "retrans=4" # 4 retries before giving up
       "_netdev" # Wait for network

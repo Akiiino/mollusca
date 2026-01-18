@@ -89,20 +89,21 @@
       url = "github:mawww/kakoune";
       flake = false;
     };
-
     kak-yac = {
       url = "github:Akiiino/kak-yac";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     parinfer-rust = {
       url = "github:eraserhd/parinfer-rust";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     crossmacro = {
       url = "github:alper-han/CrossMacro";
       inputs.flake-parts.follows = "flake-parts";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    microvm = {
+      url = "github:microvm-nix/microvm.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
