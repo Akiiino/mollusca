@@ -258,6 +258,29 @@ in
     ];
   };
 
-  # boot.kernelParams = [ "consoleblank=0" ];
+  powerManagement = {
+    enable = true;
+    cpuFreqGovernor = "powersave";
+  };
 
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_ENERGY_PERF_POLICY_ON_AC = "balance_power";
+      CPU_SCALING_GOVERNOR_ON_AC = "powersave";
+      CPU_BOOST_ON_AC = 0;
+      CPU_HWP_DYN_BOOST_ON_AC = 0;
+      
+      # CPU_MAX_PERF_ON_AC = 80;  # Limit to 80% of max frequency
+      
+      PLATFORM_PROFILE_ON_AC = "low-power";
+      
+      SOUND_POWER_SAVE_ON_AC = 0;
+      SOUND_POWER_SAVE_CONTROLLER = "N";
+      
+      WIFI_PWR_ON_AC = "off";
+    };
+  };
+  services.power-profiles-daemon.enable = false;
+  services.thermald.enable = true;
 }
