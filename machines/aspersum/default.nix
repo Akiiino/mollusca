@@ -68,6 +68,7 @@
         22000 # Syncthing
       ];
     };
+    networkmanager.settings.connection."wifi.tdls" = false;
   };
 
   mollusca = {
@@ -84,6 +85,7 @@
   };
 
   services = {
+    resolved.enable = true;
     power-profiles-daemon.enable = true;
     thermald.enable = true;
     avahi = {
@@ -112,9 +114,7 @@
         "2"
       ];
     };
-    opensnitch.enable = true;
   };
-  home-manager.users.akiiino.services.opensnitch-ui.enable = true;
 
   security.rtkit.enable = true;
 
