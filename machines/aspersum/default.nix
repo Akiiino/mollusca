@@ -74,7 +74,7 @@
   mollusca = {
     gui = {
       enable = true;
-      desktopEnvironment = "plasma";
+      desktopEnvironment = "niri";
     };
     isRemote = true;
     enableHM = true;

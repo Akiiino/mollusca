@@ -3,6 +3,7 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }:
 let
@@ -15,10 +16,12 @@ in
       type = lib.types.enum [
         "gnome"
         "plasma"
+        "niri"
       ];
       description = "What desktop environment to use.";
     };
   };
+
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
       {
@@ -57,6 +60,58 @@ in
         services = {
           xserver.displayManager.gdm.enable = true;
           xserver.desktopManager.gnome.enable = true;
+        };
+      })
+
+      (lib.mkIf (cfg.desktopEnvironment == "niri") {
+        nixpkgs.overlays = [ inputs.niri.overlays.niri ];
+        niri-flake.cache.enable = false;
+        programs.niri.enable = true;
+
+        services.displayManager = {
+          sddm.enable = true;
+          sddm.wayland.enable = true;
+          defaultSession = "niri";
+        };
+
+        environment.sessionVariables = {
+          NIXOS_OZONE_WL = "1";
+        };
+
+        # Essential packages for a usable niri desktop
+        environment.systemPackages = with pkgs; [
+          fuzzel
+
+          mako
+
+          swaylock
+          swayidle
+
+          waybar
+
+          xwayland-satellite
+
+          kdePackages.dolphin
+
+          brightnessctl
+
+          adwaita-icon-theme
+          gnome-themes-extra
+        ];
+
+        security.polkit.enable = true;
+        systemd.user.services.polkit-agent = {
+          description = "Polkit Authentication Agent";
+          wantedBy = [ "graphical-session.target" ];
+          wants = [ "graphical-session.target" ];
+          after = [ "graphical-session.target" ];
+          serviceConfig = {
+            Type = "simple";
+            ExecStart = "${pkgs.lxqt.lxqt-policykit}/bin/lxqt-policykit-agent";
+            Restart = "on-failure";
+            RestartSec = 1;
+            TimeoutStopSec = 10;
+          };
         };
       })
     ]
