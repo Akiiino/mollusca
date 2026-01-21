@@ -12,6 +12,7 @@
     self.inputs.home-manager.nixosModules.default
     self.inputs.crossmacro.nixosModules.default
     self.inputs.disko.nixosModules.disko
+    self.inputs.niri.nixosModules.niri
 
     "${self}/modules/mollusca"
   ];
