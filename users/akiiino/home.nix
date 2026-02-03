@@ -57,16 +57,24 @@
     zsh.enable = true;
     fzf.enable = true;
   };
+  services.swayosd = {
+    enable = true;
+    topMargin = 0.75;
+  };
+  services.blueman-applet.enable = true;
+  services.playerctld.enable = true;
+
   programs.niri.settings = {
+    prefer-no-csd = true;
     input = {
       focus-follows-mouse = {
         enable = true;
-        max-scroll-amount = "50%";
+        max-scroll-amount = "10%";
       };
       keyboard.xkb = {
         layout = "eu,ru";
         variant = ",mac";
-        options = "grp:win_space_toggle";
+        # options = "grp:win_space_toggle";
         # options = "ctrl:nocaps";
       };
       
@@ -74,6 +82,7 @@
         tap = true;
         natural-scroll = true;
         dwt = false;
+        click-method = "clickfinger";
       };
     };
 
@@ -83,6 +92,7 @@
       # TODO: replace with pkgs.*
       { command = [ "waybar" ]; }
       { command = [ "mako" ]; }
+      { command = [ "nm-applet" "--indicator" ]; }
       # { command = [ "swaybg" "-i" "/path/to/wallpaper.jpg" ]; }
     ];
 
@@ -152,34 +162,50 @@
   
       # Example volume keys mappings for PipeWire & WirePlumber.
       # The allow-when-locked=true property makes them work even when the session is locked.
-      # Using spawn-sh allows to pass multiple arguments together with the command.
       "XF86AudioRaiseVolume" = {
-          allow-when-locked=true;
-          action.spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"];
+        allow-when-locked = true;
+        action.spawn = ["swayosd-client" "--output-volume" "raise"];
       };
       "XF86AudioLowerVolume" = {
-          allow-when-locked=true;
-          action.spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"];
+        allow-when-locked = true;
+        action.spawn = ["swayosd-client" "--output-volume" "lower"];
       };
       "XF86AudioMute" = {
-          allow-when-locked=true;
-          action.spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
+        allow-when-locked = true;
+        action.spawn = ["swayosd-client" "--output-volume" "mute-toggle"];
       };
       "XF86AudioMicMute" = {
-          allow-when-locked=true;
-          action.spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"];
+        allow-when-locked = true;
+        action.spawn = ["swayosd-client" "--input-volume" "mute-toggle"];
       };
-  
-      # Example brightness key mappings for brightnessctl.
-      # You can use regular spawn with multiple arguments too (to avoid going through "sh"),
-      # but you need to manually put each argument in separate "" quotes.
       "XF86MonBrightnessUp" = {
-          allow-when-locked=true;
-          action.spawn = ["brightnessctl" "--class=backlight" "set" "+10%"];
+        allow-when-locked = true;
+        action.spawn = ["swayosd-client" "--brightness" "raise"];
       };
       "XF86MonBrightnessDown" = {
-          allow-when-locked=true;
-          action.spawn = ["brightnessctl" "--class=backlight" "set" "10%-"];
+        allow-when-locked = true;
+        action.spawn = ["swayosd-client" "--brightness" "lower"];
+      };
+
+      "XF86AudioPlay" = {
+        allow-when-locked = true;
+        action.spawn = ["playerctl" "play-pause"];
+      };
+      "XF86AudioPause" = {
+        allow-when-locked = true;
+        action.spawn = ["playerctl" "pause"];
+      };
+      "XF86AudioNext" = {
+        allow-when-locked = true;
+        action.spawn = ["playerctl" "next"];
+      };
+      "XF86AudioPrev" = {
+        allow-when-locked = true;
+        action.spawn = ["playerctl" "previous"];
+      };
+      "XF86AudioStop" = {
+        allow-when-locked = true;
+        action.spawn = ["playerctl" "stop"];
       };
   
       # Open/close the Overview: a zoomed-out view of workspaces and windows.
@@ -403,7 +429,7 @@
       # a matching layout switch hotkey configured in xkb options above.
       # Having both at once on the same hotkey will break the switching,
       # since it will switch twice upon pressing the hotkey (once by xkb, once by niri).
-      # Mod+Space       { switch-layout "next"; }
+      "Mod+Space".action.switch-layout  = "next";
       # Mod+Shift+Space { switch-layout "prev"; }
   
       "Print".action.screenshot = {};
@@ -438,6 +464,19 @@
         matches = [{ app-id = "^firefox$"; title = "^Picture-in-Picture$"; }];
         open-floating = true;
       }
+      {
+        matches = [{ app-id = "^steam$"; }];
+        default-column-width = {};  # TODO: maybe unnecessary?
+      }
+      {
+        matches = [{ app-id = "^steam$"; title = "^notificationtoasts_.*_desktop$"; }];
+        default-floating-position = {
+          x = 10;
+          y = 10;
+          relative-to = "bottom-right";
+        };
+      }
+
     ];
   };
 

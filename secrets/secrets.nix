@@ -18,4 +18,8 @@ in
     nautilus
     actinella
   ];
+  "actinella-backup.age".publicKeys = [
+    akiiino
+    actinella
+  ];
 }

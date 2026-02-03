@@ -22,11 +22,11 @@
     package = inputs'.fiveETools.packages.fiveEToolsWithImages;
   };
 
-  documentation.nixos = {
-    enable = true;
-    options.warningsAreErrors = false;
-    includeAllModules = true;
-  };
+  # documentation.nixos = {
+  #   enable = true;
+  #   options.warningsAreErrors = false;
+  #   includeAllModules = true;
+  # };
 
   users.users.akiiino = {
     extraGroups = [ "adbusers" ];
@@ -39,8 +39,8 @@
 
     resumeDevice = "/dev/disk/by-label/CRYPTED";
     kernelParams = [
-      # "amdgpu.dcdebugmask=0x410"  # remove if flicker persists
-      # "amdgpu.sg_display=0"
+      "amdgpu.dcdebugmask=0x410"  # possibly actually helps with crashes?
+      # "amdgpu.sg_display=0"  # possibly helps against crashes with external display connected  # nope
       # "pcie_aspm=off"
 
       "resume_offset=533760" # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile

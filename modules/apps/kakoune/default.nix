@@ -91,6 +91,8 @@ in
       set-option -add global ui_options terminal_set_title=true
 
       yac-enable
+      set-option global yac_push_command "${lib.getExe' pkgs.wl-clipboard "wl-copy"} &> /dev/null"
+      set-option global yac_pull_command "${lib.getExe' pkgs.wl-clipboard "wl-paste"}"
 
       define-command -docstring "Prepare windows for IDE mode" ide %{
           rename-client main

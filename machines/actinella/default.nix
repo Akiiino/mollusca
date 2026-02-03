@@ -128,6 +128,8 @@ in
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
 
+  age.secrets.actinella-backup.file = "${self}/secrets/actinella-backup.age";
+
   services = {
     fwupd.enable = true;
 
@@ -161,7 +163,7 @@ in
 
     pinchflat = {
       enable = true;
-      mediaDir = "/var/lib/pinchflat/media";
+      mediaDir = "/mnt/media/YouTube/";
       port = 8945;
       openFirewall = true;
       selfhosted = true;
@@ -170,6 +172,44 @@ in
     jellyfin = {
       enable = true;
       openFirewall = true;
+    };
+
+    borgbackup.jobs.var-backup = {
+      paths = [ "/var" ];
+      repo = "/mnt/backups/actinella/var";
+
+      encryption = {
+        mode = "repokey-blake2";
+        passCommand = "cat ${config.age.secrets.actinella-backup.path}";
+      };
+
+      compression = "auto,zstd";
+
+      prune.keep = {
+        hourly = 24;
+        daily = 7;
+        weekly = -1;  # -1 means unlimited
+      };
+
+      startAt = "hourly";
+
+      exclude = [
+        "/var/cache"
+        "/var/tmp"
+        "/var/log/journal"
+      ];
+
+      extraCreateArgs = [
+        "--stats"
+        "--checkpoint-interval" "600"
+      ];
+
+      preHook = ''
+        if ! ls /mnt/backups >/dev/null 2>&1; then
+          echo "Backup destination not available"
+          exit 1
+        fi
+      '';
     };
   };
 
@@ -250,8 +290,22 @@ in
       "x-systemd.automount" # Mount on first access
       "noauto" # Don't mount at boot
       "x-systemd.idle-timeout=600" # Unmount after 10min idle
-      "nfsvers=3" # Use NFSv4.2 for best performance
+      "nfsvers=3"
       "hard" # hang if NAS is unavailable
+      "timeo=50" # 5 second timeout
+      "retrans=4" # 4 retries before giving up
+      "_netdev" # Wait for network
+    ];
+  };
+  fileSystems."/mnt/backups" = {
+    device = "MyCloudEX2Ultra.local:/nfs/Backups";
+    fsType = "nfs";
+    options = [
+      "x-systemd.automount" # Mount on first access
+      "noauto" # Don't mount at boot
+      "x-systemd.idle-timeout=600" # Unmount after 10min idle
+      "nfsvers=3"
+      "soft" # don't hang if NAS is unavailable
       "timeo=50" # 5 second timeout
       "retrans=4" # 4 retries before giving up
       "_netdev" # Wait for network

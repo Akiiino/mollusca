@@ -77,9 +77,15 @@ in
         environment.sessionVariables = {
           NIXOS_OZONE_WL = "1";
         };
+        services.udev.packages = [ pkgs.swayosd ];
+        services.blueman.enable = true;
+        services.upower.enable = true;
 
         # Essential packages for a usable niri desktop
         environment.systemPackages = with pkgs; [
+          networkmanagerapplet
+          playerctl
+          pavucontrol
           fuzzel
 
           mako
@@ -91,9 +97,7 @@ in
 
           xwayland-satellite
 
-          kdePackages.dolphin
-
-          brightnessctl
+          nautilus
 
           adwaita-icon-theme
           gnome-themes-extra
