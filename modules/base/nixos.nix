@@ -6,7 +6,6 @@
 }:
 {
   imports = [
-    self.inputs.nixos-generators.nixosModules.all-formats
     self.inputs.mollusca-secrets.nixosModules.secrets
     self.inputs.agenix.nixosModules.default
     self.inputs.home-manager.nixosModules.default
@@ -17,6 +16,7 @@
     "${self}/modules/mollusca"
   ];
 
+  niri-flake.cache.enable = false;
   boot = {
     tmp.cleanOnBoot = true;
     loader = {

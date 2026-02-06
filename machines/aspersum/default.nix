@@ -102,6 +102,7 @@
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
+      wireplumber.extraConfig.no-ucm."monitor.alsa.properties"."alsa.use-ucm" = false;
     };
     xserver.wacom.enable = true;
     fwupd.enable = true;

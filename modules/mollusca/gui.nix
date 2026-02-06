@@ -65,7 +65,6 @@ in
 
       (lib.mkIf (cfg.desktopEnvironment == "niri") {
         nixpkgs.overlays = [ inputs.niri.overlays.niri ];
-        niri-flake.cache.enable = false;
         programs.niri.enable = true;
 
         services.displayManager = {

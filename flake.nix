@@ -26,10 +26,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     mac-app-util = {
       url = "github:hraban/mac-app-util";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -145,6 +141,9 @@
             mussel = {
               system = "aarch64-linux";
             };
+            entovalva = {
+              system = "aarch64-linux";
+            };
           };
         };
 
@@ -164,6 +163,7 @@
             devShells.default = import "${self}/devshell.nix" { inherit pkgs inputs'; };
             packages = {
               # musselSD = self.nixosConfigurations.mussel.config.formats.sd-aarch64;
+              entovalvaSD = self.nixosConfigurations.entovalva.config.system.build.images.sd-card;
               nixos-manual = self.nixosConfigurations.aspersum.config.system.build.manual.manualHTML;
               cups-brother-dcpl3520cdw = pkgs.callPackage ./packages/cups-brother-dcpl3520cdw.nix { };
             };
