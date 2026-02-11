@@ -6,29 +6,13 @@
   inputs,
   ...
 }:
-let
-  kodiPackage = pkgs.kodi-gbm.withPackages (
-    p: with p; [
-      jellyfin
-      # jellycon
-
-      inputstream-adaptive
-      inputstreamhelper
-
-      invidious
-    ]
-  );
-  librespotWithAvahi = pkgs.librespot.override {
-    withAvahi = true;
-    withMDNS = false;
-  };
-in
 {
   imports = [
     inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
     inputs.home-manager.nixosModules.home-manager
     ./hardware-configuration.nix
     ./disko.nix
+    ./tv-filter.nix
   ];
 
   mollusca = {
@@ -36,14 +20,8 @@ in
     useTailscale = true;
     isExitNode = true;
     advertiseRoutes = "192.168.1.0/24";
-    plymouth.enable = true;
     bluetooth.enable = true;
   };
-
-  environment.systemPackages = with pkgs; [
-    libcec
-    kodiPackage
-  ];
 
   users.users.actinella = {
     isNormalUser = true;
@@ -51,7 +29,6 @@ in
     extraGroups = [
       "audio"
       "video"
-      "input" # kodi-gbm keyboard/remote input
       "render" # GPU acceleration
     ];
     openssh.authorizedKeys.keys = [
@@ -60,86 +37,10 @@ in
     ];
   };
 
-  home-manager.users.actinella =
-    { pkgs, ... }:
-    {
-      home.stateVersion = "25.11";
-
-      programs.kodi = {
-        enable = true;
-        package = kodiPackage;
-
-        settings = {
-          services = {
-            devicename = "actinella";
-
-            webserver = "true";
-            webserverport = "8080";
-            webserverusername = "kodi";
-            webserverpassword = "kodi";
-
-            esallinterfaces = "true";
-            esenabled = "true";
-          };
-
-          general = {
-            addonupdates = "2";
-            addonnotifications = "false";
-          };
-
-          videolibrary = {
-            showemptytvshows = "true";
-            cleanonupdate = "true";
-          };
-
-          locale = {
-            timezonecountry = "Germany";
-            timezone = "Europe/Berlin";
-          };
-        };
-      };
-    };
-
-  systemd.user.services.librespot = {
-    description = "Librespot Spotify Connect";
-    wantedBy = [ "default.target" ];
-    after = [
-      "pipewire.service"
-      "pulseaudio.service"
-    ];
-    serviceConfig = {
-      ExecStart = builtins.concatStringsSep " " [
-        "${librespotWithAvahi}/bin/librespot"
-        "--name 'actinella'"
-        "--bitrate 320"
-        "--backend pulseaudio"
-        "--zeroconf-port 5354"
-        "--device-type speaker"
-        "--initial-volume 100"
-        "--zeroconf-backend avahi"
-      ];
-      Restart = "always";
-      RestartSec = 5;
-    };
-  };
-
-  systemd.targets.sleep.enable = false;
-  systemd.targets.suspend.enable = false;
-  systemd.targets.hibernate.enable = false;
-  systemd.targets.hybrid-sleep.enable = false;
-
   age.secrets.actinella-backup.file = "${self}/secrets/actinella-backup.age";
 
   services = {
     fwupd.enable = true;
-
-    greetd = {
-      enable = true;
-      settings.default_session = {
-        command = lib.getExe' kodiPackage "kodi-standalone";
-        user = "actinella";
-      };
-    };
 
     avahi = {
       enable = true;
@@ -153,12 +54,76 @@ in
       };
     };
 
-    pipewire = {
+    coredns = {
       enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-      wireplumber.enable = true;
+      config = ''
+        . {
+          bind 127.0.0.1 192.168.1.101
+          hosts ${self.inputs.stevenBlackHosts}/hosts {
+            192.168.1.204 valetudo.akiiino.me
+            192.168.1.101 akiiino.me
+            fallthrough
+          }
+          # Cloudflare Forwarding
+          forward . 1.1.1.1 1.0.0.1
+          cache
+        }
+      '';
+    };
+
+    hostapd = {
+      enable = true;
+      radios.wlp170s0 = {
+        band = "2g";
+        channel = 11;
+        wifi4.enable = true;
+
+        networks.wlp170s0 = {
+          ssid = "0ct0ptic0n";
+          authentication = {
+            mode = "wpa2-sha256";
+            wpaPassword = "asynchronous rondo";  # or use wpaPasswordFile
+          };
+          # ignoreBroadcastSsid = "empty";
+        };
+      };
+    };
+
+    tvFilter = {
+      enable = true;
+      tvInterface  = "wlp170s0";
+      wanInterface = "enp0s13f0u3u1";
+      upstreamDNS = "127.0.0.1";
+  
+      allowedDomains = [
+        # Spotify
+        "spotify.com"
+        "spotify.net"
+        "spotifycdn.com"
+        "scdn.co"
+        "audio-ak-spotify-com.akamaized.net"
+  
+        # # YouTube
+        # "youtube.com"
+        # "googlevideo.com"
+        # "ytimg.com"
+        # "ggpht.com"
+        # "googleapis.com"
+        # "gstatic.com"
+        # "google.com"
+  
+        # # Google Play
+        # "play-lh.googleusercontent.com"
+  
+        # NTP
+        "pool.ntp.org"
+      ];
+  
+      allowedIPv4s = [
+        # "8.8.8.8"
+        # "8.8.4.4"
+        "192.168.1.0/24"
+      ];
     };
 
     pinchflat = {
@@ -213,12 +178,10 @@ in
     };
   };
 
-  users.users.jellyfin = {
-    extraGroups = [
-      "render"
-      "video"
-    ];
-  };
+  users.users.jellyfin.extraGroups = [
+    "render"
+    "video"
+  ];
 
   hardware.graphics = {
     enable = true;
@@ -230,56 +193,30 @@ in
     ];
   };
 
-  environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
+  environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD"; # Jellyfin hardware transcoding
   systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD"; # Jellyfin hardware transcoding
 
-  boot.extraModprobeConfig = ''
-    options snd_intel_dspcfg dsp_driver=3
-    options i915 enable_guc=2
-  ''; # for audio through HDMI card and GuC
-
-  age.secrets.AmityTowerPassword.file = "${self}/secrets/AmityTower.age";
   networking = {
     hostName = "actinella";
     firewall = {
       enable = true;
       allowedTCPPorts = [
-        5354 # librespot
-        8080 # Kodi web interface
-        9090 # Kodi JSON-RPC
+        53 # DNS
+        80 # nginx
       ];
       allowedUDPPorts = [
+        53 # DNS
         5353 # mDNS (Avahi)
-        8080 # Kodi EventServer
       ];
     };
-    networkmanager = {
-      enable = true;
-      ensureProfiles = {
-        environmentFiles = [ config.age.secrets.AmityTowerPassword.path ];
-        profiles = {
-          home-wifi = {
-            connection = {
-              id = "Amity Tower";
-              type = "wifi";
-              autoconnect = true;
-            };
-            wifi = {
-              ssid = "Amity Tower";
-              mode = "infrastructure";
-            };
-            wifi-security = {
-              auth-alg = "open";
-              key-mgmt = "wpa-psk";
-              psk = "$PASSWORD";
-            };
-            ipv4.method = "auto";
-            ipv6.method = "auto";
-          };
-        };
-      };
-    };
+    # wireless.enable = false;
+    # networkmanager.unmanaged = [ "wlan0" ];
   };
+
+  hardware.wirelessRegulatoryDatabase = true;
+  boot.extraModprobeConfig = ''
+    options cfg80211 ieee80211_regdom="DE"
+  '';
 
   boot.supportedFilesystems = [ "nfs" ];
 

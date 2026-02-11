@@ -32,21 +32,6 @@
         userServices = true;
       };
     };
-    coredns = {
-      enable = true;
-      config = ''
-        . {
-          hosts ${self.inputs.stevenBlackHosts}/hosts {
-            192.168.1.200 valetudo.akiiino.me
-            192.168.1.15 akiiino.me
-            fallthrough
-          }
-          # Cloudflare Forwarding
-          forward . 1.1.1.1 1.0.0.1
-          cache
-        }
-      '';
-    };
     nginx = {
       enable = true;
       recommendedGzipSettings = true;
