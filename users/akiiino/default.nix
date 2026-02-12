@@ -29,7 +29,6 @@
           "${self}/modules/apps/direnv.nix"
           "${self}/modules/apps/firefox"
           "${self}/modules/apps/git.nix"
-          "${self}/modules/apps/gnome.nix"
           "${self}/modules/apps/kakoune"
           "${self}/modules/apps/kitty.nix"
           "${self}/modules/apps/starship.nix"

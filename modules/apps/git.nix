@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }:
 {
@@ -16,7 +17,7 @@
           "! f() { ONTO=$1 BRANCH=\${2:-$(git branch --show-current)} FROM=\${3:-$(git remote-main)}; git rebase --onto $ONTO $(git merge-base $FROM $BRANCH) $BRANCH; }; f";
       };
       user = {
-        email = "git@akiiino.me";
+        email = inputs.mollusca-secrets.secrets.gitEmail;
         name = "akiiino";
       };
       gitsh.historyFile = config.xdg.stateHome + "/gitsh/history";

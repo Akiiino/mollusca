@@ -6,6 +6,6 @@
     ./logitech.nix
     ./8bitdo.nix
     ./bluetooth.nix
-    ./cec.nix
+    ./tv-filter.nix
   ];
 }

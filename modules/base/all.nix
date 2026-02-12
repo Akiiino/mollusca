@@ -1,6 +1,7 @@
 {
   self,
   pkgs,
+  inputs,
   inputs',
   ...
 }:
@@ -28,7 +29,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = { inherit self inputs'; };
+    extraSpecialArgs = { inherit self inputs inputs'; };
     backupFileExtension = "backup";
   };
 

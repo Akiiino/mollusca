@@ -36,9 +36,7 @@
     })
 
     (lib.mkIf config.mollusca.useTailscale {
-      age.secrets.tailscaleKey = {
-        file = "${self}/secrets/tailscale.age";
-      };
+      age.secrets.tailscaleKey.file = "${self}/secrets/tailscale.age";
       services.tailscale = {
         enable = true;
         openFirewall = true;

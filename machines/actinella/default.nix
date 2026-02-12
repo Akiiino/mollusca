@@ -9,10 +9,8 @@
 {
   imports = [
     inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
-    inputs.home-manager.nixosModules.home-manager
     ./hardware-configuration.nix
     ./disko.nix
-    ./tv-filter.nix
   ];
 
   mollusca = {

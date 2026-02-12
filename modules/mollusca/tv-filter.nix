@@ -5,9 +5,9 @@
 # to the Pi; the Pi connects to the internet via Wi-Fi.  Only explicitly
 # allowlisted domains and IPs are reachable from the TV.
 #
-# ┌────┐  ethernet   ┌─────────────┐  wi-fi   ┌──────────┐
-# │ TV ├────────────►│ Raspberry Pi ├─────────►│ Internet │
-# └────┘  (tvIface)  └─────────────┘ (wanIface)└──────────┘
+# ┌────┐  ethernet   ┌──────────────┐  wi-fi       ┌──────────┐
+# │ TV ├────────────►│ Raspberry Pi ├─────────────►│ Internet │
+# └────┘  (tvIface)  └──────────────┘  (wanIface)  └──────────┘
 #
 # Architecture
 # ────────────

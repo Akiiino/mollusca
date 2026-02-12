@@ -14,7 +14,6 @@ in
     enable = lib.mkEnableOption "GUI";
     desktopEnvironment = lib.mkOption {
       type = lib.types.enum [
-        "gnome"
         "plasma"
         "niri"
       ];
@@ -54,13 +53,6 @@ in
           konsole
           elisa
         ];
-      })
-
-      (lib.mkIf (cfg.desktopEnvironment == "gnome") {
-        services = {
-          xserver.displayManager.gdm.enable = true;
-          xserver.desktopManager.gnome.enable = true;
-        };
       })
 
       (lib.mkIf (cfg.desktopEnvironment == "niri") {

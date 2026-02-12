@@ -6,6 +6,4 @@ let
 in
 {
   inherit (machines) mkNixOSMachines mkDarwinMachines;
-  inherit (utils) takeLast removePrefixOrThrow;
-  inherit (networking) mkProxy mkVirtualHost mkCifs;
 }
