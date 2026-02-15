@@ -70,7 +70,9 @@ in
         };
         services.udev.packages = [ pkgs.swayosd ];
         services.blueman.enable = true;
-        services.upower.enable = true;
+
+        services.udisks2.enable = true;  # USB automount
+        services.gvfs.enable = true;  # MTP, smb://, trash://, etc.
 
         # Essential packages for a usable niri desktop
         environment.systemPackages = with pkgs; [
@@ -89,10 +91,28 @@ in
           xwayland-satellite
 
           nautilus
+          # cinnamon.nemo-with-extensions  # file browser
 
           adwaita-icon-theme
           gnome-themes-extra
         ];
+        services.tumbler.enable = true;  # thumbnailer
+        xdg.portal.config.common."org.freedesktop.impl.portal.FileChooser" = "gtk";
+        services.upower = {
+          enable = true;
+          criticalPowerAction = "Hibernate";
+          percentageLow = 15;
+          percentageCritical = 10;
+          percentageAction = 5;
+        };
+        # TODO
+        # services.logind = {
+        #   lidSwitch = "suspend-then-hibernate";
+        # };
+        # systemd.sleep.extraConfig = ''
+        #   HibernateDelaySec=30m
+        #   SuspendState=mem
+        # '';
 
         security.polkit.enable = true;
         systemd.user.services.polkit-agent = {

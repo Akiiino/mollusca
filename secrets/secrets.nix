@@ -15,4 +15,8 @@ in
     akiiino
     actinella
   ];
+  "proton-wireguard.age".publicKeys = [
+    akiiino
+    actinella
+  ];
 }

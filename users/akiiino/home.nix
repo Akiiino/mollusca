@@ -64,6 +64,35 @@
   services.blueman-applet.enable = true;
   services.playerctld.enable = true;
 
+  services.udiskie = {  # USB automount
+    enable = true;
+    tray = "auto";
+  };
+
+  services.swayidle = {  # timed sleep
+    enable = true;
+    events = [
+      { event = "before-sleep"; command = "${pkgs.swaylock}/bin/swaylock -f"; }
+      { event = "lock";         command = "${pkgs.swaylock}/bin/swaylock -f"; }
+    ];
+    timeouts = [
+      # TODO
+      # {
+      #   timeout = 300;   # 5 minutes
+      #   command = "${pkgs.brightnessctl}/bin/brightnessctl -s set 10%";
+      #   resumeCommand = "${pkgs.brightnessctl}/bin/brightnessctl -r";
+      # }
+      # {
+      #   timeout = 600;   # 10 minutes
+      #   command = "${pkgs.swaylock}/bin/swaylock -f";
+      # }
+      # {
+      #   timeout = 900;   # 15 minutes
+      #   command = "systemctl suspend";
+      # }
+    ];
+  };
+
   programs.niri.settings = {
     prefer-no-csd = true;
     input = {

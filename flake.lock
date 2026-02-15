@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "WG-jail": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1770998773,
+        "narHash": "sha256-XJwZgKtwGCHwJ2NMKT9bBH1WjmjVybw8HdlJ8qwfqhU=",
+        "path": "/home/akiiino/WG-jail/",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/akiiino/WG-jail/",
+        "type": "path"
+      }
+    },
     "agenix": {
       "inputs": {
         "darwin": [
@@ -650,6 +667,7 @@
     },
     "root": {
       "inputs": {
+        "WG-jail": "WG-jail",
         "agenix": "agenix",
         "arkenfox": "arkenfox",
         "autoraise": "autoraise",

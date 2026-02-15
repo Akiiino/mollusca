@@ -9,6 +9,8 @@
 {
   imports = [
     inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
+    inputs.WG-jail.nixosModules.default
+    ./transmission.nix
     ./hardware-configuration.nix
     ./disko.nix
   ];
@@ -19,20 +21,6 @@
     isExitNode = true;
     advertiseRoutes = "192.168.1.0/24";
     bluetooth.enable = true;
-  };
-
-  users.users.actinella = {
-    isNormalUser = true;
-    password = "";
-    extraGroups = [
-      "audio"
-      "video"
-      "render" # GPU acceleration
-    ];
-    openssh.authorizedKeys.keys = [
-      (builtins.readFile "${self}/secrets/keys/akiiino.pub")
-      (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
-    ];
   };
 
   age.secrets.actinella-backup.file = "${self}/secrets/actinella-backup.age";
@@ -197,7 +185,6 @@
   networking = {
     hostName = "actinella";
     firewall = {
-      enable = true;
       allowedTCPPorts = [
         53 # DNS
         80 # nginx
@@ -207,14 +194,7 @@
         5353 # mDNS (Avahi)
       ];
     };
-    # wireless.enable = false;
-    # networkmanager.unmanaged = [ "wlan0" ];
   };
-
-  hardware.wirelessRegulatoryDatabase = true;
-  boot.extraModprobeConfig = ''
-    options cfg80211 ieee80211_regdom="DE"
-  '';
 
   boot.supportedFilesystems = [ "nfs" ];
 
