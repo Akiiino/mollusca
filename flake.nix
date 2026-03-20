@@ -40,6 +40,16 @@
       };
       inputs.treefmt-nix.follows = "";
     };
+    nixos-anywhere = {  # only here to make it work with mini-agenix
+      url = "github:nix-community/nixos-anywhere";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.disko.follows = "disko";
+      inputs.flake-parts.follows = "flake-parts";
+      inputs.nixos-stable.follows = "nixpkgs";
+      inputs.nixos-images.follows = "nixpkgs";  # never evaluated
+      inputs.nix-vm-test.follows = "nixpkgs";   # never evaluated
+      inputs.treefmt-nix.follows = "nixpkgs";   # conditional check fails gracefully
+    };
 
     # Secrets
     agenix = {
