@@ -18,7 +18,7 @@
   ];
 
   services.fiveETools = {
-    enable = true;
+    enable = false;
     package = inputs'.fiveETools.packages.fiveEToolsWithImages;
   };
 
@@ -33,13 +33,21 @@
     hashedPassword = "$6$nwRe8GAT99X9XVMD$EI8wRSBQF.zw6Evh7UVFKxfu/K9v2.i4hb1unxSnf26e50glpz6SkuVR9MQYr7/m.1IqgrstKvnPAVPa1i/JB0";
   };
 
+  # boot.crashDump.enable = true;  # TODO: remove after kernel panic debugged
+  # boot.kernel.sysctl = {  # TODO: remove after kernel panic debugged
+  #   "kernel.panic_on_oops" = 1;
+  #   "kernel.hung_task_panic" = 1;
+  #   "kernel.softlockup_panic" = 1;
+  #   "kernel.hardlockup_panic_on_detect" = 1;  # newer kernels
+  # };
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     binfmt.emulatedSystems = [ "aarch64-linux" ];
 
     resumeDevice = "/dev/disk/by-label/CRYPTED";
     kernelParams = [
-      "amdgpu.dcdebugmask=0x410"  # possibly actually helps with crashes?
+      "amdgpu.dcdebugmask=0x410"  # possibly actually helps with crashes?  # looks like
+      "amdgpu.cwsr_enable=0"      # fix MES load on resume, possibly
       # "amdgpu.sg_display=0"  # possibly helps against crashes with external display connected  # nope
       # "pcie_aspm=off"
 

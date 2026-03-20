@@ -17,12 +17,11 @@
       obsidian
       dolphin-emu
       vlc
-      libreoffice
+      # libreoffice
       shotwell
       gyre-fonts
       localsend
       openscad-unstable
-      freecad-wayland
       prusa-slicer
       thunderbird
 

@@ -8,13 +8,14 @@
   imports = [
     self.inputs.agenix.nixosModules.default
     self.inputs.home-manager.nixosModules.default
-    self.inputs.crossmacro.nixosModules.default
     self.inputs.disko.nixosModules.disko
     self.inputs.niri.nixosModules.niri
+    self.inputs.mini-agenix.nixosModules.mini-agenix
 
     "${self}/modules/mollusca"
   ];
 
+  mini-agenix.enable = true;
   niri-flake.cache.enable = false;
   boot = {
     tmp.cleanOnBoot = true;
@@ -52,7 +53,6 @@
       };
     };
   };
-  nix.nixPath = [ "nixpkgs=/run/current-system/nixpkgs" ];
   services.openssh = {
     settings = {
       PasswordAuthentication = lib.mkForce false;

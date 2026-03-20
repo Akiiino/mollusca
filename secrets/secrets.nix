@@ -19,4 +19,7 @@ in
     akiiino
     actinella
   ];
+  "minor-secrets.age".publicKeys = [
+    akiiino
+  ];
 }

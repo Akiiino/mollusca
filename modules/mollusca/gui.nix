@@ -39,6 +39,11 @@ in
           };
         };
         networking.networkmanager.enable = true;
+        fonts.packages = [
+          pkgs.fira-code
+          pkgs.nerd-fonts.hack
+          pkgs.iosevka
+        ];
       }
 
       (lib.mkIf (cfg.desktopEnvironment == "plasma") {

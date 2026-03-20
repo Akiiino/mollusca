@@ -48,8 +48,8 @@
       inputs.darwin.follows = "darwin";
       inputs.home-manager.follows = "home-manager";
     };
-    mollusca-secrets = {
-      url = "git+ssh://git@github.com/Akiiino/mollusca-secrets.git";
+    mini-agenix = {
+      url = "github:akiiino/mini-agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -95,15 +95,6 @@
     };
     parinfer-rust = {
       url = "github:eraserhd/parinfer-rust";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    crossmacro = {
-      url = "github:alper-han/CrossMacro";
-      inputs.flake-parts.follows = "flake-parts";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    microvm = {
-      url = "github:microvm-nix/microvm.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     niri = {

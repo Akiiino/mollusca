@@ -1,1 +1,3 @@
-_: [ ]
+_: [
+  (import ./gamescope.nix)
+]

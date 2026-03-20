@@ -13,6 +13,11 @@ pkgs.mkShell {
     nix-prefetch-scripts
     inputs'.agenix.packages.agenix
     inputs'.gitsh.packages.gitsh
+    inputs'.mini-agenix.packages.mini-agenix
     nh
+    nix
+    age
   ];
+
+  NIX_CONFIG = "plugin-files = ${inputs'.mini-agenix.packages.mini-agenix}/lib/libmini_agenix.so";
 }

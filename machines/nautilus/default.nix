@@ -20,12 +20,14 @@
     "${self}/users/akiiino"
     "${self}/users/rinkaru"
     ./bigscreen.nix
+    # ./formovie-theater-fix.nix
+    ./ftfix.nix
   ];
 
   boot = {
     kernelParams = [ "amd_pstate=active" ];
     binfmt.emulatedSystems = [ "aarch64-linux" ];
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_6_12;
   };
 
   powerManagement.cpuFreqGovernor = "performance";
@@ -96,7 +98,17 @@
 
       nvidiaSettings = true;
       powerManagement.enable = true;
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
+      #package = config.boot.kernelPackages.nvidiaPackages.stable;
+      # TODO: remove after https://github.com/ValveSoftware/gamescope/issues/1964 is fixed
+      # or >580 is available
+      package = config.boot.kernelPackages.nvidiaPackages.mkDriver {  
+        version = "575.64.05";
+        sha256_64bit = "sha256-hfK1D5EiYcGRegss9+H5dDr/0Aj9wPIJ9NVWP3dNUC0=";
+        sha256_aarch64 = "sha256-GRE9VEEosbY7TL4HPFoyo0Ac5jgBHsZg9sBKJ4BLhsA=";
+        openSha256 = "sha256-mcbMVEyRxNyRrohgwWNylu45vIqF+flKHnmt47R//KU=";
+        settingsSha256 = "sha256-o2zUnYFUQjHOcCrB0w/4L6xI1hVUXLAWgG2Y26BowBE=";
+        persistencedSha256 = "sha256-2g5z7Pu8u2EiAh5givP5Q1Y4zk4Cbb06W37rf768NFU=";
+      };
     };
   };
 
@@ -112,19 +124,19 @@
     displayManager.autoLogin.user = "nautilus";
   };
 
-  programs = {
-    crossmacro = {
-      enable = true;
-      users = [
-        "akiiino"
-        "nautilus"
-      ];
-    };
-    steam = {
-      enable = true;
-      remotePlay.openFirewall = true;
-    };
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
   };
+  programs.steam.gamescopeSession = {
+    enable = true;
+  };
+  programs.gamescope = {
+    enable = true;
+    capSysNice = true;
+  };
+  services.displayManager.defaultSession = "steam";
+
   environment.systemPackages = with pkgs; [
     ungoogled-chromium
     firefox

@@ -28,6 +28,19 @@
 #   virtual interface (veth) inside the VPN namespace. Transmission binds
 #   to it because it's the only routable non-VPN interface it can see.
 #   The DNAT port mapping makes this transparent to LAN clients.
+#
+# Download & hardlink workflow:
+#   Transmission downloads to /mnt/media/Seeding/ (its private directory).
+#   When a torrent completes, a script hardlinks every file into
+#   /mnt/media/Staging/, preserving the directory structure.
+#
+#   You work with /mnt/media/Staging/ — rename, reorganise, delete files
+#   at will. Transmission keeps seeding from /mnt/media/Seeding/ undisturbed.
+#   Since hardlinks share data blocks, there's no extra disk space used.
+#
+#   When you remove a torrent from Transmission (with "delete local data"),
+#   the Seeding copy is removed and the disk blocks are freed only if no
+#   hardlinks remain — i.e. only once you've also cleaned up Staging.
 
 { self, pkgs, lib, config, ... }:
 
@@ -36,6 +49,21 @@ let
 
   nsAddr = "192.168.15.1";
   rpcPort = 9091;
+
+  # Where Transmission downloads and seeds from (don't touch these files).
+  seedDir = "/mnt/media/Seeding";
+
+  # Where hardlinks appear for you to organise.
+  stagingDir = "/mnt/media/Staging";
+
+  # Script that Transmission calls when a torrent finishes downloading.
+  # Transmission sets these environment variables:
+  #   TR_TORRENT_DIR  — the directory the torrent was downloaded to
+  #   TR_TORRENT_NAME — the name of the torrent (file or top-level dir)
+  hardlinkScript = pkgs.writeShellScript "transmission-hardlink" ''
+    set -euo pipefail
+    cp -al "$TR_TORRENT_DIR/$TR_TORRENT_NAME" "${stagingDir}/$TR_TORRENT_NAME"
+  '';
 in {
 
   # ── VPN namespace ───────────────────────────────────────────────────
@@ -61,11 +89,15 @@ in {
       # Bind the WebUI to the namespace's veth address.
       rpc-bind-address = nsAddr;
 
-      bind-address-ipv6 = "";
-
       # Allow LAN clients to access the WebUI.
       rpc-whitelist-enabled = true;
       rpc-whitelist = "127.0.0.1,${nsAddr},192.168.15.*";
+
+      bind-address-ipv6 = "::";
+
+      # TODO: remove with 4.1
+      announce-ip-enabled = true;
+      announce-ip = "159.26.104.11";
 
       # Disable Transmission's built-in port forwarding — the sidecar
       # handles this via NAT-PMP directly with ProtonVPN.
@@ -75,7 +107,14 @@ in {
       # this at runtime once it gets the NAT-PMP assignment.
       peer-port = 51413;
 
-      download-dir = "/mnt/media/Staging/";
+      # Download into the seeding directory. Transmission owns this —
+      # don't rename or move files here, or seeding will break.
+      download-dir = seedDir;
+
+      # When a torrent finishes, run the hardlink script to create
+      # links in the staging directory.
+      script-torrent-done-enabled = true;
+      script-torrent-done-filename = "${hardlinkScript}";
     };
   };
 
@@ -92,7 +131,12 @@ in {
   # downloads elsewhere, add the path here:
   #
   systemd.services.transmission.serviceConfig = {
-    BindPaths = [ "/mnt/media" ];
+    BindPaths = lib.mkForce [  # force to prevent /mnt/media/Seeding being added and breaking hardlinks
+      "/var/lib/transmission/.config/transmission-daemon"
+      "/run"
+      "/var/lib/transmission/.incomplete"
+      "/mnt/media"
+    ];
     ReadWritePaths = [ "/var/lib/transmission" ];
   };
   # ── NAT-PMP sidecar ────────────────────────────────────────────────
@@ -102,6 +146,7 @@ in {
   #   2. Opens that port in the namespace's nftables firewall
   #   3. Tells Transmission to use it for incoming peer connections
 
+  systemd.services.transmission.environment.TR_CURL_VERBOSE = "1";
   systemd.services.transmission-natpmp = {
     description = "ProtonVPN NAT-PMP port forwarding for Transmission";
     after = [ "transmission.service" ];
@@ -127,8 +172,8 @@ in {
 
     path = with pkgs; [
       libnatpmp      # natpmpc
-      nftables       #5 nft
-      transmission_4 # transmission-re5mote
+      nftables       # nft
+      transmission_4 # transmission-remote
       gawk           # awk
     ];
 
