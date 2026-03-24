@@ -2,6 +2,7 @@
   self,
   pkgs,
   lib,
+  config,
   ...
 }:
 {
@@ -39,18 +40,31 @@
       LC_MEASUREMENT = "en_IE.UTF-8";
     };
   };
+
   system = {
     stateVersion = "23.11";
   };
+
+  systemd.services.gc-generations = {
+    description = "Delete old NixOS generations, keeping the last 5";
+    serviceConfig.Type = "oneshot";
+    path = [ config.nix.package ];
+    script = ''
+      nix-env --profile /nix/var/nix/profiles/system --delete-generations +5
+      nix-collect-garbage
+    '';
+  };
+
+  systemd.timers.gc-generations = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "weekly";
+      Persistent = true;
+    };
+  };
+
   programs = {
     nix-ld.enable = true;
-    nh = {
-      enable = true;
-      clean = {
-        enable = true;
-        extraArgs = "--keep-since 14d --keep 5";
-      };
-    };
   };
   services.openssh = {
     settings = {

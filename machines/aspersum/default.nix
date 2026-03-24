@@ -33,21 +33,20 @@
     hashedPassword = "$6$nwRe8GAT99X9XVMD$EI8wRSBQF.zw6Evh7UVFKxfu/K9v2.i4hb1unxSnf26e50glpz6SkuVR9MQYr7/m.1IqgrstKvnPAVPa1i/JB0";
   };
 
-  # boot.crashDump.enable = true;  # TODO: remove after kernel panic debugged
-  # boot.kernel.sysctl = {  # TODO: remove after kernel panic debugged
-  #   "kernel.panic_on_oops" = 1;
-  #   "kernel.hung_task_panic" = 1;
-  #   "kernel.softlockup_panic" = 1;
-  #   "kernel.hardlockup_panic_on_detect" = 1;  # newer kernels
-  # };
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
+    kernelPatches = [
+      {
+        name = "amdgpu-tlb-fence-fix";
+        patch = ./amdgpu-tlb-fence-fix.patch;
+      }
+    ];
     binfmt.emulatedSystems = [ "aarch64-linux" ];
 
     resumeDevice = "/dev/disk/by-label/CRYPTED";
     kernelParams = [
-      "amdgpu.dcdebugmask=0x410"  # possibly actually helps with crashes?  # looks like
-      "amdgpu.cwsr_enable=0"      # fix MES load on resume, possibly
+      # "amdgpu.dcdebugmask=0x410"  # possibly actually helps with crashes?  # looks like
+      # "amdgpu.cwsr_enable=0"      # fix MES load on resume, possibly  # maybe not needed with the kernel patch?
       # "amdgpu.sg_display=0"  # possibly helps against crashes with external display connected  # nope
       # "pcie_aspm=off"
 
@@ -76,7 +75,6 @@
         22000 # Syncthing
       ];
     };
-    networkmanager.settings.connection."wifi.tdls" = false;
   };
 
   mollusca = {
@@ -110,7 +108,7 @@
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
-      wireplumber.extraConfig.no-ucm."monitor.alsa.properties"."alsa.use-ucm" = false;
+      # wireplumber.extraConfig.no-ucm."monitor.alsa.properties"."alsa.use-ucm" = false;
     };
     xserver.wacom.enable = true;
     fwupd.enable = true;

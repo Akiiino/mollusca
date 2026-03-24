@@ -28,7 +28,14 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = {inherit self inputs inputs' minor-secrets;};
+    extraSpecialArgs = {
+      inherit
+        self
+        inputs
+        inputs'
+        minor-secrets
+        ;
+    };
     backupFileExtension = "backup";
   };
 
