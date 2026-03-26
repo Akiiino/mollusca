@@ -20,8 +20,6 @@
     "${self}/users/akiiino"
     "${self}/users/rinkaru"
     ./bigscreen.nix
-    # ./formovie-theater-fix.nix
-    ./ftfix.nix
   ];
 
   boot = {

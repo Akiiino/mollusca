@@ -132,6 +132,7 @@
     pkgs.btdu
     pkgs.kdePackages.partitionmanager
     pkgs.kdePackages.skanlite
+    pkgs.evince
     (pkgs.kdePackages.skanpage.override {
       tesseractLanguages = [
         "eng"

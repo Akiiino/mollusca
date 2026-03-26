@@ -161,7 +161,6 @@
             formatter = pkgs.nixfmt-tree;
             devShells.default = import "${self}/devshell.nix" { inherit pkgs inputs'; };
             packages = {
-              nixos-manual = self.nixosConfigurations.aspersum.config.system.build.manual.manualHTML;
               cups-brother-dcpl3520cdw = pkgs.callPackage ./packages/cups-brother-dcpl3520cdw.nix { };
             };
           };

@@ -42,7 +42,7 @@
 #   the Seeding copy is removed and the disk blocks are freed only if no
 #   hardlinks remain — i.e. only once you've also cleaned up Staging.
 
-{ self, pkgs, lib, config, ... }:
+{ self, pkgs, lib, config, minor-secrets, ... }:
 
 let
   natpmpGateway = "10.2.0.1";
@@ -97,7 +97,7 @@ in {
 
       # TODO: remove with 4.1
       announce-ip-enabled = true;
-      announce-ip = "159.26.104.11";
+      announce-ip = minor-secrets.vpn_ip;
 
       # Disable Transmission's built-in port forwarding — the sidecar
       # handles this via NAT-PMP directly with ProtonVPN.
