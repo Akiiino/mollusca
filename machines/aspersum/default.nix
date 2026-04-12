@@ -88,6 +88,12 @@
     logitech.wireless.enable = true;
     eightbitdo.enable = true;
     bluetooth.enable = true;
+    useTailscale = true;
+  };
+  services.tailscale = {
+    extraSetFlags = [ "--operator=akiiino" ];
+    # extraUpFlags = [ "--operator=akiiino" ];
+    useRoutingFeatures = lib.mkForce "client";
   };
 
   services = {
@@ -121,12 +127,24 @@
         "2"
       ];
     };
+    udev.extraRules = ''
+      ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1022", KERNEL=="0000:c3:00.0", ATTR{power/control}="on"
+    '';  # fixes the annoying "xhci_hcd 0000:c3:00.0: Refused to change power state from D0 to D3hot"
   };
 
   security.rtkit.enable = true;
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id === "org.freedesktop.NetworkManager.settings.modify.system" &&
+          subject.user === "akiiino") {
+        return polkit.Result.YES;
+      }
+    });
+  '';  # allow ProtonVPN et al. to change settings without pestering
 
   environment.localBinInPath = true;
   environment.systemPackages = [
+    pkgs.trayscale
     pkgs.cheese
     pkgs.usbutils
     pkgs.btdu
@@ -162,18 +180,18 @@
 
   boot.supportedFilesystems = [ "nfs" ];
 
-  fileSystems."/mnt/media" = {
-    device = "MyCloudEX2Ultra.local:/nfs/Media";
-    fsType = "nfs";
-    options = [
-      "x-systemd.automount" # Mount on first access
-      "noauto" # Don't mount at boot
-      "x-systemd.idle-timeout=600" # Unmount after 10min idle
-      "nfsvers=3" # Use NFSv4.2 for best performance
-      "hard" # hang if NAS is unavailable
-      "timeo=50" # 5 second timeout
-      "retrans=4" # 4 retries before giving up
-      "_netdev" # Wait for network
-    ];
-  };
+  # fileSystems."/mnt/media" = {
+  #   device = "MyCloudEX2Ultra.local:/nfs/Media";
+  #   fsType = "nfs";
+  #   options = [
+  #     "x-systemd.automount" # Mount on first access
+  #     "noauto" # Don't mount at boot
+  #     "x-systemd.idle-timeout=600" # Unmount after 10min idle
+  #     "nfsvers=3" # Use NFSv4.2 for best performance
+  #     "hard" # hang if NAS is unavailable
+  #     "timeo=50" # 5 second timeout
+  #     "retrans=4" # 4 retries before giving up
+  #     "_netdev" # Wait for network
+  #   ];
+  # };
 }

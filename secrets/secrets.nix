@@ -3,6 +3,7 @@ let
   nautilus = builtins.readFile keys/nautilus.pub;
   pecten = builtins.readFile keys/pecten.pub;
   actinella = builtins.readFile keys/actinella.pub;
+  aspersum = builtins.readFile keys/aspersum.pub;
 in
 {
   "tailscale.age".publicKeys = [
@@ -10,6 +11,7 @@ in
     nautilus
     pecten
     actinella
+    aspersum
   ];
   "actinella-backup.age".publicKeys = [
     akiiino

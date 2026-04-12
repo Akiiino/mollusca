@@ -121,12 +121,13 @@
       { command = [ "waybar" ]; }
       { command = [ "mako" ]; }
       { command = [ "nm-applet" "--indicator" ]; }
+      { command = [ "wl-clip-persist" "--clipboard" "regular" "--all-mime-type-regex" "'^(?!x-kde-passwordManagerHint).+'"]; }
       # { command = [ "swaybg" "-i" "/path/to/wallpaper.jpg" ]; }
     ];
 
     # Output (monitor) configuration
     outputs."eDP-1" = {
-      scale = 1.75;  # Fractional scaling!
+      scale = 1.75;
       mode = {
         width = 2880;
         height = 1920;
@@ -176,20 +177,20 @@
   
       # Suggested binds for running programs: terminal, app launcher, screen locker.
       "Mod+T" = {
-        hotkey-overlay.title="Open a Terminal: alacritty";
-        action.spawn="alacritty";
+        hotkey-overlay.title = "Open a Terminal: kitty";
+        action.spawn = "kitty";
       };
       "Mod+D" = {
-        hotkey-overlay.title="Run an Application: fuzzel";
-        action.spawn="fuzzel";
+        hotkey-overlay.title = "Run an Application: fuzzel";
+        action.spawn = "fuzzel";
       };
       "Super+Alt+L" = {
-        hotkey-overlay.title="Lock the Screen: swaylock";
-        action.spawn="swaylock";
+        hotkey-overlay.title = "Lock the Screen: swaylock";
+        action.spawn = "swaylock";
       };
   
       # Example volume keys mappings for PipeWire & WirePlumber.
-      # The allow-when-locked=true property makes them work even when the session is locked.
+      # The allow-when-locked = true property makes them work even when the session is locked.
       "XF86AudioRaiseVolume" = {
         allow-when-locked = true;
         action.spawn = ["swayosd-client" "--output-volume" "raise"];
@@ -240,62 +241,59 @@
       # You can also move the mouse into the top-left hot corner,
       # or do a four-finger swipe up on a touchpad.
       "Mod+O" = {
-          repeat=false;
+          repeat = false;
           action = toggle-overview;
       };
   
       "Mod+Q" = {
-          repeat=false;
+          repeat = false;
           action = close-window;
       };
   
-      "Mod+Left".action =   focus-column-left;
-      "Mod+Down".action =   focus-window-down;
-      "Mod+Up".action =     focus-window-up;
+      "Mod+Left".action = focus-column-left;
+      "Mod+Down".action = focus-window-down;
+      "Mod+Up".action = focus-window-up;
       "Mod+Right".action = focus-column-right;
-      "Mod+H".action =      focus-column-left;
-      "Mod+J".action =      focus-window-down;
-      "Mod+K".action =      focus-window-up;
-      "Mod+L".action =      focus-column-right;
+      "Mod+H".action = focus-column-left;
+      # "Mod+J".action = focus-window-down;
+      # "Mod+K".action = focus-window-up;
+      "Mod+J".action = focus-window-or-workspace-down;
+      "Mod+K".action = focus-window-or-workspace-up;
+      "Mod+L".action = focus-column-right;
   
-      "Mod+Ctrl+Left".action =   move-column-left; 
-      "Mod+Ctrl+Down".action =   move-window-down; 
-      "Mod+Ctrl+Up".action =     move-window-up; 
+      "Mod+Ctrl+Left".action = move-column-left;
+      "Mod+Ctrl+Down".action = move-window-down;
+      "Mod+Ctrl+Up".action = move-window-up;
       "Mod+Ctrl+Right".action = move-column-right;
-      "Mod+Ctrl+H".action =      move-column-left; 
-      "Mod+Ctrl+J".action =      move-window-down; 
-      "Mod+Ctrl+K".action =      move-window-up; 
-      "Mod+Ctrl+L".action =      move-column-right; 
-  
-      # Alternative commands that move across workspaces when reaching
-      # the first or last window in a column.
-      # Mod+J     { focus-window-or-workspace-down; }
-      # Mod+K     { focus-window-or-workspace-up; }
-      # Mod+Ctrl+J     { move-window-down-or-to-workspace-down; }
-      # Mod+Ctrl+K     { move-window-up-or-to-workspace-up; }
+      "Mod+Ctrl+H".action = move-column-left; 
+      # "Mod+Ctrl+J".action = move-window-down; 
+      # "Mod+Ctrl+K".action = move-window-up;
+      "Mod+Ctrl+J".action = move-window-down-or-to-workspace-down; 
+      "Mod+Ctrl+K".action = move-window-up-or-to-workspace-up;
+      "Mod+Ctrl+L".action = move-column-right; 
   
       "Mod+Home".action = focus-column-first;
-      "Mod+End".action =   focus-column-last; 
+      "Mod+End".action = focus-column-last; 
       "Mod+Ctrl+Home".action = move-column-to-first;
-      "Mod+Ctrl+End".action =   move-column-to-last; 
+      "Mod+Ctrl+End".action = move-column-to-last; 
   
-      "Mod+Shift+Left".action =   focus-monitor-left; 
-      "Mod+Shift+Down".action =   focus-monitor-down; 
-      "Mod+Shift+Up".action =     focus-monitor-up; 
+      "Mod+Shift+Left".action = focus-monitor-left; 
+      "Mod+Shift+Down".action = focus-monitor-down; 
+      "Mod+Shift+Up".action = focus-monitor-up; 
       "Mod+Shift+Right".action = focus-monitor-right;
-      "Mod+Shift+H".action =      focus-monitor-left; 
-      "Mod+Shift+J".action =      focus-monitor-down; 
-      "Mod+Shift+K".action =      focus-monitor-up; 
-      "Mod+Shift+L".action =      focus-monitor-right; 
+      "Mod+Shift+H".action = focus-monitor-left; 
+      "Mod+Shift+J".action = focus-monitor-down; 
+      "Mod+Shift+K".action = focus-monitor-up; 
+      "Mod+Shift+L".action = focus-monitor-right; 
   
-      "Mod+Shift+Ctrl+Left".action =   move-column-to-monitor-left; 
-      "Mod+Shift+Ctrl+Down".action =   move-column-to-monitor-down; 
-      "Mod+Shift+Ctrl+Up".action =     move-column-to-monitor-up; 
+      "Mod+Shift+Ctrl+Left".action = move-column-to-monitor-left; 
+      "Mod+Shift+Ctrl+Down".action = move-column-to-monitor-down; 
+      "Mod+Shift+Ctrl+Up".action = move-column-to-monitor-up; 
       "Mod+Shift+Ctrl+Right".action = move-column-to-monitor-right;
-      "Mod+Shift+Ctrl+H".action =      move-column-to-monitor-left; 
-      "Mod+Shift+Ctrl+J".action =      move-column-to-monitor-down; 
-      "Mod+Shift+Ctrl+K".action =      move-column-to-monitor-up; 
-      "Mod+Shift+Ctrl+L".action =      move-column-to-monitor-right; 
+      "Mod+Shift+Ctrl+H".action = move-column-to-monitor-left; 
+      "Mod+Shift+Ctrl+J".action = move-column-to-monitor-down; 
+      "Mod+Shift+Ctrl+K".action = move-column-to-monitor-up; 
+      "Mod+Shift+Ctrl+L".action = move-column-to-monitor-right; 
   
       # Alternatively, there are commands to move just a single window:
       # Mod+Shift+Ctrl+Left  { move-window-to-monitor-left; }
@@ -305,23 +303,19 @@
       # Mod+Shift+Ctrl+Left  { move-workspace-to-monitor-left; }
       # ...
   
-      "Mod+Page_Down".action =       focus-workspace-down; 
-      "Mod+Page_Up".action =         focus-workspace-up; 
-      "Mod+U".action =               focus-workspace-down; 
-      "Mod+I".action =               focus-workspace-up; 
+      "Mod+Page_Down".action = focus-workspace-down; 
+      "Mod+Page_Up".action = focus-workspace-up; 
+      "Mod+U".action = focus-workspace-down; 
+      "Mod+I".action = focus-workspace-up; 
       "Mod+Ctrl+Page_Down".action = move-column-to-workspace-down;
-      "Mod+Ctrl+Page_Up".action =    move-column-to-workspace-up; 
-      "Mod+Ctrl+U".action =          move-column-to-workspace-down; 
-      "Mod+Ctrl+I".action =          move-column-to-workspace-up; 
-  
-      # Alternatively, there are commands to move just a single window:
-      # Mod+Ctrl+Page_Down { move-window-to-workspace-down; }
-      # ...
+      "Mod+Ctrl+Page_Up".action = move-column-to-workspace-up; 
+      "Mod+Ctrl+U".action = move-column-to-workspace-down; 
+      "Mod+Ctrl+I".action = move-column-to-workspace-up; 
   
       "Mod+Shift+Page_Down".action = move-workspace-down;
-      "Mod+Shift+Page_Up".action =   move-workspace-up; 
-      "Mod+Shift+U".action =         move-workspace-down; 
-      "Mod+Shift+I".action =         move-workspace-up; 
+      "Mod+Shift+Page_Up".action = move-workspace-up; 
+      "Mod+Shift+U".action = move-workspace-down; 
+      "Mod+Shift+I".action = move-workspace-up; 
   
       # You can bind mouse wheel scroll ticks using the following syntax.
       # These binds will change direction based on the natural-scroll setting.
@@ -329,34 +323,34 @@
       # To avoid scrolling through workspaces really fast, you can use
       # the cooldown-ms property. The bind will be rate-limited to this value.
       # You can set a cooldown on any bind, but it's most useful for the wheel.
-      "Mod+WheelScrollDown" =      {
-          cooldown-ms=150;
+      "Mod+WheelScrollDown" = {
+          cooldown-ms = 150;
           action = focus-workspace-down;
       };
-      "Mod+WheelScrollUp" =        {
-          cooldown-ms=150;
+      "Mod+WheelScrollUp" = {
+          cooldown-ms = 150;
           action = focus-workspace-up;
       };
       "Mod+Ctrl+WheelScrollDown" = {
-          cooldown-ms=150;
+          cooldown-ms = 150;
           action = move-column-to-workspace-down;
       };
-      "Mod+Ctrl+WheelScrollUp" =   {
-          cooldown-ms=150;
+      "Mod+Ctrl+WheelScrollUp" = {
+          cooldown-ms = 150;
           action = move-column-to-workspace-up;
       };
   
-      "Mod+WheelScrollRight".action =       focus-column-right; 
-      "Mod+WheelScrollLeft".action =        focus-column-left; 
+      "Mod+WheelScrollRight".action = focus-column-right; 
+      "Mod+WheelScrollLeft".action = focus-column-left;
       "Mod+Ctrl+WheelScrollRight".action = move-column-right;
-      "Mod+Ctrl+WheelScrollLeft".action =   move-column-left; 
+      "Mod+Ctrl+WheelScrollLeft".action = move-column-left;
   
       # Usually scrolling up and down with Shift in applications results in
       # horizontal scrolling; these binds replicate that.
-      "Mod+Shift+WheelScrollDown".action =       focus-column-right; 
-      "Mod+Shift+WheelScrollUp".action =         focus-column-left; 
+      "Mod+Shift+WheelScrollDown".action = focus-column-right; 
+      "Mod+Shift+WheelScrollUp".action = focus-column-left; 
       "Mod+Ctrl+Shift+WheelScrollDown".action = move-column-right;
-      "Mod+Ctrl+Shift+WheelScrollUp".action =    move-column-left; 
+      "Mod+Ctrl+Shift+WheelScrollUp".action = move-column-left; 
   
       # Similarly, you can bind touchpad scroll "ticks".
       # Touchpad scrolling is continuous, so for these binds it is split into
@@ -403,11 +397,11 @@
       # The following binds move the focused window in and out of a column.
       # If the window is alone, they will consume it into the nearby column to the side.
       # If the window is already in a column, they will expel it out.
-      "Mod+BracketLeft".action =   consume-or-expel-window-left;
+      "Mod+BracketLeft".action = consume-or-expel-window-left;
       "Mod+BracketRight".action = consume-or-expel-window-right;
   
       # Consume one window from the right to the bottom of the focused column.
-      "Mod+Comma".action =  consume-window-into-column;
+      "Mod+Comma".action = consume-window-into-column;
       # Expel the bottom window from the focused column to the right.
       "Mod+Period".action = expel-window-from-column;
   
@@ -444,7 +438,7 @@
       "Mod+Shift+Equal".action = set-window-height "+10%";
   
       # Move the focused window between the floating and the tiling layout.
-      "Mod+V".action =        toggle-window-floating;
+      "Mod+V".action = toggle-window-floating;
       "Mod+Shift+V".action = switch-focus-between-floating-and-tiling;
   
       # Toggle tabbed column display mode.
@@ -457,8 +451,7 @@
       # a matching layout switch hotkey configured in xkb options above.
       # Having both at once on the same hotkey will break the switching,
       # since it will switch twice upon pressing the hotkey (once by xkb, once by niri).
-      "Mod+Space".action.switch-layout  = "next";
-      # Mod+Shift+Space { switch-layout "prev"; }
+      "Mod+Space".action.switch-layout = "next";
   
       "Print".action.screenshot = {};
       "Ctrl+Print".action.screenshot-screen = {};
@@ -470,11 +463,11 @@
       # It's a good idea to bind an escape hatch to toggle the inhibitor,
       # so a buggy application can't hold your session hostage.
       #
-      # The allow-inhibiting=false property can be applied to other binds as well,
+      # The allow-inhibiting = false property can be applied to other binds as well,
       # which ensures niri always processes them, even when an inhibitor is active.
       "Mod+Escape" = {
-          allow-inhibiting=false;
-          action=toggle-keyboard-shortcuts-inhibit;
+          allow-inhibiting = false;
+          action = toggle-keyboard-shortcuts-inhibit;
       };
   
       # The quit action will show a confirmation dialog to avoid accidental exits.

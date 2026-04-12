@@ -4,6 +4,7 @@
   inputs,
   inputs',
   minor-secrets,
+  lib,
   ...
 }:
 {
@@ -39,7 +40,7 @@
     backupFileExtension = "backup";
   };
 
-  time.timeZone = "Europe/Berlin";
+  time.timeZone = lib.mkDefault "Europe/Berlin";
 
   programs.zsh.enable = true;
 }

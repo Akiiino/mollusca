@@ -21,6 +21,15 @@
       kdiff = "kitty +kitten diff";
       icat = "kitty +kitten icat";
     };
+    siteFunctions = {
+      launch = ''
+        (cd / && setsid "$@" >/dev/null 2>&1 <&-) &!
+      '';
+      _launch = ''
+        #compdef launch
+        _precommand "$@"
+      '';
+    };
 
     initContent = ''
       setopt NO_CASE_GLOB

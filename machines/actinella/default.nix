@@ -19,8 +19,36 @@
     isRemote = true;
     useTailscale = true;
     isExitNode = true;
-    advertiseRoutes = "192.168.1.0/24";
+    # advertiseRoutes = "192.168.1.0/24";
     bluetooth.enable = true;
+  };
+
+  mollusca.lanServices = {
+    enable = true;
+    lanAddress = "192.168.1.101";
+    blocklist = self.inputs.stevenBlackHosts + "/hosts";
+    upstreamDNS = "1.1.1.1 1.0.0.1";
+  
+    services = {
+      "akiiino.me" = {
+        proxyPass = "http://127.0.0.1:8096";  # or whatever the root should be
+        websocket = true;
+      };
+      "jellyfin.akiiino.me" = {
+        proxyPass = "http://127.0.0.1:8096";
+        websocket = true;
+      };
+      "valetudo.akiiino.me" = {
+        proxyPass = "http://192.168.1.204";
+      };
+      "valetudocam.akiiino.me" = {
+        proxyPass = "http://192.168.1.204:1984";
+        websocket = true;
+      };
+      "pinchflat.akiiino.me" = {
+        proxyPass = "http://127.0.0.1:8945";
+      };
+    };
   };
 
   age.secrets.actinella-backup.file = "${self}/secrets/actinella-backup.age";
@@ -40,25 +68,26 @@
       };
     };
 
-    coredns = {
-      enable = true;
-      config = ''
-        . {
-          bind 127.0.0.1 192.168.1.101
-          hosts ${self.inputs.stevenBlackHosts}/hosts {
-            192.168.1.204 valetudo.akiiino.me
-            192.168.1.101 akiiino.me
-            fallthrough
-          }
-          # Cloudflare Forwarding
-          forward . 1.1.1.1 1.0.0.1
-          cache
-        }
-      '';
-    };
+    # coredns = {
+    #   enable = true;
+    #   config = ''
+    #     . {
+    #       bind 127.0.0.1 192.168.1.101
+    #       hosts ${self.inputs.stevenBlackHosts}/hosts {
+    #         192.168.1.204 valetudo.akiiino.me
+    #         192.168.1.101 akiiino.me
+    #         fallthrough
+    #       }
+    #       # Cloudflare Forwarding
+    #       forward . 1.1.1.1 1.0.0.1
+    #       cache
+    #     }
+    #   '';
+    # };
 
     hostapd = {
-      enable = true;
+      # enable = true;  # TODO
+      enable = false;
       radios.wlp170s0 = {
         band = "2g";
         channel = 11;
@@ -68,15 +97,16 @@
           ssid = "0ct0ptic0n";
           authentication = {
             mode = "wpa2-sha256";
-            wpaPassword = "asynchronous rondo";  # or use wpaPasswordFile
+            wpaPassword = "asynchronous rondo";
           };
-          # ignoreBroadcastSsid = "empty";
+          ignoreBroadcastSsid = "empty";
         };
       };
     };
 
     tvFilter = {
-      enable = true;
+      # enable = true;  # TODO
+      enable = false;
       tvInterface  = "wlp170s0";
       wanInterface = "enp0s13f0u3u1";
       upstreamDNS = "127.0.0.1";
@@ -186,11 +216,11 @@
     hostName = "actinella";
     firewall = {
       allowedTCPPorts = [
-        53 # DNS
-        80 # nginx
+        # 53 # DNS
+        # 80 # nginx
       ];
       allowedUDPPorts = [
-        53 # DNS
+        # 53 # DNS
         5353 # mDNS (Avahi)
       ];
     };
@@ -202,7 +232,7 @@
     device = "MyCloudEX2Ultra.local:/nfs/Media";
     fsType = "nfs";
     options = [
-      "x-systemd.automount" # Mount on first access
+      "x-systemd.automount"
       "noauto" # Don't mount at boot
       "x-systemd.idle-timeout=600" # Unmount after 10min idle
       "nfsvers=3"
@@ -216,7 +246,7 @@
     device = "MyCloudEX2Ultra.local:/nfs/Backups";
     fsType = "nfs";
     options = [
-      "x-systemd.automount" # Mount on first access
+      "x-systemd.automount"
       "noauto" # Don't mount at boot
       "x-systemd.idle-timeout=600" # Unmount after 10min idle
       "nfsvers=3"
