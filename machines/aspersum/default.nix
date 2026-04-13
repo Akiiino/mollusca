@@ -35,12 +35,12 @@
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelPatches = [
-      {
-        name = "amdgpu-tlb-fence-fix";
-        patch = ./amdgpu-tlb-fence-fix.patch;
-      }
-    ];
+    # kernelPatches = [
+    #   {
+    #     name = "amdgpu-tlb-fence-fix";
+    #     patch = ./amdgpu-tlb-fence-fix.patch;
+    #   }
+    # ];
     binfmt.emulatedSystems = [ "aarch64-linux" ];
 
     resumeDevice = "/dev/disk/by-label/CRYPTED";
