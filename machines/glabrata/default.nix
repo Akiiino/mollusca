@@ -1,6 +1,5 @@
 {
   self,
-  config,
   pkgs,
   lib,
   modulesPath,
@@ -11,6 +10,7 @@
   imports = [
     ./hardware-configuration.nix
     ./disko.nix
+    self.inputs.impermanence.nixosModules.impermanence
     # "${modulesPath}/profiles/perlless.nix"
   ];
 
@@ -25,9 +25,9 @@
   };
 
 
-  # Persistent volume for Claude Code memories — survives nixos-anywhere reinstalls.
+  # Persistent volume — survives nixos-anywhere reinstalls.
   # Deliberately NOT in disko.nix so it won't be reformatted on reinstall.
-  fileSystems."/mnt/memories" = {
+  fileSystems."/mnt/persist" = {
     device = "/dev/disk/by-id/scsi-0HC_Volume_105394318";
     fsType = "btrfs";
     options = [
@@ -35,26 +35,20 @@
       "nofail"
       "compress=zstd"
     ];
+    neededForBoot = true;
   };
 
-  # Bind-mount into the claude user's memory path.
-  # tmpfiles ensures the mount point directory exists before mount.
-  systemd.tmpfiles.rules = [
-    "d /home/claude/.claude/projects/-/memory 0755 claude users -"
-    "z /mnt/memories 0755 claude users -"
-  ];
-  fileSystems."/home/claude/.claude/projects/-/memory" = {
-    device = "/mnt/memories";
-    options = [ "bind" "nofail" ];
-  };
-
-  # Full credentials file from `claude auth login` — required for remote control.
-  # Encrypt with: agenix -e secrets/claude-credentials.age
-  # (use the contents of ~/.claude/.credentials.json)
-  age.secrets.claude-credentials = {
-    file = "${self}/secrets/claude-credentials.age";
-    owner = "claude";
-    mode = "0600";
+  # impermanence bind-mounts paths from /mnt/persist into their real locations.
+  environment.persistence."/mnt/persist" = {
+    hideMounts = true;
+    users.claude = {
+      directories = [
+        ".claude/projects/-/memory"
+      ];
+      files = [
+        ".claude/.credentials.json"
+      ];
+    };
   };
 
   environment.systemPackages = with pkgs; [
@@ -94,29 +88,19 @@
   };
 
   # Persistent Claude Code tmux session for the claude user.
-  # Waits for agenix to decrypt credentials before starting.
-  # ExecStartPre symlinks the decrypted credentials into ~/.claude/ so
-  # Claude Code finds them at its expected path.
   systemd.services.sandbox-tmux = {
     description = "Persistent Claude Code tmux session";
     after = [
       "network-online.target"
       "tailscaled.service"
-      "agenix.service"
     ];
     wants = [
       "network-online.target"
-      "agenix.service"
-    ];
-    requires = [
-      "run-agenix.d.mount"
-      "mnt-memories.mount"
     ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "forking";
       User = "claude";
-      ExecStartPre = "${pkgs.bash}/bin/bash -c 'mkdir -p /home/claude/.claude && ln -sf ${config.age.secrets.claude-credentials.path} /home/claude/.claude/.credentials.json'";
       ExecStart = "${pkgs.tmux}/bin/tmux new-session -d -s main ${pkgs.claude-code}/bin/claude --remote-control --dangerously-skip-permissions --model opus";
       ExecStop = "${pkgs.tmux}/bin/tmux kill-session -t main";
       Restart = "always";
@@ -179,25 +163,25 @@
         No human uses this machine directly — you are the primary operator.
         The human operator (and the person interacting with you) is Akiiino,
         who manages this machine remotely.
- 
+
         ## System overview
- 
+
         - **OS**: NixOS 25.11 (declarative, immutable system config)
         - **User**: `claude` (wheel group, passwordless sudo)
         - **Session**: You run inside a tmux session (`main`) managed by systemd
         - **Network**: Tailscale VPN; internet access available
         - **Resources**: ~8 GiB RAM, ~76 GiB disk (mostly free)
-        - **Auth**: OAuth credentials at `~/.claude/.credentials.json` (symlinked from agenix)
- 
+        - **Auth**: OAuth credentials at `~/.claude/.credentials.json` (bind-mounted from persistent volume)
+
         ## Package management
- 
+
         This is NixOS — **do not use `apt`, `brew`, `pip install --global`**, etc.
- 
+
         - One-off command: `nix run nixpkgs#<package>` (e.g., `nix run nixpkgs#cowsay -- hello`)
         - Add to current shell: `nix shell nixpkgs#<package>`
         - Multiple packages: `nix shell nixpkgs#foo nixpkgs#bar`
         - Search for packages: `nix search nixpkgs <query>`
- 
+
         The nixpkgs registry is pinned to a specific revision, so these commands
         are fast and deterministic after first use.
 
@@ -231,8 +215,10 @@
         ## Persistence across reinstalls
 
         The machine may be wiped and rebuilt at any time. What survives:
-        - **Memories**: `~/.claude/projects/-/memory/` is a bind-mount of `/mnt/memories`,
-          a persistent volume that survives reinstalls automatically
+        - **Persistent volume**: `/mnt/persist` mirrors the real filesystem layout.
+          Paths on the volume are bind-mounted to their real locations at boot.
+          Currently persisted: memories (`~/.claude/projects/-/memory/`) and
+          OAuth credentials (`~/.claude/.credentials.json`).
         - **System config**: Everything in the mollusca repo
         - **Nothing else**: Treat local state as ephemeral
 
