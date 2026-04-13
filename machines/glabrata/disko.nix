@@ -1,4 +1,7 @@
 {
+  # impermanence requires filesystems containing persisted paths to be available early in boot.
+  fileSystems."/var".neededForBoot = true;
+
   disko.devices.disk.main = {
     type = "disk";
     device = "/dev/sda";

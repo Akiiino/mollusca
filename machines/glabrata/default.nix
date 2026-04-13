@@ -41,6 +41,9 @@
   # impermanence bind-mounts paths from /mnt/persist into their real locations.
   environment.persistence."/mnt/persist" = {
     hideMounts = true;
+    directories = [
+      "/var/lib/tailscale"
+    ];
     users.claude = {
       directories = [
         ".claude/projects/-/memory"
@@ -156,6 +159,8 @@
         nix-direnv.enable = true;
       };
 
+      home.file."git/.keep".text = "";
+
       home.file.".claude/CLAUDE.md".text = ''
         # Glabrata — Claude Code Sandbox
 
@@ -195,8 +200,11 @@
         at any time via `nixos-anywhere`.
 
         However: `nixos-rebuild` is **disabled**. You cannot change the system
-        configuration from this machine. To propose system changes, produce a
-        patch against the mollusca repo (see below).
+        configuration from this machine.
+
+        This file (`CLAUDE.md`) is managed by home-manager and is **read-only**
+        on glabrata. To change it, the mollusca repo must be updated and
+        redeployed.
 
         ## Machine configuration
 
@@ -208,9 +216,6 @@
 
         Shared modules are in `modules/mollusca/` (remote.nix, gui.nix, etc.)
         and `modules/base/` (all.nix, nixos.nix).
-
-        To propose changes: clone the repo to /tmp, edit, and produce a patch
-        with `git diff` for Akiiino to apply and deploy.
 
         ## Persistence across reinstalls
 
@@ -224,6 +229,9 @@
 
         ## Working with projects
 
+        - **Repo location**: Always clone and work on repos in `~/git/`.
+          Akiiino pulls changes from glabrata over Tailscale SSH, so repos must
+          be at a stable, predictable path (e.g., `~/git/<repo-name>`).
         - direnv + nix-direnv are installed — entering a directory with a `flake.nix`
           and `.envrc` will automatically activate the devshell
         - Git is configured as "Claude (glabrata)" <noreply@anthropic.com>
