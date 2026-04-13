@@ -25,6 +25,29 @@
   };
 
 
+  # Persistent volume for Claude Code memories — survives nixos-anywhere reinstalls.
+  # Deliberately NOT in disko.nix so it won't be reformatted on reinstall.
+  fileSystems."/mnt/memories" = {
+    device = "/dev/disk/by-id/scsi-0HC_Volume_105394318";
+    fsType = "ext4";
+    options = [
+      "discard"
+      "nofail"
+      "defaults"
+    ];
+  };
+
+  # Bind-mount into the claude user's memory path.
+  # tmpfiles ensures the mount point directory exists before mount.
+  systemd.tmpfiles.rules = [
+    "d /home/claude/.claude/projects/-/memory 0755 claude users -"
+    "z /mnt/memories 0755 claude users -"
+  ];
+  fileSystems."/home/claude/.claude/projects/-/memory" = {
+    device = "/mnt/memories";
+    options = [ "bind" "nofail" ];
+  };
+
   # Full credentials file from `claude auth login` — required for remote control.
   # Encrypt with: agenix -e secrets/claude-credentials.age
   # (use the contents of ~/.claude/.credentials.json)
@@ -85,7 +108,10 @@
       "network-online.target"
       "agenix.service"
     ];
-    requires = [ "run-agenix.d.mount" ];
+    requires = [
+      "run-agenix.d.mount"
+      "mnt-memories.mount"
+    ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "forking";
@@ -97,8 +123,8 @@
       RestartSec = 5;
     };
     path = [
-      "/run/current-system/sw"
       "/run/wrappers"
+      "/run/current-system/sw"
       "/etc/profiles/per-user/claude"
     ];
   };
@@ -151,7 +177,8 @@
 
         You are running on `glabrata`, a headless NixOS VM dedicated to you (Claude Code).
         No human uses this machine directly — you are the primary operator.
-        The human operator is Akiiino, who manages this machine remotely.
+        The human operator (and the person interacting with you) is Akiiino,
+        who manages this machine remotely.
  
         ## System overview
  
@@ -204,7 +231,8 @@
         ## Persistence across reinstalls
 
         The machine may be wiped and rebuilt at any time. What survives:
-        - **Memories**: `~/.claude/projects/-/memory/` (migrated manually by Akiiino)
+        - **Memories**: `~/.claude/projects/-/memory/` is a bind-mount of `/mnt/memories`,
+          a persistent volume that survives reinstalls automatically
         - **System config**: Everything in the mollusca repo
         - **Nothing else**: Treat local state as ephemeral
 
