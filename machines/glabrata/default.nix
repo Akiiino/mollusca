@@ -81,7 +81,7 @@
       Type = "forking";
       User = "builder";
       EnvironmentFile = config.age.secrets.claude-oauth-token.path;
-      ExecStart = "${pkgs.tmux}/bin/tmux new-session -d -s main ${pkgs.claude-code}/bin/claude --remote-control";
+      ExecStart = "${pkgs.tmux}/bin/tmux new-session -d -s main ${pkgs.bash}/bin/bash -c '${pkgs.claude-code}/bin/claude --remote-control --dangerously-skip-permissions'";
       ExecStop = "${pkgs.tmux}/bin/tmux kill-session -t main";
       Restart = "always";
       RestartSec = 3;

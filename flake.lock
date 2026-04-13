@@ -460,11 +460,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771498117,
-        "narHash": "sha256-Z+HhGOgo0y7DBZesirWFPSVAvvI7AzifUTRzkrYVrJU=",
+        "lastModified": 1776074775,
+        "narHash": "sha256-mG1MZV6VqS/N+4xcAN7Du7n9AqA/+z67MfZgixJfw3s=",
         "owner": "akiiino",
         "repo": "mini-agenix",
-        "rev": "f1b6fd9a10f5d14f3d71c757ccc7cd2deb56d6d7",
+        "rev": "ccc9a7924c43a3d1f45faad5110e23b3bf6c3022",
         "type": "github"
       },
       "original": {

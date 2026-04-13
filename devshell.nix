@@ -1,6 +1,9 @@
 {
   pkgs,
+  inputs,
   inputs',
+  system,
+  ...
 }:
 pkgs.mkShell {
   name = "seashell";
@@ -20,5 +23,5 @@ pkgs.mkShell {
     age
   ];
 
-  NIX_CONFIG = "plugin-files = ${inputs'.mini-agenix.packages.mini-agenix}/lib/libmini_agenix.so";
+  NIX_CONFIG = inputs.mini-agenix.lib."${system}".nixConfig;
 }

@@ -160,7 +160,7 @@
               config.allowUnfree = true;
             };
             formatter = pkgs.nixfmt-tree;
-            devShells.default = import "${self}/devshell.nix" { inherit pkgs inputs'; };
+            devShells.default = import "${self}/devshell.nix" { inherit pkgs inputs inputs' system; };
             packages = {
               cups-brother-dcpl3520cdw = pkgs.callPackage ./packages/cups-brother-dcpl3520cdw.nix { };
             };

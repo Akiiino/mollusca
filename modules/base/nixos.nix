@@ -11,12 +11,10 @@
     self.inputs.home-manager.nixosModules.default
     self.inputs.disko.nixosModules.disko
     self.inputs.niri.nixosModules.niri
-    self.inputs.mini-agenix.nixosModules.mini-agenix
 
     "${self}/modules/mollusca"
   ];
 
-  mini-agenix.enable = true;
   niri-flake.cache.enable = false;
   boot = {
     tmp.cleanOnBoot = true;
