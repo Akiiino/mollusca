@@ -4,6 +4,7 @@ let
   pecten = builtins.readFile keys/pecten.pub;
   actinella = builtins.readFile keys/actinella.pub;
   aspersum = builtins.readFile keys/aspersum.pub;
+  glabrata = builtins.readFile keys/glabrata.pub;
 in
 {
   "tailscale.age".publicKeys = [
@@ -12,6 +13,7 @@ in
     pecten
     actinella
     aspersum
+    glabrata
   ];
   "actinella-backup.age".publicKeys = [
     akiiino
@@ -23,5 +25,9 @@ in
   ];
   "minor-secrets.age".publicKeys = [
     akiiino
+  ];
+  "claude-oauth-token.age".publicKeys = [
+    akiiino
+    glabrata
   ];
 }

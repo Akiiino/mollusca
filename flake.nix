@@ -143,6 +143,7 @@
             nautilus = { };
             pecten = { };
             actinella = { };
+            glabrata = { };
           };
         };
 
