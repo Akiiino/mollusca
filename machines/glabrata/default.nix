@@ -29,11 +29,11 @@
   # Deliberately NOT in disko.nix so it won't be reformatted on reinstall.
   fileSystems."/mnt/memories" = {
     device = "/dev/disk/by-id/scsi-0HC_Volume_105394318";
-    fsType = "ext4";
+    fsType = "btrfs";
     options = [
       "discard"
       "nofail"
-      "defaults"
+      "compress=zstd"
     ];
   };
 
