@@ -30,4 +30,8 @@ in
     akiiino
     glabrata
   ];
+  "claude-credentials.age".publicKeys = [
+    akiiino
+    glabrata
+  ];
 }
