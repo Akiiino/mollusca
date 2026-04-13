@@ -19,33 +19,11 @@
     useTailscale = true;
   };
 
-  # system.tools = {
-  #   nixos-rebuild.enable = false;
-  #   nixos-install.enable = false;
-  #   nixos-generate-config.enable = false;
-  #   nixos-enter.enable = false;
-  #   nixos-build-vms.enable = false;
-  #   nixos-option.enable = false;
-  # };
+  system.tools = {
+    nixos-rebuild.enable = false;
+    nixos-install.enable = false;
+  };
 
-  # xdg.mime.enable = false;
-
-  # nixpkgs.flake.source = lib.mkForce null;
-  # nix = {
-  #   registry.nixpkgs = {
-  #     from = {
-  #       type = "indirect";
-  #       id = "nixpkgs";
-  #     };
-  #     to = {
-  #       type = "github";
-  #       owner = "NixOS";
-  #       repo = "nixpkgs";
-  #       rev = inputs.nixpkgs.rev;
-  #     };
-  #   };
-  #   settings.extra-nix-path = "nixpkgs=flake:nixpkgs";
-  # };
 
   # Full credentials file from `claude auth login` — required for remote control.
   # Encrypt with: agenix -e secrets/claude-credentials.age
@@ -169,24 +147,75 @@
       };
 
       home.file.".claude/CLAUDE.md".text = ''
-        # Environment
+        # Glabrata — Claude Code Sandbox
 
-        You are running on a NixOS sandbox machine (`glabrata`).
+        You are running on `glabrata`, a headless NixOS VM dedicated to you (Claude Code).
+        No human uses this machine directly — you are the primary operator.
+        The human operator is Akiiino, who manages this machine remotely.
+ 
+        ## System overview
+ 
+        - **OS**: NixOS 25.11 (declarative, immutable system config)
+        - **User**: `claude` (wheel group, passwordless sudo)
+        - **Session**: You run inside a tmux session (`main`) managed by systemd
+        - **Network**: Tailscale VPN; internet access available
+        - **Resources**: ~8 GiB RAM, ~76 GiB disk (mostly free)
+        - **Auth**: OAuth credentials at `~/.claude/.credentials.json` (symlinked from agenix)
+ 
+        ## Package management
+ 
+        This is NixOS — **do not use `apt`, `brew`, `pip install --global`**, etc.
+ 
+        - One-off command: `nix run nixpkgs#<package>` (e.g., `nix run nixpkgs#cowsay -- hello`)
+        - Add to current shell: `nix shell nixpkgs#<package>`
+        - Multiple packages: `nix shell nixpkgs#foo nixpkgs#bar`
+        - Search for packages: `nix search nixpkgs <query>`
+ 
+        The nixpkgs registry is pinned to a specific revision, so these commands
+        are fast and deterministic after first use.
 
-        ## Installing tools
+        Pre-installed tools: git, curl, jq, ripgrep, fd, tree, htop, python3,
+        gcc, gnumake, less, wget, unzip, openssh, file, diffutils, patch, which.
 
-        This is NixOS — do not use `apt`, `brew`, etc.
-        Use `nix run nixpkgs#<package>` for one-off commands,
-        or `nix shell nixpkgs#<package>` to add a tool to your current shell.
-        Multiple packages: `nix shell nixpkgs#foo nixpkgs#bar`.
+        ## Permissions and safety
 
-        The nixpkgs registry is pinned, so these commands work without network
-        fetches after the first use of a given package.
+        You have passwordless sudo. This is an isolated sandbox — there is nothing
+        here you can break that matters. The machine can be wiped and reinstalled
+        at any time via `nixos-anywhere`.
 
-        ## Permissions
+        However: `nixos-rebuild` is **disabled**. You cannot change the system
+        configuration from this machine. To propose system changes, produce a
+        patch against the mollusca repo (see below).
 
-        You have passwordless sudo. This machine is an isolated sandbox —
-        there is nothing here you can break that matters.
+        ## Machine configuration
+
+        This machine's NixOS config lives at `github.com/Akiiino/mollusca` in the
+        `machines/glabrata/` directory. Key files:
+        - `default.nix` — main config (users, services, packages, home-manager)
+        - `disko.nix` — disk partitioning layout
+        - `hardware-configuration.nix` — QEMU guest hardware
+
+        Shared modules are in `modules/mollusca/` (remote.nix, gui.nix, etc.)
+        and `modules/base/` (all.nix, nixos.nix).
+
+        To propose changes: clone the repo to /tmp, edit, and produce a patch
+        with `git diff` for Akiiino to apply and deploy.
+
+        ## Persistence across reinstalls
+
+        The machine may be wiped and rebuilt at any time. What survives:
+        - **Memories**: `~/.claude/projects/-/memory/` (migrated manually by Akiiino)
+        - **System config**: Everything in the mollusca repo
+        - **Nothing else**: Treat local state as ephemeral
+
+        ## Working with projects
+
+        - direnv + nix-direnv are installed — entering a directory with a `flake.nix`
+          and `.envrc` will automatically activate the devshell
+        - Git is configured as "Claude (glabrata)" <noreply@anthropic.com>
+        - You can clone repos, create branches, and produce patches
+        - You do not currently have push access to any remote repos
+        - Remember to pull upstream changes before starting or continuing your work
       '';
 
       home.stateVersion = "23.11";
