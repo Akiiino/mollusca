@@ -29,10 +29,6 @@
     upstreamDNS = "1.1.1.1 1.0.0.1";
 
     services = {
-      "akiiino.me" = {
-        proxyPass = "http://127.0.0.1:8096";
-        websocket = true;
-      };
       "jellyfin.akiiino.me" = {
         proxyPass = "http://127.0.0.1:8096";
         websocket = true;

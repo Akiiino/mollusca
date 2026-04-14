@@ -12,6 +12,7 @@
     ./hardware-configuration.nix
     ./disko.nix
     "${modulesPath}/profiles/perlless.nix"
+    ./derper.nix
   ];
 
   mollusca = {

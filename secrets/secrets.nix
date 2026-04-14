@@ -26,4 +26,8 @@ in
   "minor-secrets.age".publicKeys = [
     akiiino
   ];
+  "acme-dns.age".publicKeys = [
+    akiiino
+    pecten
+  ];
 }
