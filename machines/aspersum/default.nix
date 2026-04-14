@@ -30,21 +30,10 @@
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
-    # kernelPatches = [
-    #   {
-    #     name = "amdgpu-tlb-fence-fix";
-    #     patch = ./amdgpu-tlb-fence-fix.patch;
-    #   }
-    # ];
     binfmt.emulatedSystems = [ "aarch64-linux" ];
 
     resumeDevice = "/dev/disk/by-label/CRYPTED";
     kernelParams = [
-      # "amdgpu.dcdebugmask=0x410"  # possibly actually helps with crashes?  # looks like
-      # "amdgpu.cwsr_enable=0"      # fix MES load on resume, possibly  # maybe not needed with the kernel patch?
-      # "amdgpu.sg_display=0"  # possibly helps against crashes with external display connected  # nope
-      # "pcie_aspm=off"
-
       "resume_offset=533760" # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile
 
       "rtc_cmos.use_acpi_alarm=1"
