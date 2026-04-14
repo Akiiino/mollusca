@@ -99,30 +99,30 @@
   };
 
   # Persistent Claude Code tmux session for the claude user.
-  systemd.services.sandbox-tmux = {
-    description = "Persistent Claude Code tmux session";
-    after = [
-      "network-online.target"
-      "tailscaled.service"
-    ];
-    wants = [
-      "network-online.target"
-    ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "forking";
-      User = "claude";
-      ExecStart = "${pkgs.tmux}/bin/tmux new-session -d -s main ${pkgs.claude-code}/bin/claude --remote-control --dangerously-skip-permissions --model opus";
-      ExecStop = "${pkgs.tmux}/bin/tmux kill-session -t main";
-      Restart = "always";
-      RestartSec = 5;
-    };
-    path = [
-      "/run/wrappers"
-      "/run/current-system/sw"
-      "/etc/profiles/per-user/claude"
-    ];
-  };
+  # systemd.services.sandbox-tmux = {
+  #   description = "Persistent Claude Code tmux session";
+  #   after = [
+  #     "network-online.target"
+  #     "tailscaled.service"
+  #   ];
+  #   wants = [
+  #     "network-online.target"
+  #   ];
+  #   wantedBy = [ "multi-user.target" ];
+  #   serviceConfig = {
+  #     Type = "forking";
+  #     User = "claude";
+  #     ExecStart = "${pkgs.tmux}/bin/tmux new-session -d -s main ${pkgs.claude-code}/bin/claude --remote-control --dangerously-skip-permissions --model opus";
+  #     ExecStop = "${pkgs.tmux}/bin/tmux kill-session -t main";
+  #     Restart = "always";
+  #     RestartSec = 5;
+  #   };
+  #   path = [
+  #     "/run/wrappers"
+  #     "/run/current-system/sw"
+  #     "/etc/profiles/per-user/claude"
+  #   ];
+  # };
 
   home-manager.users.claude =
     { ... }:
