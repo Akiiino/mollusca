@@ -25,7 +25,6 @@
     nixos-install.enable = false;
   };
 
-
   # Persistent volume — survives nixos-anywhere reinstalls.
   # Deliberately NOT in disko.nix so it won't be reformatted on reinstall.
   fileSystems."/mnt/persist" = {
@@ -124,10 +123,9 @@
   #   ];
   # };
 
-  home-manager.users.claude =
-    { ... }:
-    {
-      programs.bash = {
+  home-manager.users.claude = _: {
+    programs = {
+      bash = {
         enable = true;
         historySize = 50000;
         historyFileSize = 100000;
@@ -151,7 +149,7 @@
         '';
       };
 
-      programs.git = {
+      git = {
         enable = true;
         userName = "Claude (glabrata)";
         userEmail = "noreply@anthropic.com";
@@ -166,14 +164,16 @@
         };
       };
 
-      programs.direnv = {
+      direnv = {
         enable = true;
         nix-direnv.enable = true;
       };
+    };
 
-      home.file."git/.keep".text = "";
+    home.file = {
+      "git/.keep".text = "";
 
-      home.file.".claude/CLAUDE.md".text = ''
+      ".claude/CLAUDE.md".text = ''
         # Glabrata — Claude Code Sandbox
 
         You are running on `glabrata`, a headless NixOS VM dedicated to you (Claude Code).
@@ -282,9 +282,10 @@
         - `git mkpatch` — `git diff @{u} HEAD > ~/claude.patch`
         - `git syncup` — `git fetch && git diff HEAD..@{u} && git reset --hard @{u}`
       '';
-
-      home.stateVersion = "23.11";
     };
+
+    home.stateVersion = "23.11";
+  };
 
   # Keep the builder user exactly as the other machines define it
   # (via mollusca.isRemote in remote.nix). No glabrata-specific overrides.

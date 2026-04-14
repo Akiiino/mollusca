@@ -28,7 +28,12 @@
 #   Both paths hit the same nginx, which routes by Host header.
 #   No subnet route required — only actinella is reachable.
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.mollusca.lanServices;
@@ -36,26 +41,28 @@ let
   serviceHosts = builtins.attrNames cfg.services;
 
   # ── Hosts entries for the LAN CoreDNS block ───────────────────────
-  lanHostsLines = lib.concatMapStringsSep "\n"
-    (host: "        ${cfg.lanAddress} ${host}")
-    serviceHosts;
+  lanHostsLines = lib.concatMapStringsSep "\n" (
+    host: "        ${cfg.lanAddress} ${host}"
+  ) serviceHosts;
 
   # ── Extra static DNS records (non-proxied, LAN only) ──────────────
-  extraHostsLines = lib.concatStringsSep "\n"
-    (lib.mapAttrsToList (host: ip: "        ${ip} ${host}") cfg.extraDnsRecords);
+  extraHostsLines = lib.concatStringsSep "\n" (
+    lib.mapAttrsToList (host: ip: "        ${ip} ${host}") cfg.extraDnsRecords
+  );
 
-  allLanHostsLines = lib.concatStringsSep "\n"
-    (lib.filter (s: s != "") [ lanHostsLines extraHostsLines ]);
+  allLanHostsLines = lib.concatStringsSep "\n" (
+    lib.filter (s: s != "") [
+      lanHostsLines
+      extraHostsLines
+    ]
+  );
 
   # ── CoreDNS Corefile template ─────────────────────────────────────
   # TAILSCALE_IP is replaced at runtime by the wrapper script.
   # The LAN block is always present; the Tailscale block is only
   # included when a Tailscale IP is available.
 
-  blocklistDirective =
-    if cfg.blocklist != null
-    then "hosts ${cfg.blocklist}"
-    else "hosts";
+  blocklistDirective = if cfg.blocklist != null then "hosts ${cfg.blocklist}" else "hosts";
 
   lanBlock = ''
     .:53 {
@@ -88,9 +95,9 @@ let
   corefileLanOnly = pkgs.writeText "Corefile.lan-only" lanBlock;
 
   # ── Shell fragments for writing the Tailscale hosts file ──────────
-  tsHostsWriteLines = lib.concatMapStringsSep "\n"
-    (host: ''    echo "$TS_IP ${host}" >> "$RD/ts-hosts"'')
-    serviceHosts;
+  tsHostsWriteLines = lib.concatMapStringsSep "\n" (
+    host: ''echo "$TS_IP ${host}" >> "$RD/ts-hosts"''
+  ) serviceHosts;
 
   serviceModule = lib.types.submodule {
     options = {
@@ -111,7 +118,8 @@ let
     };
   };
 
-in {
+in
+{
 
   # ═══════════════════════════════════════════════════════════════════
   # Options
@@ -129,7 +137,7 @@ in {
 
     services = lib.mkOption {
       type = lib.types.attrsOf serviceModule;
-      default = {};
+      default = { };
       description = ''
         Services to expose.  Keys are fully qualified hostnames.
         Each gets an nginx virtual host and a DNS record.
@@ -149,14 +157,16 @@ in {
 
     extraDnsRecords = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
-      default = {};
+      default = { };
       description = ''
         Additional hostname → IP mappings for LAN DNS only.
         These are NOT proxied by nginx — they resolve directly
         to the given IP.  Useful for devices that aren't
         HTTP services (printers, etc.).
       '';
-      example = { "printer.akiiino.me" = "192.168.1.50"; };
+      example = {
+        "printer.akiiino.me" = "192.168.1.50";
+      };
     };
 
     blocklist = lib.mkOption {
@@ -181,13 +191,15 @@ in {
 
   config = lib.mkIf cfg.enable {
 
-    assertions = [{
-      assertion = !config.services.coredns.enable;
-      message = ''
-        mollusca.lanServices manages its own CoreDNS instance.
-        Remove or disable services.coredns to avoid conflicts.
-      '';
-    }];
+    assertions = [
+      {
+        assertion = !config.services.coredns.enable;
+        message = ''
+          mollusca.lanServices manages its own CoreDNS instance.
+          Remove or disable services.coredns to avoid conflicts.
+        '';
+      }
+    ];
 
     # ── nginx reverse proxy ─────────────────────────────────────────
 
@@ -201,7 +213,7 @@ in {
 
       virtualHosts = lib.mapAttrs (_host: svc: {
         locations."/" = {
-          proxyPass = svc.proxyPass;
+          inherit (svc) proxyPass;
           proxyWebsockets = svc.websocket;
           extraConfig = svc.extraLocationConfig;
         };
@@ -211,7 +223,10 @@ in {
     # ── Firewall ────────────────────────────────────────────────────
 
     networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
-      allowedTCPPorts = [ 53 80 ];
+      allowedTCPPorts = [
+        53
+        80
+      ];
       allowedUDPPorts = [ 53 ];
     };
 
@@ -219,7 +234,10 @@ in {
 
     systemd.services.lan-services-dns = {
       description = "CoreDNS — LAN (with ad-blocking) + Tailscale";
-      after = [ "tailscaled.service" "network.target" ];
+      after = [
+        "tailscaled.service"
+        "network.target"
+      ];
       wants = [ "tailscaled.service" ];
       wantedBy = [ "multi-user.target" ];
 

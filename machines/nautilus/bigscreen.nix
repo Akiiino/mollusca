@@ -1,47 +1,47 @@
 { config, pkgs, ... }:
 let
   plasma-tv = pkgs.callPackage ./plasma-bigscreen.nix {
-    kcmutils = pkgs.kdePackages.kcmutils;
-    kdeclarative = pkgs.kdePackages.kdeclarative;
-    ki18n = pkgs.kdePackages.ki18n;
-    kio = pkgs.kdePackages.kio;
-    knotifications = pkgs.kdePackages.knotifications;
-    kwayland = pkgs.kdePackages.kwayland;
-    kwindowsystem = pkgs.kdePackages.kwindowsystem;
-    mkKdeDerivation = pkgs.kdePackages.mkKdeDerivation;
-    qtmultimedia = pkgs.kdePackages.qtmultimedia;
-    plasma-workspace = pkgs.kdePackages.plasma-workspace;
-    bluez-qt = pkgs.kdePackages.bluez-qt;
-    qtwebengine = pkgs.kdePackages.qtwebengine;
-    plasma-nano = pkgs.kdePackages.plasma-nano;
-    plasma-nm = pkgs.kdePackages.plasma-nm;
-    milou = pkgs.kdePackages.milou;
-    kscreen = pkgs.kdePackages.kscreen;
-    kdeconnect-kde = pkgs.kdePackages.kdeconnect-kde;
-    qtdeclarative = pkgs.kdePackages.qtdeclarative;
+    inherit (pkgs.kdePackages) kcmutils
+    kdeclarative
+    ki18n
+    kio
+    knotifications
+    kwayland
+    kwindowsystem
+    mkKdeDerivation
+    qtmultimedia
+    plasma-workspace
+    bluez-qt
+    qtwebengine
+    plasma-nano
+    plasma-nm
+    milou
+    kscreen
+    kdeconnect-kde
+    qtdeclarative;
   };
   plasma-remotecontrollers = pkgs.callPackage ./plasma-remotecontrollers.nix {
-    mkKdeDerivation = pkgs.kdePackages.mkKdeDerivation;
-    qtbase = pkgs.kdePackages.qtbase;
-    qtdeclarative = pkgs.kdePackages.qtdeclarative;
-    qtwayland = pkgs.kdePackages.qtwayland;
-    kconfig = pkgs.kdePackages.kconfig;
-    kcoreaddons = pkgs.kdePackages.kcoreaddons;
-    kdbusaddons = pkgs.kdePackages.kdbusaddons;
-    kdeclarative = pkgs.kdePackages.kdeclarative;
-    ki18n = pkgs.kdePackages.ki18n;
-    kcmutils = pkgs.kdePackages.kcmutils;
-    knotifications = pkgs.kdePackages.knotifications;
-    kpackage = pkgs.kdePackages.kpackage;
-    kwindowsystem = pkgs.kdePackages.kwindowsystem;
-    kstatusnotifieritem = pkgs.kdePackages.kstatusnotifieritem;
-    solid = pkgs.kdePackages.solid;
-    plasma-workspace = pkgs.kdePackages.plasma-workspace;
-    libplasma = pkgs.kdePackages.libplasma;
-    plasma-wayland-protocols = pkgs.kdePackages.plasma-wayland-protocols;
-    wayland = pkgs.wayland;
-    libevdev = pkgs.libevdev;
-    libcec = pkgs.libcec;
+    inherit (pkgs.kdePackages) mkKdeDerivation
+    qtbase
+    qtdeclarative
+    qtwayland
+    kconfig
+    kcoreaddons
+    kdbusaddons
+    kdeclarative
+    ki18n
+    kcmutils
+    knotifications
+    kpackage
+    kwindowsystem
+    kstatusnotifieritem
+    solid
+    plasma-workspace
+    libplasma
+    plasma-wayland-protocols;
+    inherit (pkgs) wayland
+    libevdev
+    libcec;
     xwiimote = null; # or pkgs.xwiimote if you want Wiimote support
   };
 in

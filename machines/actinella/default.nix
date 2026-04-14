@@ -28,10 +28,10 @@
     lanAddress = "192.168.1.101";
     blocklist = self.inputs.stevenBlackHosts + "/hosts";
     upstreamDNS = "1.1.1.1 1.0.0.1";
-  
+
     services = {
       "akiiino.me" = {
-        proxyPass = "http://127.0.0.1:8096";  # or whatever the root should be
+        proxyPass = "http://127.0.0.1:8096"; # or whatever the root should be
         websocket = true;
       };
       "jellyfin.akiiino.me" = {
@@ -107,10 +107,10 @@
     tvFilter = {
       # enable = true;  # TODO
       enable = false;
-      tvInterface  = "wlp170s0";
+      tvInterface = "wlp170s0";
       wanInterface = "enp0s13f0u3u1";
       upstreamDNS = "127.0.0.1";
-  
+
       allowedDomains = [
         # Spotify
         "spotify.com"
@@ -118,7 +118,7 @@
         "spotifycdn.com"
         "scdn.co"
         "audio-ak-spotify-com.akamaized.net"
-  
+
         # # YouTube
         # "youtube.com"
         # "googlevideo.com"
@@ -127,14 +127,14 @@
         # "googleapis.com"
         # "gstatic.com"
         # "google.com"
-  
+
         # # Google Play
         # "play-lh.googleusercontent.com"
-  
+
         # NTP
         "pool.ntp.org"
       ];
-  
+
       allowedIPv4s = [
         # "8.8.8.8"
         # "8.8.4.4"
@@ -169,7 +169,7 @@
       prune.keep = {
         hourly = 24;
         daily = 7;
-        weekly = -1;  # -1 means unlimited
+        weekly = -1; # -1 means unlimited
       };
 
       startAt = "hourly";
@@ -182,7 +182,8 @@
 
       extraCreateArgs = [
         "--stats"
-        "--checkpoint-interval" "600"
+        "--checkpoint-interval"
+        "600"
       ];
 
       preHook = ''
@@ -269,14 +270,14 @@
       CPU_SCALING_GOVERNOR_ON_AC = "powersave";
       CPU_BOOST_ON_AC = 0;
       CPU_HWP_DYN_BOOST_ON_AC = 0;
-      
+
       # CPU_MAX_PERF_ON_AC = 80;  # Limit to 80% of max frequency
-      
+
       PLATFORM_PROFILE_ON_AC = "low-power";
-      
+
       SOUND_POWER_SAVE_ON_AC = 0;
       SOUND_POWER_SAVE_CONTROLLER = "N";
-      
+
       WIFI_PWR_ON_AC = "off";
     };
   };

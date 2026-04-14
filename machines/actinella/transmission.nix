@@ -42,7 +42,14 @@
 #   the Seeding copy is removed and the disk blocks are freed only if no
 #   hardlinks remain — i.e. only once you've also cleaned up Staging.
 
-{ self, pkgs, lib, config, minor-secrets, ... }:
+{
+  self,
+  pkgs,
+  lib,
+  config,
+  minor-secrets,
+  ...
+}:
 
 let
   natpmpGateway = "10.2.0.1";
@@ -64,7 +71,8 @@ let
     set -euo pipefail
     cp -al "$TR_TORRENT_DIR/$TR_TORRENT_NAME" "${stagingDir}/$TR_TORRENT_NAME"
   '';
-in {
+in
+{
 
   # ── VPN namespace ───────────────────────────────────────────────────
 
@@ -76,7 +84,11 @@ in {
     namespaceAddress = nsAddr;
 
     portMappings = [
-      { from = rpcPort; to = rpcPort; protocol = "tcp"; }
+      {
+        from = rpcPort;
+        to = rpcPort;
+        protocol = "tcp";
+      }
     ];
   };
 
@@ -118,132 +130,136 @@ in {
     };
   };
 
-  systemd.services.transmission.vpnConfinement = {
-    enable = true;
-    vpnNamespace = "wg";
-  };
+  systemd.services = {
+    transmission = {
+      vpnConfinement = {
+        enable = true;
+        vpnNamespace = "wg";
+      };
 
-  # Transmission stores data under /var/lib/transmission — the default
-  # ProtectHome=true is fine since that's not under /home. But
-  # ProtectSystem=strict makes / read-only, and Transmission needs to
-  # write to its state and download directories. NixOS's transmission
-  # module already handles this via ReadWritePaths, but if you store
-  # downloads elsewhere, add the path here:
-  #
-  systemd.services.transmission.serviceConfig = {
-    BindPaths = lib.mkForce [  # force to prevent /mnt/media/Seeding being added and breaking hardlinks
-      "/var/lib/transmission/.config/transmission-daemon"
-      "/run"
-      "/var/lib/transmission/.incomplete"
-      "/mnt/media"
-    ];
-    ReadWritePaths = [ "/var/lib/transmission" ];
-  };
-  # ── NAT-PMP sidecar ────────────────────────────────────────────────
-  #
-  # Runs inside the same VPN namespace. Every 45 seconds it:
-  #   1. Requests a port mapping from ProtonVPN via NAT-PMP
-  #   2. Opens that port in the namespace's nftables firewall
-  #   3. Tells Transmission to use it for incoming peer connections
-
-  systemd.services.transmission.environment.TR_CURL_VERBOSE = "1";
-  systemd.services.transmission-natpmp = {
-    description = "ProtonVPN NAT-PMP port forwarding for Transmission";
-    after = [ "transmission.service" ];
-    requires = [ "transmission.service" ];
-    wantedBy = [ "multi-user.target" ];
-
-    vpnConfinement = {
-      enable = true;
-      vpnNamespace = "wg";
+      # Transmission stores data under /var/lib/transmission — the default
+      # ProtectHome=true is fine since that's not under /home. But
+      # ProtectSystem=strict makes / read-only, and Transmission needs to
+      # write to its state and download directories. NixOS's transmission
+      # module already handles this via ReadWritePaths, but if you store
+      # downloads elsewhere, add the path here:
+      #
+      serviceConfig = {
+        BindPaths = lib.mkForce [
+          # force to prevent /mnt/media/Seeding being added and breaking hardlinks
+          "/var/lib/transmission/.config/transmission-daemon"
+          "/run"
+          "/var/lib/transmission/.incomplete"
+          "/mnt/media"
+        ];
+        ReadWritePaths = [ "/var/lib/transmission" ];
+      };
     };
 
-    # The sidecar needs CAP_NET_ADMIN to modify nftables rules.
-    # Override some hardening defaults that would interfere.
-    serviceConfig = {
-      Type = "simple";
-      Restart = "on-failure";
-      RestartSec = 10;
+    # ── NAT-PMP sidecar ────────────────────────────────────────────────
+    #
+    # Runs inside the same VPN namespace. Every 45 seconds it:
+    #   1. Requests a port mapping from ProtonVPN via NAT-PMP
+    #   2. Opens that port in the namespace's nftables firewall
+    #   3. Tells Transmission to use it for incoming peer connections
+    transmission-natpmp = {
+      description = "ProtonVPN NAT-PMP port forwarding for Transmission";
+      after = [ "transmission.service" ];
+      requires = [ "transmission.service" ];
+      wantedBy = [ "multi-user.target" ];
 
-      # nft needs netlink access (CAP_NET_ADMIN). The hardening
-      # defaults from vpnConfinement are fine — nft uses netlink
-      # sockets, not sysfs or procfs.
+      vpnConfinement = {
+        enable = true;
+        vpnNamespace = "wg";
+      };
+
+      # The sidecar needs CAP_NET_ADMIN to modify nftables rules.
+      # Override some hardening defaults that would interfere.
+      serviceConfig = {
+        Type = "simple";
+        Restart = "on-failure";
+        RestartSec = 10;
+
+        # nft needs netlink access (CAP_NET_ADMIN). The hardening
+        # defaults from vpnConfinement are fine — nft uses netlink
+        # sockets, not sysfs or procfs.
+      };
+
+      path = with pkgs; [
+        libnatpmp # natpmpc
+        nftables # nft
+        transmission_4 # transmission-remote
+        gawk # awk
+      ];
+
+      script = ''
+        # The NAT-PMP chain is managed exclusively by this sidecar.
+        # Create it on first run; flush and rebuild on each renewal.
+        # The jump from the main input chain is idempotent — if it
+        # already exists, the add command succeeds silently.
+        setup_chain() {
+          nft add chain inet vpn-wg natpmp-input 2>/dev/null || true
+          # Only add the jump rule if it doesn't already exist.
+          # nft add rule always appends, so repeated service restarts
+          # would accumulate duplicate jumps.
+          if ! nft list chain inet vpn-wg input | grep -q 'jump natpmp-input'; then
+            nft add rule inet vpn-wg input jump natpmp-input
+          fi
+        }
+
+        update_firewall() {
+          local port="$1"
+          nft flush chain inet vpn-wg natpmp-input
+          nft add rule inet vpn-wg natpmp-input iifname "wg0" tcp dport "$port" accept
+          nft add rule inet vpn-wg natpmp-input iifname "wg0" udp dport "$port" accept
+          echo "firewall: opened port $port on wg0"
+        }
+
+        update_transmission() {
+          local port="$1"
+          # transmission-remote may fail briefly on startup; tolerate it
+          if transmission-remote ${nsAddr}:${toString rpcPort} --port "$port" 2>/dev/null; then
+            echo "transmission: peer port set to $port"
+          else
+            echo "transmission: RPC not ready yet, will retry next cycle" >&2
+          fi
+        }
+
+        setup_chain
+        current_port=""
+
+        while true; do
+          # Request UDP and TCP port mappings from ProtonVPN.
+          # natpmpc -a 1 0 <proto> 60 -g <gateway>
+          #   -a 1 0: map local port 1 to server-chosen public port
+          #   60: lease lifetime in seconds
+          #   -g: NAT-PMP gateway (ProtonVPN's internal IP)
+          port=$(
+            natpmpc -a 1 0 udp 60 -g ${natpmpGateway} 2>/dev/null \
+              | awk '/Mapped public port/ { print $4 }'
+          )
+
+          if [[ -z "$port" ]]; then
+            echo "error: NAT-PMP request failed, retrying in 15s" >&2
+            sleep 15
+            continue
+          fi
+
+          # Also request TCP (uses the same port)
+          natpmpc -a 1 0 tcp 60 -g ${natpmpGateway} > /dev/null 2>&1
+
+          # Only update if the port changed (avoids unnecessary churn)
+          if [[ "$port" != "$current_port" ]]; then
+            echo "NAT-PMP: assigned port $port (was: ''${current_port:-none})"
+            update_firewall "$port"
+            update_transmission "$port"
+            current_port="$port"
+          fi
+
+          # Renew before the 60-second lease expires
+          sleep 45
+        done
+      '';
     };
-
-    path = with pkgs; [
-      libnatpmp      # natpmpc
-      nftables       # nft
-      transmission_4 # transmission-remote
-      gawk           # awk
-    ];
-
-    script = ''
-      # The NAT-PMP chain is managed exclusively by this sidecar.
-      # Create it on first run; flush and rebuild on each renewal.
-      # The jump from the main input chain is idempotent — if it
-      # already exists, the add command succeeds silently.
-      setup_chain() {
-        nft add chain inet vpn-wg natpmp-input 2>/dev/null || true
-        # Only add the jump rule if it doesn't already exist.
-        # nft add rule always appends, so repeated service restarts
-        # would accumulate duplicate jumps.
-        if ! nft list chain inet vpn-wg input | grep -q 'jump natpmp-input'; then
-          nft add rule inet vpn-wg input jump natpmp-input
-        fi
-      }
-
-      update_firewall() {
-        local port="$1"
-        nft flush chain inet vpn-wg natpmp-input
-        nft add rule inet vpn-wg natpmp-input iifname "wg0" tcp dport "$port" accept
-        nft add rule inet vpn-wg natpmp-input iifname "wg0" udp dport "$port" accept
-        echo "firewall: opened port $port on wg0"
-      }
-
-      update_transmission() {
-        local port="$1"
-        # transmission-remote may fail briefly on startup; tolerate it
-        if transmission-remote ${nsAddr}:${toString rpcPort} --port "$port" 2>/dev/null; then
-          echo "transmission: peer port set to $port"
-        else
-          echo "transmission: RPC not ready yet, will retry next cycle" >&2
-        fi
-      }
-
-      setup_chain
-      current_port=""
-
-      while true; do
-        # Request UDP and TCP port mappings from ProtonVPN.
-        # natpmpc -a 1 0 <proto> 60 -g <gateway>
-        #   -a 1 0: map local port 1 to server-chosen public port
-        #   60: lease lifetime in seconds
-        #   -g: NAT-PMP gateway (ProtonVPN's internal IP)
-        port=$(
-          natpmpc -a 1 0 udp 60 -g ${natpmpGateway} 2>/dev/null \
-            | awk '/Mapped public port/ { print $4 }'
-        )
-
-        if [[ -z "$port" ]]; then
-          echo "error: NAT-PMP request failed, retrying in 15s" >&2
-          sleep 15
-          continue
-        fi
-
-        # Also request TCP (uses the same port)
-        natpmpc -a 1 0 tcp 60 -g ${natpmpGateway} > /dev/null 2>&1
-
-        # Only update if the port changed (avoids unnecessary churn)
-        if [[ "$port" != "$current_port" ]]; then
-          echo "NAT-PMP: assigned port $port (was: ''${current_port:-none})"
-          update_firewall "$port"
-          update_transmission "$port"
-          current_port="$port"
-        fi
-
-        # Renew before the 60-second lease expires
-        sleep 45
-      done
-    '';
   };
 }

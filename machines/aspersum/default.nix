@@ -17,11 +17,6 @@
     inputs.fiveETools.nixosModules.default
   ];
 
-  services.fiveETools = {
-    enable = false;
-    package = inputs'.fiveETools.packages.fiveEToolsWithImages;
-  };
-
   # documentation.nixos = {
   #   enable = true;
   #   options.warningsAreErrors = false;
@@ -90,11 +85,6 @@
     bluetooth.enable = true;
     useTailscale = true;
   };
-  services.tailscale = {
-    extraSetFlags = [ "--operator=akiiino" ];
-    # extraUpFlags = [ "--operator=akiiino" ];
-    useRoutingFeatures = lib.mkForce "client";
-  };
 
   services = {
     resolved.enable = true;
@@ -129,7 +119,12 @@
     };
     udev.extraRules = ''
       ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1022", KERNEL=="0000:c3:00.0", ATTR{power/control}="on"
-    '';  # fixes the annoying "xhci_hcd 0000:c3:00.0: Refused to change power state from D0 to D3hot"
+    ''; # fixes the annoying "xhci_hcd 0000:c3:00.0: Refused to change power state from D0 to D3hot"
+    tailscale = {
+      extraSetFlags = [ "--operator=akiiino" ];
+      # extraUpFlags = [ "--operator=akiiino" ];
+      useRoutingFeatures = lib.mkForce "client";
+    };
   };
 
   security.rtkit.enable = true;
@@ -140,7 +135,7 @@
         return polkit.Result.YES;
       }
     });
-  '';  # allow ProtonVPN et al. to change settings without pestering
+  ''; # allow ProtonVPN et al. to change settings without pestering
 
   environment.localBinInPath = true;
   environment.systemPackages = [

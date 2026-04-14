@@ -99,7 +99,7 @@
       #package = config.boot.kernelPackages.nvidiaPackages.stable;
       # TODO: remove after https://github.com/ValveSoftware/gamescope/issues/1964 is fixed
       # or >580 is available
-      package = config.boot.kernelPackages.nvidiaPackages.mkDriver {  
+      package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
         version = "575.64.05";
         sha256_64bit = "sha256-hfK1D5EiYcGRegss9+H5dDr/0Aj9wPIJ9NVWP3dNUC0=";
         sha256_aarch64 = "sha256-GRE9VEEosbY7TL4HPFoyo0Ac5jgBHsZg9sBKJ4BLhsA=";
@@ -122,17 +122,20 @@
     displayManager.autoLogin.user = "nautilus";
   };
 
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true;
+  programs = {
+    steam = {
+      enable = true;
+      remotePlay.openFirewall = true;
+      gamescopeSession = {
+        enable = true;
+      };
+    };
+    gamescope = {
+      enable = true;
+      capSysNice = true;
+    };
   };
-  programs.steam.gamescopeSession = {
-    enable = true;
-  };
-  programs.gamescope = {
-    enable = true;
-    capSysNice = true;
-  };
+
   services.displayManager.defaultSession = "steam";
 
   environment.systemPackages = with pkgs; [

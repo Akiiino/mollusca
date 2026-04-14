@@ -32,31 +32,38 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     mac-app-util = {
       url = "github:hraban/mac-app-util";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.cl-nix-lite.inputs = {
-        flake-parts.follows = "flake-parts";
+      inputs = {
         nixpkgs.follows = "nixpkgs";
+        cl-nix-lite.inputs = {
+          flake-parts.follows = "flake-parts";
+          nixpkgs.follows = "nixpkgs";
+          treefmt-nix.follows = "";
+        };
         treefmt-nix.follows = "";
       };
-      inputs.treefmt-nix.follows = "";
     };
-    nixos-anywhere = {  # only here to make it work with mini-agenix
+    nixos-anywhere = {
+      # only here to make it work with mini-agenix
       url = "github:nix-community/nixos-anywhere";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.disko.follows = "disko";
-      inputs.flake-parts.follows = "flake-parts";
-      inputs.nixos-stable.follows = "nixpkgs";
-      inputs.nixos-images.follows = "nixpkgs";  # never evaluated
-      inputs.nix-vm-test.follows = "nixpkgs";   # never evaluated
-      inputs.treefmt-nix.follows = "nixpkgs";   # conditional check fails gracefully
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        disko.follows = "disko";
+        flake-parts.follows = "flake-parts";
+        nixos-stable.follows = "nixpkgs";
+        nixos-images.follows = "nixpkgs"; # never evaluated
+        nix-vm-test.follows = "nixpkgs"; # never evaluated
+        treefmt-nix.follows = "nixpkgs"; # conditional check fails gracefully
+      };
     };
 
     # Secrets
     agenix = {
       url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.darwin.follows = "darwin";
-      inputs.home-manager.follows = "home-manager";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        darwin.follows = "darwin";
+        home-manager.follows = "home-manager";
+      };
     };
     mini-agenix = {
       url = "github:akiiino/mini-agenix";
@@ -70,8 +77,10 @@
     };
     autoraise = {
       url = "github:akiiino/autoraise-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+      };
     };
     gitsh = {
       url = "github:akiiino/gitsh-flake";
@@ -79,8 +88,10 @@
     };
     secondbrain = {
       url = "github:akiiino/secondbrain";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+      };
     };
     stevenBlackHosts = {
       url = "github:StevenBlack/hosts";
@@ -109,8 +120,10 @@
     };
     niri = {
       url = "github:sodiboo/niri-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nixpkgs-stable.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-stable.follows = "nixpkgs";
+      };
     };
   };
 
@@ -160,7 +173,14 @@
               config.allowUnfree = true;
             };
             formatter = pkgs.nixfmt-tree;
-            devShells.default = import "${self}/devshell.nix" { inherit pkgs inputs inputs' system; };
+            devShells.default = import "${self}/devshell.nix" {
+              inherit
+                pkgs
+                inputs
+                inputs'
+                system
+                ;
+            };
             packages = {
               cups-brother-dcpl3520cdw = pkgs.callPackage ./packages/cups-brother-dcpl3520cdw.nix { };
             };
