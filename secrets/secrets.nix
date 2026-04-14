@@ -26,12 +26,4 @@ in
   "minor-secrets.age".publicKeys = [
     akiiino
   ];
-  "claude-oauth-token.age".publicKeys = [
-    akiiino
-    glabrata
-  ];
-  "claude-credentials.age".publicKeys = [
-    akiiino
-    glabrata
-  ];
 }

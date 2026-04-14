@@ -29,6 +29,16 @@
         #compdef launch
         _precommand "$@"
       '';
+      claude-project = ''
+        ssh -tt claude@glabrata "abduco -a '$1' 2>/dev/null || abduco -c '$1' bash -c 'cd ~/git/$1 && claude'"
+      '';
+      _claude-project = ''
+        #compdef claude-project
+
+        local -a projects
+        projects=(''${(f)"$(ssh claude@glabrata 'ls ~/git' 2>/dev/null)"})
+        compadd "$@" -- $projects
+      '';
     };
 
     initContent = ''

@@ -63,6 +63,7 @@
 
   environment.systemPackages = with pkgs; [
     claude-code
+    abduco
     tmux
     git
     curl
@@ -155,7 +156,7 @@
         userName = "Claude (glabrata)";
         userEmail = "noreply@anthropic.com";
         aliases = {
-          mkpatch = "!git diff @{u} HEAD > ~/claude.patch && echo 'Patch written to ~/claude.patch'";
+          mkpatch = "!git diff --quiet && git diff --cached --quiet || { echo 'Error: uncommitted changes exist. Commit or stash them first.'; exit 1; } && git diff @{u} HEAD > ~/claude.patch && echo 'Patch written to ~/claude.patch'";
           syncup = "!git fetch && git diff HEAD..@{u} && git reset --hard @{u}";
         };
         extraConfig = {
@@ -266,7 +267,7 @@
         Use this workflow when making code changes for ${minor-secrets.shortName} to review:
 
         **Delivering changes:**
-        1. Do your work, committing locally as needed (WIP commits are fine).
+        1. Do your work, making one or multiple commits locally as needed (WIP commits are fine).
         2. When ready, run `git mkpatch` — writes all changes vs upstream to `~/claude.patch`.
         3. Tell ${minor-secrets.shortName} the patch is ready. They apply it with:
            `ssh glabrata 'cat ~/claude.patch' | git apply -`
