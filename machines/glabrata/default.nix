@@ -154,6 +154,10 @@
         enable = true;
         userName = "Claude (glabrata)";
         userEmail = "noreply@anthropic.com";
+        aliases = {
+          mkpatch = "!git diff @{u} HEAD > ~/claude.patch && echo 'Patch written to ~/claude.patch'";
+          syncup = "!git fetch && git diff HEAD..@{u} && git reset --hard @{u}";
+        };
         extraConfig = {
           init.defaultBranch = "main";
           pull.rebase = true;
@@ -215,6 +219,15 @@
         on glabrata. To change it, the mollusca repo must be updated and
         redeployed.
 
+        ## Declarative configuration
+
+        Most system settings (dotfiles, shell, git config, tools) are managed
+        declaratively by home-manager in the mollusca repo. Editing files like
+        `~/.gitconfig` or `~/.bashrc` directly won't survive a rebuild — they are
+        overwritten on each deployment. **To change any persistent system setting,
+        modify the mollusca Nix config** (`machines/glabrata/default.nix`) and
+        produce a patch for ${minor-secrets.shortName} to deploy via the collaboration workflow.
+
         ## Machine configuration
 
         This machine's NixOS config lives at `https://github.com/Akiiino/mollusca` in the
@@ -247,6 +260,26 @@
         - You can clone repos, create branches, and produce patches
         - You do not currently have push access to any remote repos
         - Remember to pull upstream changes before starting or continuing your work
+
+        ## Collaboration workflow
+
+        Use this workflow when making code changes for ${minor-secrets.shortName} to review:
+
+        **Delivering changes:**
+        1. Do your work, committing locally as needed (WIP commits are fine).
+        2. When ready, run `git mkpatch` — writes all changes vs upstream to `~/claude.patch`.
+        3. Tell ${minor-secrets.shortName} the patch is ready. They apply it with:
+           `ssh glabrata 'cat ~/claude.patch' | git apply -`
+        4. ${minor-secrets.shortName} modifies as needed, commits, and pushes to `origin`.
+
+        **Continuing after ${minor-secrets.shortName} pushes:**
+        1. Run `git syncup` — fetches origin, shows what ${minor-secrets.shortName} changed vs your last commit,
+           then resets to upstream.
+        2. Continue working from the clean upstream state.
+
+        Git aliases (defined in home-manager, available globally):
+        - `git mkpatch` — `git diff @{u} HEAD > ~/claude.patch`
+        - `git syncup` — `git fetch && git diff HEAD..@{u} && git reset --hard @{u}`
       '';
 
       home.stateVersion = "23.11";
