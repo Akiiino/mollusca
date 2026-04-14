@@ -7,7 +7,7 @@
 }:
 {
   options.mollusca = {
-    enableHM = lib.mkEnableOption "home-manager environment";
+    enableHM = lib.mkEnableOption "home-manager environment"; # TODO: this does not make any sense, yes; will be fixed in a future rewrite
   };
   config = {
     users.users.akiiino = {

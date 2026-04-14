@@ -19,7 +19,6 @@
     self.inputs.nixos-hardware.nixosModules.common-pc-ssd
     "${self}/users/akiiino"
     "${self}/users/rinkaru"
-    ./bigscreen.nix
   ];
 
   boot = {
@@ -54,7 +53,7 @@
         (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
       ];
     };
-    akiiino = {
+    akiiino = { # intensionally modified from users/akiiino
       isNormalUser = true;
       password = "";
       extraGroups = [

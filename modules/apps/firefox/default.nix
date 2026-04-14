@@ -26,7 +26,7 @@
     };
     arkenfox = {
       enable = true;
-      version = "133.0";
+      version = "133.0"; # TODO: update arkenfox or drop it completely
     };
     profiles.akiiino = {
       id = 0;

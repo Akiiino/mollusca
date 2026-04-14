@@ -102,7 +102,7 @@
     };
   };
 
-  programs.niri.settings = {
+  programs.niri.settings = { # TODO: remove tons of default config boilerplate
     prefer-no-csd = true;
     input = {
       focus-follows-mouse = {

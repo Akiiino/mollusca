@@ -54,7 +54,7 @@
 # ────────────────────────────────────────
 #   imports = [ ./tv-filter.nix ];
 #
-#   services.tvFilter = {
+#   mollusca.tvFilter = {
 #     enable = true;
 #     tvInterface  = "eth0";
 #     wanInterface = "wlan0";
@@ -94,15 +94,13 @@
   ...
 }:
 
-with lib;
-
 let
-  cfg = config.services.tvFilter;
+  cfg = config.mollusca.tvFilter;
 
   # ── dnsmasq configuration file ──────────────────────────────────────
 
   dnsmasqConf = pkgs.writeText "tv-filter-dnsmasq.conf" (
-    concatStringsSep "\n" (
+    lib.concatStringsSep "\n" (
       [
         # ── interface ──
         "interface=${cfg.tvInterface}"
@@ -133,7 +131,7 @@ let
       ]
 
       # ── per-domain allow rules ──
-      ++ concatMap (domain: [
+      ++ lib.concatMap (domain: [
         "server=/${domain}/${cfg.upstreamDNS}"
         "nftset=/${domain}/4#inet#tv_filter#allowed_dns_ips"
       ]) cfg.allowedDomains
@@ -142,7 +140,7 @@ let
 
   # ── nftables ruleset ────────────────────────────────────────────────
 
-  staticIPElements = concatStringsSep ", " cfg.allowedIPv4s;
+  staticIPElements = lib.concatStringsSep ", " cfg.allowedIPv4s;
 
   nftRuleset = pkgs.writeText "tv-filter.nft" ''
     table inet tv_filter {
@@ -156,7 +154,7 @@ let
         timeout ${cfg.nftsetTimeout}
       }
 
-      ${optionalString (cfg.allowedIPv4s != [ ]) ''
+      ${lib.optionalString (cfg.allowedIPv4s != [ ]) ''
         # Static allowlist — IPs/ranges that are always reachable.
         set allowed_static_ips {
           type ipv4_addr
@@ -186,7 +184,7 @@ let
         # ── allow traffic to dynamically resolved IPs ──
         ip daddr @allowed_dns_ips accept
 
-        ${optionalString (cfg.allowedIPv4s != [ ]) ''
+        ${lib.optionalString (cfg.allowedIPv4s != [ ]) ''
           # ── allow traffic to statically allowlisted IPs ──
           ip daddr @allowed_static_ips accept
         ''}
@@ -218,52 +216,52 @@ in
   # Options
   # ═══════════════════════════════════════════════════════════════════
 
-  options.services.tvFilter = {
+  options.mollusca.tvFilter = {
 
-    enable = mkEnableOption "smart TV network filter";
+    enable = lib.mkEnableOption "smart TV network filter";
 
     # ── network topology ──
 
-    tvInterface = mkOption {
-      type = types.str;
+    tvInterface = lib.mkOption {
+      type = lib.types.str;
       default = "eth0";
       description = "Network interface connected to the TV.";
     };
 
-    wanInterface = mkOption {
-      type = types.str;
+    wanInterface = lib.mkOption {
+      type = lib.types.str;
       default = "wlan0";
       description = "Internet-facing (upstream) network interface.";
     };
 
-    tvAddress = mkOption {
-      type = types.str;
+    tvAddress = lib.mkOption {
+      type = lib.types.str;
       default = "10.10.10.1";
       description = "IPv4 address of the Pi on the TV-facing interface.";
     };
 
-    tvPrefixLength = mkOption {
-      type = types.int;
+    tvPrefixLength = lib.mkOption {
+      type = lib.types.int;
       default = 24;
       description = "Prefix length for the TV-facing subnet.";
     };
 
-    tvSubnet = mkOption {
-      type = types.str;
+    tvSubnet = lib.mkOption {
+      type = lib.types.str;
       default = "10.10.10.0/24";
       description = "TV-facing subnet in CIDR notation (used for NAT).";
     };
 
-    dhcpRange = mkOption {
-      type = types.str;
+    dhcpRange = lib.mkOption {
+      type = lib.types.str;
       default = "10.10.10.100,10.10.10.200,255.255.255.0,24h";
       description = "DHCP range for dnsmasq (start,end,netmask,lease-time).";
     };
 
     # ── DNS ──
 
-    upstreamDNS = mkOption {
-      type = types.str;
+    upstreamDNS = lib.mkOption {
+      type = lib.types.str;
       default = "127.0.0.53";
       description = ''
         Upstream DNS server for resolving allowlisted domains.
@@ -275,8 +273,8 @@ in
 
     # ── allowlists ──
 
-    allowedDomains = mkOption {
-      type = types.listOf types.str;
+    allowedDomains = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
       default = [ ];
       example = [
         "spotify.com"
@@ -291,8 +289,8 @@ in
       '';
     };
 
-    allowedIPv4s = mkOption {
-      type = types.listOf types.str;
+    allowedIPv4s = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
       default = [ ];
       example = [ "35.186.224.0/24" ];
       description = ''
@@ -303,8 +301,8 @@ in
 
     # ── tuning ──
 
-    nftsetTimeout = mkOption {
-      type = types.str;
+    nftsetTimeout = lib.mkOption {
+      type = lib.types.str;
       default = "1h";
       description = ''
         How long a dynamically resolved IP stays in the firewall allowlist
@@ -313,10 +311,10 @@ in
       '';
     };
 
-    dnsmasqPackage = mkOption {
-      type = types.package;
+    dnsmasqPackage = lib.mkOption {
+      type = lib.types.package;
       default = pkgs.dnsmasq;
-      defaultText = literalExpression "pkgs.dnsmasq";
+      defaultText = lib.literalExpression "pkgs.dnsmasq";
       description = ''
         dnsmasq package to use.  Must be built with nftset support
         (requires libnftnl; the default nixpkgs build includes this).
@@ -328,7 +326,7 @@ in
   # Implementation
   # ═══════════════════════════════════════════════════════════════════
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
 
     # ── kernel parameters ──
 
@@ -348,7 +346,7 @@ in
             prefixLength = cfg.tvPrefixLength;
           }
         ];
-        ipv6.addresses = mkForce [ ];
+        ipv6.addresses = lib.mkForce [ ];
       };
 
       # ── let DHCP and DNS through the system firewall on the TV iface ──

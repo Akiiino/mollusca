@@ -46,6 +46,44 @@
     };
   };
 
+  mollusca.tvFilter = {
+    enable = false; # TODO: enable after rewrite
+    tvInterface = "wlp170s0";
+    wanInterface = "enp0s13f0u3u1";
+    upstreamDNS = "127.0.0.1";
+
+    allowedDomains = [
+      # Spotify
+      "spotify.com"
+      "spotify.net"
+      "spotifycdn.com"
+      "scdn.co"
+      "audio-ak-spotify-com.akamaized.net"
+
+      # # YouTube
+      # "youtube.com"
+      # "googlevideo.com"
+      # "ytimg.com"
+      # "ggpht.com"
+      # "googleapis.com"
+      # "gstatic.com"
+      # "google.com"
+
+      # # Google Play
+      # "play-lh.googleusercontent.com"
+
+      # NTP
+      "pool.ntp.org"
+    ];
+
+    allowedIPv4s = [
+      # "8.8.8.8"
+      # "8.8.4.4"
+      "192.168.1.0/24"
+    ];
+  };
+
+
   age.secrets.actinella-backup.file = "${self}/secrets/actinella-backup.age";
 
   services = {
@@ -63,26 +101,8 @@
       };
     };
 
-    # coredns = {
-    #   enable = true;
-    #   config = ''
-    #     . {
-    #       bind 127.0.0.1 192.168.1.101
-    #       hosts ${self.inputs.stevenBlackHosts}/hosts {
-    #         192.168.1.204 valetudo.akiiino.me
-    #         192.168.1.101 akiiino.me
-    #         fallthrough
-    #       }
-    #       # Cloudflare Forwarding
-    #       forward . 1.1.1.1 1.0.0.1
-    #       cache
-    #     }
-    #   '';
-    # };
-
     hostapd = {
-      # enable = true;  # TODO
-      enable = false;
+      enable = false; # TODO: enable after tvFilter rewrite
       radios.wlp170s0 = {
         band = "2g";
         channel = 11;
@@ -97,44 +117,6 @@
           ignoreBroadcastSsid = "empty";
         };
       };
-    };
-
-    tvFilter = {
-      # enable = true;  # TODO
-      enable = false;
-      tvInterface = "wlp170s0";
-      wanInterface = "enp0s13f0u3u1";
-      upstreamDNS = "127.0.0.1";
-
-      allowedDomains = [
-        # Spotify
-        "spotify.com"
-        "spotify.net"
-        "spotifycdn.com"
-        "scdn.co"
-        "audio-ak-spotify-com.akamaized.net"
-
-        # # YouTube
-        # "youtube.com"
-        # "googlevideo.com"
-        # "ytimg.com"
-        # "ggpht.com"
-        # "googleapis.com"
-        # "gstatic.com"
-        # "google.com"
-
-        # # Google Play
-        # "play-lh.googleusercontent.com"
-
-        # NTP
-        "pool.ntp.org"
-      ];
-
-      allowedIPv4s = [
-        # "8.8.8.8"
-        # "8.8.4.4"
-        "192.168.1.0/24"
-      ];
     };
 
     pinchflat = {

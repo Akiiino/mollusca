@@ -10,7 +10,7 @@
 {
   nixpkgs = {
     config.allowUnfree = true;
-    overlays = import "${self}/overlays" { flake = self; };
+    overlays = import "${self}/overlays";
   };
 
   nix = {
