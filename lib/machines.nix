@@ -39,7 +39,7 @@ rec {
 
           minor-secrets = builtins.importAge {
             file = "${self}/secrets/minor-secrets.age";
-            hash = "sha256-ffNrB23DSaa9cq5qHZsqnLgQ4WvnryPCVEpYMJUYO8E=";
+            hash = "sha256-lea7ICweNJR9YuY+dbOl6iNHxZjA+nvdzCwBkTNdDt4=";
           };
         };
       }
