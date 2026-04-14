@@ -36,7 +36,6 @@
       enable = true;
       desktopEnvironment = "plasma";
     };
-    plymouth.enable = true;
     logitech.wireless.enable = true;
     eightbitdo.enable = true;
     bluetooth.enable = true;
@@ -73,7 +72,7 @@
     hostName = "nautilus";
 
     firewall = {
-      allowedTCPPorts = [ 11111 ];
+      allowedTCPPorts = [ 11111 ]; # TODO: what are the ports for?
       allowedUDPPorts = [ 11111 ];
     };
   };
@@ -81,7 +80,6 @@
   hardware = {
     graphics = {
       enable = true;
-      # driSupport = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
         libva-vdpau-driver
@@ -143,6 +141,5 @@
     firefox
     keepassxc
     onboard
-    vacuum-tube
   ];
 }

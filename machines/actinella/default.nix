@@ -19,7 +19,6 @@
     isRemote = true;
     useTailscale = true;
     isExitNode = true;
-    # advertiseRoutes = "192.168.1.0/24";
     bluetooth.enable = true;
   };
 
@@ -31,7 +30,7 @@
 
     services = {
       "akiiino.me" = {
-        proxyPass = "http://127.0.0.1:8096"; # or whatever the root should be
+        proxyPass = "http://127.0.0.1:8096";
         websocket = true;
       };
       "jellyfin.akiiino.me" = {

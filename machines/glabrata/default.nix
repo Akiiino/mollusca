@@ -287,8 +287,5 @@
     home.stateVersion = "23.11";
   };
 
-  # Keep the builder user exactly as the other machines define it
-  # (via mollusca.isRemote in remote.nix). No glabrata-specific overrides.
-
   networking.hostName = "glabrata";
 }

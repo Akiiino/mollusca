@@ -33,10 +33,6 @@ in
               && (userConfig.passwordFile == null)
             ) config.users.users
           );
-          xserver = {
-            # enable = true;
-            # excludePackages = [pkgs.xterm];
-          };
         };
         networking.networkmanager.enable = true;
         fonts.packages = [
@@ -44,6 +40,19 @@ in
           pkgs.nerd-fonts.hack
           pkgs.iosevka
         ];
+        boot = {
+          plymouth.enable = true;
+          consoleLogLevel = 3;
+          initrd.verbose = false;
+          kernelParams = [
+            "quiet"
+            "splash"
+            "boot.shell_on_fail"
+            "udev.log_priority=3"
+            "rd.systemd.show_status=auto"
+          ];
+          loader.timeout = 0;
+        };
       }
 
       (lib.mkIf (cfg.desktopEnvironment == "plasma") {

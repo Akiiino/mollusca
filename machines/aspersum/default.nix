@@ -36,10 +36,10 @@
     kernelParams = [
       "resume_offset=533760" # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile
 
-      "rtc_cmos.use_acpi_alarm=1"
+      "rtc_cmos.use_acpi_alarm=1" # TODO: why is this here?
     ];
 
-    initrd.systemd.enable = true;
+    initrd.systemd.enable = true; # TODO: is it reasonable to enable for all machines?
   };
 
   powerManagement.enable = true;
@@ -68,7 +68,6 @@
     };
     isRemote = true;
     enableHM = true;
-    plymouth.enable = true;
     logitech.wireless.enable = true;
     eightbitdo.enable = true;
     bluetooth.enable = true;
@@ -93,7 +92,6 @@
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
-      # wireplumber.extraConfig.no-ucm."monitor.alsa.properties"."alsa.use-ucm" = false;
     };
     xserver.wacom.enable = true;
     fwupd.enable = true;
@@ -111,7 +109,6 @@
     ''; # fixes the annoying "xhci_hcd 0000:c3:00.0: Refused to change power state from D0 to D3hot"
     tailscale = {
       extraSetFlags = [ "--operator=akiiino" ];
-      # extraUpFlags = [ "--operator=akiiino" ];
       useRoutingFeatures = lib.mkForce "client";
     };
   };
@@ -142,7 +139,6 @@
         "rus"
       ];
     })
-    # (pkgs.tic-80.override {withPro = true;})
   ];
 
   programs = {
@@ -151,10 +147,10 @@
   };
 
   hardware = {
-    framework.laptop13.audioEnhancement = {
-      enable = true;
-      hideRawDevice = false;
-    };
+    # framework.laptop13.audioEnhancement = { # doesn't do anything :( # TODO: figure out why?
+    #   enable = true;
+    #   hideRawDevice = false;
+    # };
     sane = {
       enable = true;
       extraBackends = [ pkgs.sane-airscan ];
@@ -164,18 +160,18 @@
 
   boot.supportedFilesystems = [ "nfs" ];
 
-  # fileSystems."/mnt/media" = {
-  #   device = "MyCloudEX2Ultra.local:/nfs/Media";
-  #   fsType = "nfs";
-  #   options = [
-  #     "x-systemd.automount" # Mount on first access
-  #     "noauto" # Don't mount at boot
-  #     "x-systemd.idle-timeout=600" # Unmount after 10min idle
-  #     "nfsvers=3" # Use NFSv4.2 for best performance
-  #     "hard" # hang if NAS is unavailable
-  #     "timeo=50" # 5 second timeout
-  #     "retrans=4" # 4 retries before giving up
-  #     "_netdev" # Wait for network
-  #   ];
-  # };
+  fileSystems."/mnt/media" = {
+    device = "MyCloudEX2Ultra.local:/nfs/Media";
+    fsType = "nfs";
+    options = [
+      "x-systemd.automount" # Mount on first access
+      "noauto" # Don't mount at boot
+      "x-systemd.idle-timeout=600" # Unmount after 10min idle
+      "nfsvers=3" # Use NFSv4.2 for best performance
+      "soft" # don't hang if NAS is unavailable
+      "timeo=50" # 5 second timeout
+      "retrans=4" # 4 retries before giving up
+      "_netdev" # Wait for network
+    ];
+  };
 }
