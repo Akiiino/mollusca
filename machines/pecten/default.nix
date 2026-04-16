@@ -1,7 +1,4 @@
 {
-  self,
-  config,
-  pkgs,
   lib,
   modulesPath,
   inputs,

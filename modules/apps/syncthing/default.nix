@@ -1,11 +1,4 @@
-{
-  config,
-  pkgs,
-  lib,
-  self,
-  osConfig,
-  ...
-}:
+_:
 {
   services.syncthing = {
     enable = true;

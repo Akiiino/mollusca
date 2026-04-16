@@ -1,6 +1,5 @@
 {
   modulesPath,
-  self,
   ...
 }:
 {

@@ -1,43 +1,19 @@
 {
-  config,
   pkgs,
-  lib,
   self,
   ...
 }:
 {
-  options.mollusca = {
-    enableHM = lib.mkEnableOption "home-manager environment"; # TODO: this does not make any sense, yes; will be fixed in a future rewrite
-  };
-  config = {
-    users.users.akiiino = {
-      isNormalUser = true;
-      extraGroups = [
-        "wheel"
-        "scanner"
-        "lp"
-      ];
-      shell = pkgs.zsh;
-      openssh.authorizedKeys.keys = [
-        (builtins.readFile "${self}/secrets/keys/akiiino.pub")
-      ];
-    };
-    home-manager.users.akiiino = lib.mkIf config.mollusca.enableHM (
-      { ... }:
-      {
-        imports = [
-          "${self}/modules/apps/direnv.nix"
-          "${self}/modules/apps/firefox"
-          "${self}/modules/apps/git.nix"
-          "${self}/modules/apps/kakoune"
-          "${self}/modules/apps/kitty.nix"
-          "${self}/modules/apps/starship.nix"
-          "${self}/modules/apps/syncthing"
-          "${self}/modules/apps/zsh.nix"
-          "${self}/users/akiiino/home.nix"
-        ];
-        programs.kitty.settings.kitty_mod = "ctrl+shift";
-      }
-    );
+  users.users.akiiino = {
+    isNormalUser = true;
+    extraGroups = [
+      "wheel"
+      "scanner"
+      "lp"
+    ];
+    shell = pkgs.zsh;
+    openssh.authorizedKeys.keys = [
+      (builtins.readFile "${self}/secrets/keys/akiiino.pub")
+    ];
   };
 }

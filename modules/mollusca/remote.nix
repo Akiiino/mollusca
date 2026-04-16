@@ -1,7 +1,6 @@
 {
   self,
   config,
-  pkgs,
   lib,
   ...
 }:
@@ -11,9 +10,24 @@
     useTailscale = lib.mkEnableOption "using Tailscale";
     isExitNode = lib.mkEnableOption "using this Tailscale node as exit node";
     advertiseRoutes = lib.mkOption {
-      type = lib.types.nullOr lib.types.str;
-      default = null;
-      description = "Routes to advertise";
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      example = [ "192.168.1.0/24" ];
+      description = "Subnet routes to advertise to other Tailscale peers.";
+    };
+    tailscaleRoutingFeatures = lib.mkOption {
+      type = lib.types.enum [
+        "none"
+        "client"
+        "server"
+        "both"
+      ];
+      default = "server";
+      description = ''
+        Tailscale routing features mode (passed to services.tailscale).
+        Use "client" on machines that consume exit nodes / subnet routes
+        but don't advertise any; "server" on machines that advertise.
+      '';
     };
   };
   config = lib.mkMerge [
@@ -40,7 +54,7 @@
       services.tailscale = {
         enable = true;
         openFirewall = true;
-        useRoutingFeatures = "server";
+        useRoutingFeatures = config.mollusca.tailscaleRoutingFeatures;
         authKeyFile = config.age.secrets.tailscaleKey.path;
         extraUpFlags = [
           "--hostname=${config.networking.hostName}"
@@ -49,8 +63,8 @@
         extraSetFlags =
           (lib.optional config.mollusca.isExitNode "--advertise-exit-node")
           ++ (lib.optional (
-            !(builtins.isNull config.mollusca.advertiseRoutes)
-          ) "--advertise-routes=${config.mollusca.advertiseRoutes}");
+            config.mollusca.advertiseRoutes != [ ]
+          ) "--advertise-routes=${lib.concatStringsSep "," config.mollusca.advertiseRoutes}");
         disableUpstreamLogging = true;
         disableTaildrop = true;
       };

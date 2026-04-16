@@ -2,7 +2,6 @@
   self,
   config,
   pkgs,
-  lib,
   inputs,
   ...
 }:
@@ -204,35 +203,12 @@
     };
   };
 
-  boot.supportedFilesystems = [ "nfs" ];
-
-  fileSystems."/mnt/media" = {
-    device = "MyCloudEX2Ultra.local:/nfs/Media";
-    fsType = "nfs";
-    options = [
-      "x-systemd.automount"
-      "noauto" # Don't mount at boot
-      "x-systemd.idle-timeout=600" # Unmount after 10min idle
-      "nfsvers=3"
-      "hard" # hang if NAS is unavailable
-      "timeo=50" # 5 second timeout
-      "retrans=4" # 4 retries before giving up
-      "_netdev" # Wait for network
-    ];
-  };
-  fileSystems."/mnt/backups" = {
-    device = "MyCloudEX2Ultra.local:/nfs/Backups";
-    fsType = "nfs";
-    options = [
-      "x-systemd.automount"
-      "noauto" # Don't mount at boot
-      "x-systemd.idle-timeout=600" # Unmount after 10min idle
-      "nfsvers=3"
-      "soft" # don't hang if NAS is unavailable
-      "timeo=50" # 5 second timeout
-      "retrans=4" # 4 retries before giving up
-      "_netdev" # Wait for network
-    ];
+  mollusca.nasMounts = {
+    "/mnt/media" = {
+      share = "MyCloudEX2Ultra.local:/nfs/Media";
+      hard = true;
+    };
+    "/mnt/backups".share = "MyCloudEX2Ultra.local:/nfs/Backups";
   };
 
   powerManagement = {

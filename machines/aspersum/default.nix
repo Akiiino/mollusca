@@ -1,11 +1,8 @@
 {
-  config,
   pkgs,
-  lib,
   self,
   self',
   inputs,
-  inputs',
   ...
 }:
 {
@@ -14,7 +11,7 @@
     ./hardware-configuration.nix
     ./disko.nix
     "${self}/users/akiiino"
-    inputs.fiveETools.nixosModules.default
+    "${self}/users/akiiino/home-manager.nix"
   ];
 
   # documentation.nixos = {
@@ -67,11 +64,11 @@
       desktopEnvironment = "niri";
     };
     isRemote = true;
-    enableHM = true;
     logitech.wireless.enable = true;
     eightbitdo.enable = true;
     bluetooth.enable = true;
     useTailscale = true;
+    tailscaleRoutingFeatures = "client";
   };
 
   services = {
@@ -109,7 +106,6 @@
     ''; # fixes the annoying "xhci_hcd 0000:c3:00.0: Refused to change power state from D0 to D3hot"
     tailscale = {
       extraSetFlags = [ "--operator=akiiino" ];
-      useRoutingFeatures = lib.mkForce "client";
     };
   };
 
@@ -158,20 +154,5 @@
     };
   };
 
-  boot.supportedFilesystems = [ "nfs" ];
-
-  fileSystems."/mnt/media" = {
-    device = "MyCloudEX2Ultra.local:/nfs/Media";
-    fsType = "nfs";
-    options = [
-      "x-systemd.automount" # Mount on first access
-      "noauto" # Don't mount at boot
-      "x-systemd.idle-timeout=600" # Unmount after 10min idle
-      "nfsvers=3"
-      "soft" # don't hang if NAS is unavailable
-      "timeo=50" # 5 second timeout
-      "retrans=4" # 4 retries before giving up
-      "_netdev" # Wait for network
-    ];
-  };
+  mollusca.nasMounts."/mnt/media".share = "MyCloudEX2Ultra.local:/nfs/Media";
 }

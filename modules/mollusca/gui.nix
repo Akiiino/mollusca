@@ -1,5 +1,4 @@
 {
-  self,
   config,
   pkgs,
   lib,
@@ -27,7 +26,7 @@ in
         services = {
           displayManager.hiddenUsers = builtins.attrNames (
             lib.filterAttrs (
-              name: userConfig:
+              _: userConfig:
               (userConfig.password == null)
               && (userConfig.hashedPassword == null)
               && (userConfig.passwordFile == null)
@@ -117,20 +116,11 @@ in
           xwayland-satellite
 
           nautilus
-          # cinnamon.nemo-with-extensions  # file browser
 
           adwaita-icon-theme
           gnome-themes-extra
         ];
         xdg.portal.config.common."org.freedesktop.impl.portal.FileChooser" = "gtk";
-        # TODO
-        # services.logind = {
-        #   lidSwitch = "suspend-then-hibernate";
-        # };
-        # systemd.sleep.extraConfig = ''
-        #   HibernateDelaySec=30m
-        #   SuspendState=mem
-        # '';
 
         security.polkit.enable = true;
         systemd.user.services.polkit-agent = {

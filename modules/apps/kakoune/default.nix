@@ -1,5 +1,4 @@
 {
-  config,
   pkgs,
   lib,
   self,
@@ -7,7 +6,7 @@
   ...
 }:
 let
-  kakoune = pkgs.kakoune-unwrapped.overrideAttrs (oldAttrs: rec {
+  kakoune = pkgs.kakoune-unwrapped.overrideAttrs (_: {
     version = "2025.06.03";
     src = self.inputs.kakoune;
   });

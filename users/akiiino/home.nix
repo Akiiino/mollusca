@@ -1,7 +1,6 @@
 {
   pkgs,
   config,
-  self,
   ...
 }:
 {
@@ -17,7 +16,6 @@
       obsidian
       dolphin-emu
       vlc
-      # libreoffice
       shotwell
       gyre-fonts
       localsend
@@ -127,25 +125,23 @@
     clipboard.disable-primary = true;
 
     spawn-at-startup = [
-      # TODO: replace with pkgs.*
-      { command = [ "waybar" ]; }
-      { command = [ "mako" ]; }
+      { command = [ "${pkgs.waybar}/bin/waybar" ]; }
+      { command = [ "${pkgs.mako}/bin/mako" ]; }
       {
         command = [
-          "nm-applet"
+          "${pkgs.networkmanagerapplet}/bin/nm-applet"
           "--indicator"
         ];
       }
       {
         command = [
-          "wl-clip-persist"
+          "${pkgs.wl-clip-persist}/bin/wl-clip-persist"
           "--clipboard"
           "regular"
           "--all-mime-type-regex"
           "'^(?!x-kde-passwordManagerHint).+'"
         ];
       }
-      # { command = [ "swaybg" "-i" "/path/to/wallpaper.jpg" ]; }
     ];
 
     # Output (monitor) configuration
@@ -517,7 +513,7 @@
 
       "Print".action.screenshot = { };
       "Ctrl+Print".action.screenshot-screen = { };
-      "Alt+Print".action.screenshot-window = { }; # TODO: missing?
+      "Alt+Print".action.screenshot-window = { };
 
       # Applications such as remote-desktop clients and software KVM switches may
       # request that niri stops processing the keyboard shortcuts defined here

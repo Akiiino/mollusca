@@ -1,10 +1,6 @@
 {
   self,
   config,
-  pkgs,
-  lib,
-  modulesPath,
-  inputs,
   minor-secrets,
   ...
 }:

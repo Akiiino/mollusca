@@ -1,9 +1,6 @@
 {
   self,
   pkgs,
-  lib,
-  modulesPath,
-  inputs,
   minor-secrets,
   ...
 }:

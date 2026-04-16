@@ -1,10 +1,7 @@
 {
   config,
   pkgs,
-  lib,
   self,
-  nixos-hardware,
-  modulesPath,
   ...
 }:
 {
@@ -53,7 +50,7 @@
         (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
       ];
     };
-    akiiino = { # intensionally modified from users/akiiino
+    akiiino = { # intentionally modified from users/akiiino
       isNormalUser = true;
       password = "";
       extraGroups = [
@@ -65,11 +62,9 @@
       ];
     };
   };
-  # users.groups.users.gid = 100;
 
   networking = {
     hostName = "nautilus";
-
     firewall = {
       allowedTCPPorts = [ 11111 ]; # TODO: what are the ports for?
       allowedUDPPorts = [ 11111 ];

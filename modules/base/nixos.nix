@@ -1,6 +1,5 @@
 {
   self,
-  pkgs,
   lib,
   config,
   ...
@@ -29,7 +28,6 @@
   users.mutableUsers = false;
   i18n = {
     defaultLocale = "en_US.UTF-8";
-    # extraLocales = "all";
     extraLocaleSettings = {
       LC_NUMERIC = "en_IE.UTF-8";
       LC_TIME = "en_IE.UTF-8";

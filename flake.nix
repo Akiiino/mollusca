@@ -1,11 +1,7 @@
 {
   inputs = {
-    fiveETools = {
-      url = "path:/home/akiiino/5etools/";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     WG-jail = {
-      url = "path:/home/akiiino/WG-jail/";
+      url = "github:Akiiino/WG-Jail";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Nix

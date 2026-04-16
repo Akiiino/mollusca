@@ -7,5 +7,6 @@
     ./bluetooth.nix
     ./tv-filter.nix
     ./lan-services.nix
+    ./nas-mounts.nix
   ];
 }

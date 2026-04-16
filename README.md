@@ -4,5 +4,6 @@ Contains system configs for my machines, as well as the shell environment I use 
 
 Secrets management is done via [agenix](https://github.com/ryantm/agenix). Minor secret-like things like URLs and emails are just kept in a separate private flake.
 
-## TODOs: # TODO: make a TODO ;)
+## TODO
+
 - Unify colorscheme management; `config.mollusca.colorscheme`?
