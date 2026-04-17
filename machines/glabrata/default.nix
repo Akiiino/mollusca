@@ -272,7 +272,9 @@
 
         **Continuing after ${minor-secrets.shortName} pushes:**
         1. Run `git syncup` — fetches origin, shows what ${minor-secrets.shortName} changed vs your last commit,
-           then resets to upstream.
+           then resets to upstream. Note that if you're continuing your work it's more token-efficient to read
+           the entire output of `git syncup`, rather than `| head -n *` it and have to look through `git log`
+           and read the files again.
         2. Continue working from the clean upstream state.
 
         Git aliases (defined in home-manager, available globally):
