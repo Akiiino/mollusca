@@ -3,6 +3,9 @@
   config,
   ...
 }:
+let
+  swaylockPackage = pkgs.swaylock-effects;
+in
 {
   home = {
     packages = with pkgs; [
@@ -47,12 +50,114 @@
     configHome = config.home.homeDirectory + "/Configuration";
     dataHome = config.home.homeDirectory + "/Data";
     stateHome = config.home.homeDirectory + "/State";
+
+    userDirs = {
+      enable = true;
+      createDirectories = true;
+    };
+
+    desktopEntries.kakoune-kitty = {
+      name = "Kakoune (via Kitty)";
+      genericName = "Text Editor";
+      exec = "kitty kak %F";
+      terminal = false;  # TODO: is this necessary?
+      categories = [ "Utility" "TextEditor" ];
+      mimeType = [
+        "text/plain"
+        "text/markdown"
+        "text/csv"
+        "application/json"
+      ];
+    };
+
+    mimeApps = {
+      enable = true;
+      defaultApplications =
+        let
+          images = "org.gnome.Shotwell-Viewer.desktop";
+          av = "vlc.desktop";
+          browser = "firefox.desktop";
+          mail = "thunderbird.desktop";
+          files = "org.kde.dolphin.desktop";
+          archive = "org.kde.ark.desktop";
+          text = "kakoune-kitty.desktop";
+        in
+        {
+          "application/pdf" = "org.gnome.Evince.desktop";
+
+          "text/plain" = text;
+          "text/markdown" = text;
+          "text/csv" = text;
+          "application/json" = text;
+
+          "image/jpeg" = images;
+          "image/png" = images;
+          "image/gif" = images;
+          "image/webp" = images;
+          "image/bmp" = images;
+          "image/tiff" = images;
+
+          "video/mp4" = av;
+          "video/mpeg" = av;
+          "video/webm" = av;
+          "video/x-matroska" = av;
+          "video/x-msvideo" = av;
+          "video/quicktime" = av;
+          "video/ogg" = av;
+          "audio/mpeg" = av;
+          "audio/flac" = av;
+          "audio/ogg" = av;
+          "audio/wav" = av;
+          "audio/x-wav" = av;
+          "audio/mp4" = av;
+
+          "text/html" = browser;
+          "application/xhtml+xml" = browser;
+          "x-scheme-handler/http" = browser;
+          "x-scheme-handler/https" = browser;
+          "x-scheme-handler/about" = browser;
+          "x-scheme-handler/unknown" = browser;
+
+          "x-scheme-handler/mailto" = mail;
+          "message/rfc822" = mail;
+          "application/x-extension-eml" = mail;
+
+          "inode/directory" = files;
+
+          "application/zip" = archive;
+          "application/x-tar" = archive;
+          "application/x-compressed-tar" = archive;
+          "application/x-bzip2-compressed-tar" = archive;
+          "application/x-xz-compressed-tar" = archive;
+          "application/gzip" = archive;
+          "application/x-7z-compressed" = archive;
+          "application/vnd.rar" = archive;
+          "application/x-rar" = archive;
+        };
+    };
   };
   programs = {
     kakoune.enable = true;
     bash.enable = true;
     zsh.enable = true;
     fzf.enable = true;
+
+    swaylock = {
+      enable = true;
+      package = swaylockPackage;
+      settings = {
+        clock = true;
+        timestr = "%H:%M";
+        datestr = "%A, %B %e";
+        indicator = true;
+        indicator-radius = 120;
+        indicator-thickness = 10;
+        screenshots = false;
+        ignore-empty-password = true;
+        show-failed-attempts = true;
+        font = "Iosevka";
+      };
+    };
   };
   services = {
     swayosd = {
@@ -62,45 +167,132 @@
     blueman-applet.enable = true;
     playerctld.enable = true;
 
+    # USB automount
     udiskie = {
-      # USB automount
       enable = true;
       tray = "auto";
     };
 
-    swayidle = {
-      # timed sleep
-      enable = true;
-      events = [
-        {
-          event = "before-sleep";
-          command = "${pkgs.swaylock}/bin/swaylock -f";
-        }
-        {
-          event = "lock";
-          command = "${pkgs.swaylock}/bin/swaylock -f";
-        }
-      ];
-      timeouts = [
-        # TODO
-        # {
-        #   timeout = 300;   # 5 minutes
-        #   command = "${pkgs.brightnessctl}/bin/brightnessctl -s set 10%";
-        #   resumeCommand = "${pkgs.brightnessctl}/bin/brightnessctl -r";
-        # }
-        # {
-        #   timeout = 600;   # 10 minutes
-        #   command = "${pkgs.swaylock}/bin/swaylock -f";
-        # }
-        # {
-        #   timeout = 900;   # 15 minutes
-        #   command = "systemctl suspend";
-        # }
-      ];
-    };
+    # TODO: this works, but is somewhat too much for this file. Maybe turn into a
+    # `mollusca` module with proper types?
+    # Maybe someone already made a module I can add to my flake?
+    swayidle =
+      let
+        onBattery = pkgs.writeShellScript "on-battery" ''
+          for f in /sys/class/power_supply/A*/online; do
+            [ -r "$f" ] && [ "$(cat "$f")" = "0" ] && exit 0
+          done
+          exit 1
+        '';
+
+        actions = {
+          dim = {
+            run = "${pkgs.brightnessctl}/bin/brightnessctl -s set 10%";
+            resume = "${pkgs.brightnessctl}/bin/brightnessctl -r";
+          };
+          lock.run = "${swaylockPackage}/bin/swaylock -f";
+          displayOff.run = "${pkgs.niri}/bin/niri msg action power-off-monitors";
+          suspend.run = "${pkgs.systemd}/bin/systemctl suspend";
+        };
+
+        schedule = [
+          {
+            minutes = 5;
+            battery = "dim";
+            ac = null;
+          }
+          {
+            minutes = 10;
+            battery = "lock";
+            ac = "lock";
+          }
+          {
+            minutes = 11;
+            battery = "displayOff";
+            ac = null;
+          }
+          {
+            minutes = 15;
+            battery = "suspend";
+            ac = "displayOff";
+          }
+        ];
+
+        mkTimeout =
+          {
+            minutes,
+            battery,
+            ac,
+          }:
+          let
+            b = if battery == null then null else actions.${battery};
+            a = if ac == null then null else actions.${ac};
+            command =
+              if b != null && a != null then
+                (
+                  if b.run == a.run then
+                    b.run
+                  else
+                    "if ${onBattery}; then ${b.run}; else ${a.run}; fi"
+                )
+              else if b != null then
+                "if ${onBattery}; then ${b.run}; fi"
+              else
+                "if ! ${onBattery}; then ${a.run}; fi";
+            resume =
+              if b != null && b ? resume then
+                b.resume
+              else if a != null && a ? resume then
+                a.resume
+              else
+                null;
+          in
+          {
+            timeout = minutes * 60;
+            inherit command;
+          }
+          // (if resume == null then { } else { resumeCommand = resume; });
+      in
+      {
+        enable = true;
+        events = [
+          {
+            event = "before-sleep";
+            command = "${swaylockPackage}/bin/swaylock -f";
+          }
+          {
+            event = "lock";
+            command = "${swaylockPackage}/bin/swaylock -f";
+          }
+        ];
+        timeouts = map mkTimeout schedule;
+      };
   };
 
-  programs.niri.settings = { # TODO: remove tons of default config boilerplate
+  programs.niri.settings = let
+    powerMenu = pkgs.writeShellApplication {
+      name = "power-menu";
+      runtimeInputs = [
+        pkgs.fuzzel
+        swaylockPackage
+        pkgs.systemd
+        pkgs.niri
+      ];
+      text = ''
+        choice=$(printf '%s\n' Lock Logout Suspend Hibernate Reboot Shutdown \
+          | fuzzel --dmenu --prompt 'Power: ')
+        case "$choice" in
+          Lock)      swaylock -f ;;
+          Logout)    niri msg action quit ;;
+          Suspend)   systemctl suspend ;;
+          Hibernate) systemctl hibernate ;;
+          Reboot)    systemctl reboot ;;
+          Shutdown)  systemctl poweroff ;;
+        esac
+      '';
+    };
+  in
+  { # TODO: remove tons of default config boilerplate
     prefer-no-csd = true;
     input = {
       focus-follows-mouse = {
@@ -206,6 +398,10 @@
       "Super+Alt+L" = {
         hotkey-overlay.title = "Lock the Screen: swaylock";
         action.spawn = "swaylock";
+      };
+      "Mod+Shift+E" = {
+        hotkey-overlay.title = "Power Menu";
+        action.spawn = "${powerMenu}/bin/power-menu";
       };
 
       # Example volume keys mappings for PipeWire & WirePlumber.

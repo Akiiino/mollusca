@@ -41,6 +41,11 @@
 
   powerManagement.enable = true;
 
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchExternalPower = "lock";
+  };
+
   networking = {
     hostName = "aspersum";
     firewall = {
