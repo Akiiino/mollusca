@@ -38,6 +38,9 @@ in
           pkgs.fira-code
           pkgs.nerd-fonts.hack
           pkgs.iosevka
+          pkgs.noto-fonts
+          pkgs.noto-fonts-color-emoji
+          pkgs.noto-fonts-cjk-sans
         ];
         boot = {
           plymouth.enable = true;
@@ -108,19 +111,34 @@ in
 
           mako
 
-          swaylock
           swayidle
 
           waybar
 
           xwayland-satellite
 
-          nautilus
+          kdePackages.dolphin
+          kdePackages.ark
+          kdePackages.breeze-icons
 
           adwaita-icon-theme
           gnome-themes-extra
         ];
-        xdg.portal.config.common."org.freedesktop.impl.portal.FileChooser" = "gtk";
+
+        xdg.portal = {
+          enable = true;
+          extraPortals = with pkgs; [
+            xdg-desktop-portal-gnome
+            xdg-desktop-portal-gtk
+          ];
+          config.common = {
+            default = [
+              "gnome"
+              "gtk"
+            ];
+            "org.freedesktop.impl.portal.FileChooser" = "gtk";
+          };
+        };
 
         security.polkit.enable = true;
         systemd.user.services.polkit-agent = {
