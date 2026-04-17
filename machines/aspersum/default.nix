@@ -33,10 +33,10 @@
     kernelParams = [
       "resume_offset=533760" # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile
 
-      "rtc_cmos.use_acpi_alarm=1" # TODO: why is this here?
+      "rtc_cmos.use_acpi_alarm=1" # TODO: why is this here? Figure out if this fix is sill needed.
     ];
 
-    initrd.systemd.enable = true; # TODO: is it reasonable to enable for all machines?
+    initrd.systemd.enable = true; # TODO: is it reasonable to enable for all machines? Investigate.
   };
 
   powerManagement.enable = true;
