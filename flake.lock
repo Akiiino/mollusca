@@ -459,6 +459,18 @@
         "type": "github"
       }
     },
+    "minor-secrets": {
+      "flake": false,
+      "locked": {
+        "path": "./secrets/minor-secrets.age",
+        "type": "path"
+      },
+      "original": {
+        "path": "./secrets/minor-secrets.age",
+        "type": "path"
+      },
+      "parent": []
+    },
     "niri": {
       "inputs": {
         "niri-stable": "niri-stable",
@@ -662,6 +674,7 @@
         "kakoune": "kakoune",
         "mac-app-util": "mac-app-util",
         "mini-agenix": "mini-agenix",
+        "minor-secrets": "minor-secrets",
         "niri": "niri",
         "nixcasks": "nixcasks",
         "nixos-anywhere": "nixos-anywhere",

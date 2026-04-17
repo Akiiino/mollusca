@@ -65,6 +65,12 @@
       url = "github:akiiino/mini-agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # to evaluate without the correct `age` key, override this input with the stub:
+    # --override-input minor-secrets path:./secrets/minor-secrets-stub.nix
+    minor-secrets = {
+      url = "path:./secrets/minor-secrets.age";
+      flake = false;
+    };
 
     # Packages outside nixpkgs
     nixcasks = {
@@ -179,6 +185,18 @@
             };
             packages = {
               cups-brother-dcpl3520cdw = pkgs.callPackage ./packages/cups-brother-dcpl3520cdw.nix { };
+            };
+            checks = {
+              statix = pkgs.runCommand "statix-check" { nativeBuildInputs = [ pkgs.statix ]; } ''
+                cd ${self}
+                statix check .
+                touch $out
+              '';
+              deadnix = pkgs.runCommand "deadnix-check" { nativeBuildInputs = [ pkgs.deadnix ]; } ''
+                cd ${self}
+                deadnix --fail --exclude '**/hardware-configuration.nix' .
+                touch $out
+              '';
             };
           };
       }

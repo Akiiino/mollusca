@@ -21,6 +21,8 @@ pkgs.mkShell {
     nh
     nix
     age
+    statix
+    deadnix
   ];
 
   NIX_CONFIG = inputs.mini-agenix.lib."${system}".nixConfig;

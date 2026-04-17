@@ -49,7 +49,7 @@
     ];
     users.claude = {
       directories = [
-        ".claude/projects/-/memory"
+        ".claude/projects"
       ];
       files = [
         ".claude/.credentials.json"

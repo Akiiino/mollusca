@@ -37,10 +37,23 @@ rec {
             inputs'
             ;
 
-          minor-secrets = builtins.importAge {
-            file = "${self}/secrets/minor-secrets.age";
-            hash = "sha256-F8yJ46McB65dLEEy8RyE+4ZbyG8ZebID0yCBLGk3+EU=";
-          };
+          # minor-secrets comes from the `minor-secrets` flake input, which
+          # defaults to secrets/minor-secrets.age (age-encrypted). If the
+          # input path ends in `.age` we decrypt via mini-agenix; otherwise
+          # we import it as a plain Nix file. This lets this flake get evaluated
+          # in untrusted environments.
+          minor-secrets =
+            let
+              src = inputs.minor-secrets.outPath;
+              isAge = (builtins.match ".*\\.age" (toString src)) != null;
+            in
+            if isAge then
+              builtins.importAge {
+                file = src;
+                hash = "sha256-F8yJ46McB65dLEEy8RyE+4ZbyG8ZebID0yCBLGk3+EU=";
+              }
+            else
+              import src;
         };
       }
     );
