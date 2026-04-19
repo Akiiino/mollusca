@@ -152,10 +152,10 @@ in
         indicator = true;
         indicator-radius = 120;
         indicator-thickness = 10;
-        screenshots = false;
+        screenshots = true;
         ignore-empty-password = true;
         show-failed-attempts = true;
-        font = "Iosevka";
+        effect-blur = "20x10";
       };
     };
   };

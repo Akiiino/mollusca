@@ -1,0 +1,34 @@
+diff --git a/effects.c b/effects.c
+index b91b977..bfb87cc 100644
+--- a/effects.c
++++ b/effects.c
+@@ -153,10 +153,10 @@ static void blur_h(uint32_t *dest, uint32_t *src, int width, int height,
+ 
+ 		// Deal with the main body
+ 		for (int x = 0; x < width; ++x) {
+-			if (x >= minradius) {
+-				r_acc -= (srow[x - radius] & 0xff0000) >> 16;
+-				g_acc -= (srow[x - radius] & 0x00ff00) >> 8;
+-				b_acc -= (srow[x - radius] & 0x0000ff);
++			if (x > minradius) {
++				r_acc -= (srow[x - radius - 1] & 0xff0000) >> 16;
++				g_acc -= (srow[x - radius - 1] & 0x00ff00) >> 8;
++				b_acc -= (srow[x - radius - 1] & 0x0000ff);
+ 				range -= 1;
+ 			}
+ 
+@@ -200,10 +200,10 @@ static void blur_v(uint32_t *dest, uint32_t *src, int width, int height,
+ 
+ 		// Deal with the main body
+ 		for (int y = 0; y < height; ++y) {
+-			if (y >= minradius) {
+-				r_acc -= (scol[(y - radius) * width] & 0xff0000) >> 16;
+-				g_acc -= (scol[(y - radius) * width] & 0x00ff00) >> 8;
+-				b_acc -= (scol[(y - radius) * width] & 0x0000ff);
++			if (y > minradius) {
++				r_acc -= (scol[(y - radius - 1) * width] & 0xff0000) >> 16;
++				g_acc -= (scol[(y - radius - 1) * width] & 0x00ff00) >> 8;
++				b_acc -= (scol[(y - radius - 1) * width] & 0x0000ff);
+ 				range -= 1;
+ 			}
+ 
