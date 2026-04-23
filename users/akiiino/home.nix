@@ -43,8 +43,15 @@ in
     };
     language.base = "en_US.UTF-8";
 
+    sessionVariables = {
+      XCOMPOSECACHE = "${config.xdg.cacheHome}/X11/xcompose";
+      GRADLE_USER_HOME = "${config.xdg.dataHome}/gradle";
+      ANDROID_USER_HOME = "${config.xdg.dataHome}/android";
+    };
+
     stateVersion = "22.05";
   };
+
   xdg = {
     enable = true;
     configHome = config.home.homeDirectory + "/Configuration";

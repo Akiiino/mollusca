@@ -12,11 +12,6 @@
       name = "Iosevka Medium Extended";
       size = lib.mkDefault 14;
     };
-    environment = {
-      "PATH" = "\${PATH}:/usr/local/bin:/bin";
-      # "LC_ALL" = "en_US.UTF-8";
-      # "LANG" = "en_US.UTF-8";
-    };
     settings = {
       font_family = "Iosevka Medium Extended";
       bold_font = "Iosevka Bold Extended";
@@ -48,10 +43,8 @@
         + " Hack Nerd Font Mono Regular";
       confirm_os_window_close = 2;
       placement_strategy = "center";
-      hide_window_decorations = false;
+      hide_window_decorations = true;
       window_padding_width = 10;
-      # tab_bar_margin_width = 1;
-      # tab_bar_margin_height = "5.0 0.0";
       disable_ligatures = "always";
       tab_bar_min_tabs = 1;
 
@@ -81,10 +74,6 @@
       enabled_layouts = "splits:split_axis=vertical";
       focus_follows_mouse = true;
 
-      # "cursor_blink_interval" = 0;
-      # "cursor_shape" = "block";
-
-      # scrollback_pager $XDG_CONFIG_HOME/kitty/kak-pager.sh INPUT_LINE_NUMBER CURSOR_LINE CURSOR_COLUMN
       kitty_mod = lib.mkDefault "super";
       macos_option_as_alt = "left";
 
@@ -155,55 +144,10 @@
       "kitty_mod+kp_subtract" = "change_font_size all -2.0";
       "kitty_mod+backspace" = "change_font_size all 0";
 
-      #: Select and act on visible text
-
-      "kitty_mod+e" = "kitten hints";
-
-      #: Open a currently visible URL using the keyboard. The program used
-      #: to open the URL is specified in open_url_with.
-
-      "kitty_mod+p>f" = "kitten hints --type path --program -";
-
-      #: Select a path/filename and insert it into the terminal. Useful, for
-      #: instance to run git commands on a filename output from a previous
-      #: git command.
-
-      "kitty_mod+p>alt+f" = "kitten hints --type path";
-
-      #: Select a path/filename and open it with the default open program.
-
-      "kitty_mod+p>l" = "kitten hints --type line --program -";
-
-      #: Select a line of text and insert it into the terminal. Use for the
-      #: output of things like: ls -1
-
-      "kitty_mod+p>w" = "kitten hints --type word --program -";
-
-      #: Select words and insert into terminal.
-
-      "kitty_mod+p>h" = "kitten hints --type hash --program -";
-
-      #: Select something that looks like a hash and insert it into the
-      #: terminal. Useful with git, which uses sha1 hashes to identify
-      #: commits
-
-      "kitty_mod+p>n" = "kitten hints --type linenum";
-
-      #: Select something that looks like filename:linenum and open it in
-      #: vim at the specified line number.
-
-      "kitty_mod+p>y" = "kitten hints --type hyperlink";
-
-      #: Select a hyperlink (i.e. a URL that has been marked as such by the
-      #: terminal program, for example, by ls --hyperlink=auto).
-
-      #: Miscellaneous
-
       "kitty_mod+u" = "kitten unicode_input";
       "kitty_mod+alt+;" = "kitty_shell window";
       "kitty_mod+delete" = "clear_terminal reset active";
 
-      "f1" = "new_window_with_cwd";
       "ctrl+shift+f6" = "debug_config";
     };
   };
