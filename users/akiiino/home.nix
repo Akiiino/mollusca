@@ -172,6 +172,7 @@ in
       topMargin = 0.75;
     };
     blueman-applet.enable = true;
+    swaync.enable = true;
     playerctld.enable = true;
 
     # USB automount
@@ -325,7 +326,6 @@ in
 
     spawn-at-startup = [
       { command = [ "${pkgs.waybar}/bin/waybar" ]; }
-      { command = [ "${pkgs.mako}/bin/mako" ]; }
       {
         command = [
           "${pkgs.networkmanagerapplet}/bin/nm-applet"
@@ -409,6 +409,13 @@ in
       "Mod+Shift+E" = {
         hotkey-overlay.title = "Power Menu";
         action.spawn = "${powerMenu}/bin/power-menu";
+      };
+      "Mod+N" = {
+        hotkey-overlay.title = "Notification Menu";
+        action.spawn = [
+          "${pkgs.swaynotificationcenter}/bin/swaync-client"
+          "--toggle-panel"
+        ];
       };
 
       # Example volume keys mappings for PipeWire & WirePlumber.

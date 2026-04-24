@@ -109,8 +109,6 @@ in
           pavucontrol
           fuzzel
 
-          mako
-
           swayidle
 
           waybar
