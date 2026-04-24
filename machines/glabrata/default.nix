@@ -59,6 +59,7 @@
 
   environment.systemPackages = with pkgs; [
     claude-code
+    mcp-nixos
     abduco
     tmux
     git
@@ -169,6 +170,15 @@
 
     home.file = {
       "git/.keep".text = "";
+
+      ".claude/mcp.json".text = builtins.toJSON {
+        mcpServers = {
+          nixos = {
+            type = "stdio";
+            command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
+          };
+        };
+      };
 
       ".claude/CLAUDE.md".text = ''
         # Glabrata — Claude Code Sandbox
