@@ -80,6 +80,7 @@
     resolved.enable = true;
     power-profiles-daemon.enable = true;
     thermald.enable = true;
+    upower.percentageCritical = 10;
     avahi = {
       enable = true;
       nssmdns4 = true;
