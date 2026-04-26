@@ -112,6 +112,7 @@
     tailscale = {
       extraSetFlags = [ "--operator=akiiino" ];
     };
+    displayManager.autoLogin.user = "akiiino";
   };
 
   security.rtkit.enable = true;
