@@ -34,10 +34,17 @@
       "resume_offset=533760" # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile
 
       "rtc_cmos.use_acpi_alarm=1" # TODO: why is this here? Figure out if this fix is sill needed.
+
+      "amdgpu.cwsr_enable=0"  # possibly helps with unhibernation; if doesn't, add next line
+      # "amdgpu.sg_display=0"
     ];
 
     initrd.systemd.enable = true; # TODO: is it reasonable to enable for all machines? Investigate.
   };
+
+  systemd.sleep.extraConfig = ''
+    HibernateMode=shutdown
+  ''; # possibly helps with unhibernation
 
   powerManagement.enable = true;
 
