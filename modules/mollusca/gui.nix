@@ -115,7 +115,7 @@ in
 
           xwayland-satellite
 
-          kdePackages.dolphin
+          xfce.thunar
           kdePackages.ark
           kdePackages.breeze-icons
 

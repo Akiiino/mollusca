@@ -85,7 +85,7 @@ in
           av = "vlc.desktop";
           browser = "firefox.desktop";
           mail = "thunderbird.desktop";
-          files = "org.kde.dolphin.desktop";
+          files = "org.xfce.thunar.desktop";
           archive = "org.kde.ark.desktop";
           text = "kakoune-kitty.desktop";
         in
@@ -162,7 +162,7 @@ in
         screenshots = true;
         ignore-empty-password = true;
         show-failed-attempts = true;
-        effect-blur = "20x10";
+        effect-blur = "10x6";
       };
     };
   };
