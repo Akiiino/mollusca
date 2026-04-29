@@ -103,7 +103,6 @@ in
 
         # Essential packages for a usable niri desktop
         environment.systemPackages = with pkgs; [
-          wl-clip-persist
           networkmanagerapplet
           playerctl
           pavucontrol

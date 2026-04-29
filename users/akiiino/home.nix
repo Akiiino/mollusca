@@ -339,7 +339,7 @@ in
           "--clipboard"
           "regular"
           "--all-mime-type-regex"
-          "'^(?!x-kde-passwordManagerHint).+'"
+          "^(?!x-kde-passwordManagerHint).+"
         ];
       }
     ];
