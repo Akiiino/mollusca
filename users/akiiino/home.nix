@@ -333,15 +333,6 @@ in
           "--indicator"
         ];
       }
-      {
-        command = [
-          "${pkgs.wl-clip-persist}/bin/wl-clip-persist"
-          "--clipboard"
-          "regular"
-          "--all-mime-type-regex"
-          "^(?!x-kde-passwordManagerHint).+"
-        ];
-      }
     ];
 
     # Output (monitor) configuration
@@ -775,6 +766,15 @@ in
         };
       }
 
+    ];
+  };
+
+  services.wl-clip-persist = {
+    enable = true;
+    clipboardType = "regular";
+    extraOptions = [
+      "--all-mime-type-regex"
+      "^(?!x-kde-passwordManagerHint).+"
     ];
   };
 
