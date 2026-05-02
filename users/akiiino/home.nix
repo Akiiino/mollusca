@@ -178,7 +178,10 @@ in
     };
     blueman-applet.enable = true;
     swaync.enable = true;
-    poweralertd.enable = true;
+    poweralertd = {
+      enable = true;
+      extraArgs = [ "-s" "-i" "line-power" ];
+    };
     playerctld.enable = true;
 
     # USB automount
