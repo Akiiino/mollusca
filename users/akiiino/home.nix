@@ -149,6 +149,11 @@ in
     zsh.enable = true;
     fzf.enable = true;
 
+    walker = {
+      enable = true;
+      runAsService = true;
+    };
+
     swaylock = {
       enable = true;
       package = swaylockPackage;
@@ -390,11 +395,15 @@ in
         hotkey-overlay.title = "Open a Terminal: kitty";
         action.spawn = "kitty";
       };
-      "Mod+D" = {
+      "Mod+Shift+D" = {
         hotkey-overlay.title = "Run an Application: fuzzel";
         action.spawn = "fuzzel";
       };
-      "Super+Alt+L" = {
+      "Mod+D" = {
+        hotkey-overlay.title = "Run an Application: walker";
+        action.spawn = "walker";
+      };
+      "Mod+Alt+L" = {
         hotkey-overlay.title = "Lock the Screen: swaylock";
         action.spawn = "swaylock";
       };

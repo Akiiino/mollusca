@@ -1,10 +1,12 @@
 {
   self,
+  inputs,
   ...
 }:
 {
   home-manager.users.akiiino = {
     imports = [
+      inputs.walker.homeManagerModules.default
       "${self}/modules/apps/direnv.nix"
       "${self}/modules/apps/firefox"
       "${self}/modules/apps/git.nix"
