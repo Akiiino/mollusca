@@ -4,6 +4,28 @@
   minor-secrets,
   ...
 }:
+let
+  # Wrap claude-code so it always loads our home-manager-managed MCP config
+  # without touching the mutable ~/.claude.json or ~/.claude/settings.json.
+  mcpJson = pkgs.writeText "claude-mcp.json" (builtins.toJSON {
+    mcpServers = {
+      nixos = {
+        type = "stdio";
+        command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
+      };
+    };
+  });
+  claude-code-wrapped = pkgs.symlinkJoin {
+    name = "claude-code-wrapped-${pkgs.claude-code.version or "0"}";
+    paths = [ pkgs.claude-code ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/claude \
+        --add-flags "--mcp-config ${mcpJson}"
+    '';
+    inherit (pkgs.claude-code) meta;
+  };
+in
 {
   imports = [
     ./hardware-configuration.nix
@@ -58,7 +80,7 @@
   };
 
   environment.systemPackages = with pkgs; [
-    claude-code
+    claude-code-wrapped
     mcp-nixos
     abduco
     tmux
@@ -94,32 +116,6 @@
       (builtins.readFile "${self}/secrets/keys/akiiino.pub")
     ];
   };
-
-  # Persistent Claude Code tmux session for the claude user.
-  # systemd.services.sandbox-tmux = {
-  #   description = "Persistent Claude Code tmux session";
-  #   after = [
-  #     "network-online.target"
-  #     "tailscaled.service"
-  #   ];
-  #   wants = [
-  #     "network-online.target"
-  #   ];
-  #   wantedBy = [ "multi-user.target" ];
-  #   serviceConfig = {
-  #     Type = "forking";
-  #     User = "claude";
-  #     ExecStart = "${pkgs.tmux}/bin/tmux new-session -d -s main ${pkgs.claude-code}/bin/claude --remote-control --dangerously-skip-permissions --model opus";
-  #     ExecStop = "${pkgs.tmux}/bin/tmux kill-session -t main";
-  #     Restart = "always";
-  #     RestartSec = 5;
-  #   };
-  #   path = [
-  #     "/run/wrappers"
-  #     "/run/current-system/sw"
-  #     "/etc/profiles/per-user/claude"
-  #   ];
-  # };
 
   home-manager.users.claude = _: {
     programs = {
@@ -171,16 +167,12 @@
     home.file = {
       "git/.keep".text = "";
 
-      ".claude/mcp.json".text = builtins.toJSON {
-        mcpServers = {
-          nixos = {
-            type = "stdio";
-            command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
-          };
+      ".claude/CLAUDE.md".text = let
+        extraText = builtins.readAge {
+          file = "${self}/secrets/extraText.age";
+          hash = "sha256-y7kdxLTocqco2fYf62wxkLnCFrDmtK1TWf1/5lknE6Y=";
         };
-      };
-
-      ".claude/CLAUDE.md".text = ''
+      in ''
         # Glabrata — Claude Code Sandbox
 
         You are running on `glabrata`, a headless NixOS VM dedicated to you (Claude Code).
@@ -190,14 +182,14 @@
         as "you", or by name as ${minor-secrets.shortName} — but always in second person,
         never third person.
 
+        ${extraText}
+
         ## System overview
 
         - **OS**: NixOS 25.11 (declarative, immutable system config)
         - **User**: `claude` (wheel group, passwordless sudo)
-        - **Session**: You run inside a tmux session (`main`) managed by systemd
         - **Network**: Tailscale VPN; internet access available
         - **Resources**: ~8 GiB RAM, ~76 GiB disk (mostly free)
-        - **Auth**: OAuth credentials at `~/.claude/.credentials.json` (bind-mounted from persistent volume)
 
         ## Package management
 
@@ -268,6 +260,7 @@
         - You can clone repos, create branches, and produce patches
         - You do not currently have push access to any remote repos
         - Remember to pull upstream changes before starting or continuing your work
+        - If you need to look at another repo's contents, clone it into /tmp/ instead of fetching webpages
 
         ## Collaboration workflow
 
