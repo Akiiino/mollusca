@@ -118,17 +118,17 @@
     steam = {
       enable = true;
       remotePlay.openFirewall = true;
-      gamescopeSession = {
-        enable = true;
-      };
+      # gamescopeSession = {
+      #   enable = true;
+      # };
     };
-    gamescope = {
-      enable = true;
-      capSysNice = true;
-    };
+    # gamescope = {
+    #   enable = true;
+    #   capSysNice = true;
+    # };
   };
 
-  services.displayManager.defaultSession = "steam";
+  # services.displayManager.defaultSession = "steam";
 
   environment.systemPackages = with pkgs; [
     ungoogled-chromium
