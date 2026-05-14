@@ -127,6 +127,10 @@
         nixpkgs-stable.follows = "nixpkgs";
       };
     };
+    traveller = {
+      url = "github:Akiiino/traveller";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     walker = {
       url = "github:abenz1267/walker";
       inputs.nixpkgs.follows = "nixpkgs";

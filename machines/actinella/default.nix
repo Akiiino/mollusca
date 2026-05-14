@@ -12,6 +12,7 @@
     ./transmission.nix
     ./hardware-configuration.nix
     ./disko.nix
+    inputs.traveller.nixosModules.default
   ];
 
   mollusca = {
@@ -86,6 +87,10 @@
   age.secrets.actinella-backup.file = "${self}/secrets/actinella-backup.age";
 
   services = {
+    traveller = {
+      enable = true;
+      bind = "0.0.0.0:3456";
+    };
     fwupd.enable = true;
 
     avahi = {
@@ -195,6 +200,7 @@
       allowedTCPPorts = [
         # 53 # DNS
         # 80 # nginx
+        3456 # traveller
       ];
       allowedUDPPorts = [
         # 53 # DNS

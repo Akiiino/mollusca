@@ -632,11 +632,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1777428379,
-        "narHash": "sha256-ypxFOeDz+CqADEQNL72haqGjvZQdBR5Vc7pyx2JDttI=",
+        "lastModified": 1778430510,
+        "narHash": "sha256-Ti+ZBvW6yrWWAg2szExVTwCd4qOJ3KlVr1tFHfyfi8Q=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "755f5aa91337890c432639c60b6064bb7fe67769",
+        "rev": "8fd9daa3db09ced9700431c5b7ad0e8ba199b575",
         "type": "github"
       },
       "original": {
@@ -682,6 +682,27 @@
         "type": "github"
       }
     },
+    "pyproject-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "traveller",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1776715674,
+        "narHash": "sha256-Gs1VnEkCkkRZxJQAC/Dhz0Jbfi22mFXChbtNg9w/Ybg=",
+        "owner": "pyproject-nix",
+        "repo": "pyproject.nix",
+        "rev": "69f57f27e52a87c54e28138a75ec741cd46663c9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "pyproject.nix",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "WG-jail": "WG-jail",
@@ -708,6 +729,7 @@
         "parinfer-rust": "parinfer-rust",
         "secondbrain": "secondbrain",
         "stevenBlackHosts": "stevenBlackHosts",
+        "traveller": "traveller",
         "walker": "walker"
       }
     },
@@ -822,6 +844,49 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default-linux",
+        "type": "github"
+      }
+    },
+    "traveller": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "pyproject-nix": "pyproject-nix",
+        "treefmt-nix": "treefmt-nix"
+      },
+      "locked": {
+        "lastModified": 1778497135,
+        "narHash": "sha256-8ghB2XGJNQts3XdGCZ0rJjXClxYZgwR9IZvnCmRV23Y=",
+        "owner": "Akiiino",
+        "repo": "traveller",
+        "rev": "68c7bdb436473b5334cdad8affcf7c267f5e3dbd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Akiiino",
+        "repo": "traveller",
+        "type": "github"
+      }
+    },
+    "treefmt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "traveller",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775636079,
+        "narHash": "sha256-pc20NRoMdiar8oPQceQT47UUZMBTiMdUuWrYu2obUP0=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "790751ff7fd3801feeaf96d7dc416a8d581265ba",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
         "type": "github"
       }
     },
