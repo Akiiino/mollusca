@@ -43,6 +43,7 @@
           gs = "git status";
           gd = "git diff";
           gl = "git log --oneline -20";
+          c = "claude --dangerously-skip-permissions";
         };
         initExtra = ''
           # Show working directory and git branch in prompt
