@@ -28,6 +28,7 @@ in
         port = "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0";
         adapter = "ember";
         baudrate = 115200;
+        serial.rtscts = true;
       };
 
       mqtt.server = "mqtt://127.0.0.1:${toString mosquitto-port}";
