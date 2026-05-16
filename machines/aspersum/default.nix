@@ -157,9 +157,10 @@
   };
 
   hardware = {
-    framework.laptop13.audioEnhancement = { # doesn't do anything :( # TODO: figure out why?
+    framework.laptop13.audioEnhancement = {
       enable = true;
       hideRawDevice = false;
+      rawDeviceName = "alsa_output.pci-0000_c1_00.6.analog-stereo";
     };
     sane = {
       enable = true;
