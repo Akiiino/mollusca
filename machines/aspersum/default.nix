@@ -157,10 +157,10 @@
   };
 
   hardware = {
-    # framework.laptop13.audioEnhancement = { # doesn't do anything :( # TODO: figure out why?
-    #   enable = true;
-    #   hideRawDevice = false;
-    # };
+    framework.laptop13.audioEnhancement = { # doesn't do anything :( # TODO: figure out why?
+      enable = true;
+      hideRawDevice = false;
+    };
     sane = {
       enable = true;
       extraBackends = [ pkgs.sane-airscan ];
