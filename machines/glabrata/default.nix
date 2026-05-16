@@ -170,7 +170,7 @@ in
       ".claude/CLAUDE.md".text = let
         extraText = builtins.readAge {
           file = "${self}/secrets/extraText.age";
-          hash = "sha256-y7kdxLTocqco2fYf62wxkLnCFrDmtK1TWf1/5lknE6Y=";
+          hash = "sha256-AbpHGcgLb+kRsJGnwFEktk7uzpZOCcBY74+YBdrKVGs=";
         };
       in ''
         # Glabrata — Claude Code Sandbox
