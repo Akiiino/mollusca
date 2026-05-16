@@ -1,76 +1,11 @@
 {
   self,
   pkgs,
-  minor-secrets,
   ...
 }:
-let
-  # Wrap claude-code so it always loads our home-manager-managed MCP config
-  # without touching the mutable ~/.claude.json or ~/.claude/settings.json.
-  mcpJson = pkgs.writeText "claude-mcp.json" (builtins.toJSON {
-    mcpServers = {
-      nixos = {
-        type = "stdio";
-        command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
-      };
-    };
-  });
-  claude-code-wrapped = pkgs.symlinkJoin {
-    name = "claude-code-wrapped-${pkgs.claude-code.version or "0"}";
-    paths = [ pkgs.claude-code ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/claude \
-        --add-flags "--mcp-config ${mcpJson}"
-    '';
-    inherit (pkgs.claude-code) meta;
-  };
-in
 {
-  imports = [
-    ./hardware-configuration.nix
-    ./disko.nix
-    self.inputs.impermanence.nixosModules.impermanence
-    # "${modulesPath}/profiles/perlless.nix"
-    ./rinkaru.nix
-  ];
-
-  mollusca = {
-    isRemote = true;
-    useTailscale = true;
-  };
-
-  system.tools = {
-    nixos-rebuild.enable = false;
-    nixos-install.enable = false;
-  };
-
-  # Persistent volume — survives nixos-anywhere reinstalls.
-  # Deliberately NOT in disko.nix so it won't be reformatted on reinstall.
-  fileSystems."/mnt/persist" = {
-    device = "/dev/disk/by-id/scsi-0HC_Volume_105394318";
-    fsType = "btrfs";
-    options = [
-      "discard"
-      "nofail"
-      "compress=zstd"
-    ];
-    neededForBoot = true;
-  };
-
-  # impermanence bind-mounts paths from /mnt/persist into their real locations.
   environment.persistence."/mnt/persist" = {
-    hideMounts = true;
-    directories = [
-      "/var/lib/tailscale"
-    ];
-    files = [
-      "/etc/ssh/ssh_host_ed25519_key"
-      "/etc/ssh/ssh_host_ed25519_key.pub"
-      "/etc/ssh/ssh_host_rsa_key"
-      "/etc/ssh/ssh_host_rsa_key.pub"
-    ];
-    users.claude = {
+    users.rinkaru = {
       directories = [
         ".claude/projects"
       ];
@@ -80,34 +15,7 @@ in
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    claude-code-wrapped
-    mcp-nixos
-    abduco
-    tmux
-    git
-    curl
-    jq
-    ripgrep
-    fd
-    tree
-    htop
-    # Additional tools for a productive agent environment
-    python3
-    file
-    less
-    wget
-    unzip
-    gnumake
-    gcc
-    openssh
-    diffutils
-    patch
-    which
-  ];
-
-  # The claude user is the dedicated Claude Code operator on this machine.
-  users.users.claude = {
+  users.users.rinkaru = {
     isNormalUser = true;
     extraGroups = [
       "wheel"
@@ -115,10 +23,11 @@ in
     ];
     openssh.authorizedKeys.keys = [
       (builtins.readFile "${self}/secrets/keys/akiiino.pub")
+      (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
     ];
   };
 
-  home-manager.users.claude = _: {
+  home-manager.users.rinkaru = _: {
     programs = {
       bash = {
         enable = true;
@@ -178,17 +87,15 @@ in
 
         You are running on `glabrata`, a headless NixOS VM dedicated to you (Claude Code).
         No human uses this machine directly — you are the primary operator.
-        The human operator (and the person interacting with you) is ${minor-secrets.shortName},
+        The human operator (and the person interacting with you) is Rinkaru,
         who manages this machine remotely. Address the operator directly in second person:
-        as "you", or by name as ${minor-secrets.shortName} — but always in second person,
+        as "you", or by name as Rinkaru — but always in second person,
         never third person.
-
-        ${extraText}
 
         ## System overview
 
         - **OS**: NixOS 25.11 (declarative, immutable system config)
-        - **User**: `claude` (wheel group, passwordless sudo)
+        - **User**: `rinkaru` (wheel group, passwordless sudo)
         - **Network**: Tailscale VPN; internet access available
         - **Resources**: ~8 GiB RAM, ~76 GiB disk (mostly free)
 
@@ -227,7 +134,7 @@ in
         `~/.gitconfig` or `~/.bashrc` directly won't survive a rebuild — they are
         overwritten on each deployment. **To change any persistent system setting,
         modify the mollusca Nix config** (`machines/glabrata/default.nix`) and
-        produce a patch for ${minor-secrets.shortName} to deploy via the collaboration workflow.
+        produce a patch for Rinkaru to deploy via the collaboration workflow.
 
         ## Machine configuration
 
@@ -253,7 +160,7 @@ in
         ## Working with projects
 
         - **Repo location**: Always clone and work on repos in `~/git/`.
-          ${minor-secrets.shortName} pulls changes from glabrata over Tailscale SSH, so repos must
+          Rinkaru pulls changes from glabrata over Tailscale SSH, so repos must
           be at a stable, predictable path (e.g., `~/git/<repo-name>`).
         - direnv + nix-direnv are installed — entering a directory with a `flake.nix`
           and `.envrc` will automatically activate the devshell
@@ -265,17 +172,17 @@ in
 
         ## Collaboration workflow
 
-        Use this workflow when making code changes for ${minor-secrets.shortName} to review:
+        Use this workflow when making code changes for Rinkaru to review:
 
         **Delivering changes:**
         1. Do your work, making one or multiple commits locally as needed (WIP commits are fine).
         2. When ready, run `git mkpatch` — writes all changes vs upstream to `~/claude.patch`.
-        3. Tell ${minor-secrets.shortName} the patch is ready. They apply it with:
-           `ssh claude@glabrata 'cat ~/claude.patch' | git apply -`
-        4. ${minor-secrets.shortName} modifies as needed, commits, and pushes to `origin`.
+        3. Tell Rinkaru the patch is ready. They apply it with:
+           `ssh rinkaru@glabrata 'cat ~/claude.patch' | git apply -`
+        4. Rinkaru modifies as needed, commits, and pushes to `origin`.
 
-        **Continuing after ${minor-secrets.shortName} pushes:**
-        1. Run `git syncup` — fetches origin, shows what ${minor-secrets.shortName} changed vs your last commit,
+        **Continuing after Rinkaru pushes:**
+        1. Run `git syncup` — fetches origin, shows what Rinkaru changed vs your last commit,
            then resets to upstream. Note that if you're continuing your work it's more token-efficient to read
            the entire output of `git syncup`, rather than `| head -n *` it and have to look through `git log`
            and read the files again.
@@ -289,6 +196,4 @@ in
 
     home.stateVersion = "23.11";
   };
-
-  networking.hostName = "glabrata";
 }
