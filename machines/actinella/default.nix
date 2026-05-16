@@ -10,6 +10,7 @@
     inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
     inputs.WG-jail.nixosModules.default
     ./transmission.nix
+    ./smarthome.nix
     ./hardware-configuration.nix
     ./disko.nix
     inputs.traveller.nixosModules.default
