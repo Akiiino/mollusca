@@ -27,7 +27,6 @@
     enable = true;
     lanAddress = "192.168.1.101";
     blocklist = self.inputs.stevenBlackHosts + "/hosts";
-    upstreamDNS = "1.1.1.1 1.0.0.1";
 
     services = {
       "jellyfin.akiiino.me" = {
@@ -43,6 +42,9 @@
       };
       "pinchflat.akiiino.me" = {
         proxyPass = "http://127.0.0.1:8945";
+      };
+      "traveller.akiiino.me" = {
+        proxyPass = "http://127.0.0.1:3456";
       };
     };
   };
@@ -128,13 +130,11 @@
       enable = true;
       mediaDir = "/mnt/media/YouTube/";
       port = 8945;
-      openFirewall = true;
       selfhosted = true;
     };
 
     jellyfin = {
       enable = true;
-      openFirewall = true;
     };
 
     borgbackup.jobs.var-backup = {
@@ -192,22 +192,10 @@
     ];
   };
 
-  environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD"; # Jellyfin hardware transcoding
   systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD"; # Jellyfin hardware transcoding
 
   networking = {
     hostName = "actinella";
-    firewall = {
-      allowedTCPPorts = [
-        # 53 # DNS
-        # 80 # nginx
-        3456 # traveller
-      ];
-      allowedUDPPorts = [
-        # 53 # DNS
-        5353 # mDNS (Avahi)
-      ];
-    };
   };
 
   mollusca.nasMounts = {

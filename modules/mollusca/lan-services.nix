@@ -222,7 +222,7 @@ in
 
     # ── Firewall ────────────────────────────────────────────────────
 
-    networking.firewall.interfaces.${config.services.tailscale.interfaceName} = {
+    networking.firewall = {
       allowedTCPPorts = [
         53
         80
