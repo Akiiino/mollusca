@@ -9,14 +9,24 @@ let
   openhab-image = "docker.io/openhab/openhab:5.1.4@sha256:d583a280a8a8cdbff5bcebe5bd7d04a7839769350a7e54f600b4aaa26162392f";
 in
 {
+  # Mosquitto: per-service auth, anonymous denied.
+  #
   services.mosquitto = {
     enable = true;
     listeners = [
       {
         address = "127.0.0.1";
         port = mosquitto-port;
-        omitPasswordAuth = true;
-        settings.allow_anonymous = true;
+        users = {
+          zigbee2mqtt = {
+            hashedPasswordFile = config.age.secrets.mosquitto-zigbee2mqtt-password.path;
+            acl = [ "readwrite #" ];
+          };
+          openhab = {
+            hashedPasswordFile = config.age.secrets.mosquitto-openhab-password.path;
+            acl = [ "readwrite #" ];
+          };
+        };
       }
     ];
   };
@@ -28,6 +38,11 @@ in
     mode = "0400";
   };
 
+  age.secrets.mosquitto-zigbee2mqtt-password.file =
+    "${self}/secrets/mosquitto-zigbee2mqtt-password.age";
+  age.secrets.mosquitto-openhab-password.file =
+    "${self}/secrets/mosquitto-openhab-password.age";
+
   services.zigbee2mqtt = {
     enable = true;
     settings = {
@@ -38,7 +53,11 @@ in
         serial.rtscts = true;
       };
 
-      mqtt.server = "mqtt://127.0.0.1:${toString mosquitto-port}";
+      mqtt = {
+        server = "mqtt://127.0.0.1:${toString mosquitto-port}";
+        user = "!secrets.yaml mqtt_user";
+        password = "!secrets.yaml mqtt_password";
+      };
 
       frontend = {
         host = "127.0.0.1";
@@ -151,15 +170,24 @@ in
       # the user systemd bus (absent here) and fail at startup. We don't
       # consume container healthcheck status — systemd Restart=on-failure
       # handles crash recovery directly.
+      #
+      # Networking: we deliberately don't use --network=host. Instead the
+      # container runs in its own namespace (rootless podman default, pasta
+      # backend) and OH's HTTP port is published only on 127.0.0.1 of the
+      # host. nginx (from mollusca.lanServices) proxies to it; nothing else
+      # on LAN/Tailscale can hit OH directly. --add-host gives the container
+      # a stable name to reach the host (for the Mosquitto broker on the
+      # host's 127.0.0.1) regardless of which rootless network backend is
+      # in use.
       ExecStart = pkgs.writeShellScript "openhab-run" ''
         exec ${podman}/bin/podman run \
           --replace --name=openhab \
           --no-healthcheck \
-          --network=host \
+          --publish=127.0.0.1:${toString openhab-port}:${toString openhab-port} \
+          --add-host=host.containers.internal:host-gateway \
           --env=CRYPTO_POLICY=unlimited \
           --env=TZ=${config.time.timeZone} \
           --env=OPENHAB_HTTP_PORT=${toString openhab-port} \
-          --env=OPENHAB_HTTPS_PORT=8443 \
           --volume=/var/lib/openhab/conf:/openhab/conf \
           --volume=/var/lib/openhab/userdata:/openhab/userdata \
           --volume=/var/lib/openhab/addons:/openhab/addons \

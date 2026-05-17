@@ -37,4 +37,12 @@ in
     akiiino
     actinella
   ];
+  "mosquitto-zigbee2mqtt-password.age".publicKeys = [
+    akiiino
+    actinella
+  ];
+  "mosquitto-openhab-password.age".publicKeys = [
+    akiiino
+    actinella
+  ];
 }
