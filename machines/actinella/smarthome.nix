@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, self, ... }:
 let
   mosquitto-port = 1883;
   zigbee2mqtt-port = 8085;
@@ -21,6 +21,13 @@ in
     ];
   };
 
+  age.secrets.zigbee2mqtt-secrets = {
+    file = "${self}/secrets/zigbee2mqtt.age";
+    owner = "zigbee2mqtt";
+    group = "zigbee2mqtt";
+    mode = "0400";
+  };
+
   services.zigbee2mqtt = {
     enable = true;
     settings = {
@@ -37,8 +44,20 @@ in
         host = "127.0.0.1";
         port = zigbee2mqtt-port;
       };
+
+      advanced = {
+        network_key = "!secrets.yaml network_key";
+        pan_id = 26632;
+        ext_pan_id = [167 205 123 235 244 185 208 31];
+      };
     };
   };
+
+  systemd.services.zigbee2mqtt.preStart = lib.mkAfter ''
+    install -m 0400 -o zigbee2mqtt -g zigbee2mqtt \
+      ${config.age.secrets.zigbee2mqtt-secrets.path} \
+      /var/lib/zigbee2mqtt/secrets.yaml
+  '';
 
   # ── OpenHAB (rootless podman) ───────────────────────────────────────
   #

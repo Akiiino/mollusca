@@ -33,4 +33,8 @@ in
     akiiino
     pecten
   ];
+  "zigbee2mqtt.age".publicKeys = [
+    akiiino
+    actinella
+  ];
 }
