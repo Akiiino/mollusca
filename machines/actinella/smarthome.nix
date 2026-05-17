@@ -9,8 +9,9 @@ let
   openhab-image = "docker.io/openhab/openhab:5.1.4@sha256:d583a280a8a8cdbff5bcebe5bd7d04a7839769350a7e54f600b4aaa26162392f";
 in
 {
-  # Mosquitto: per-service auth, anonymous denied.
-  #
+  # Mosquitto: per-service auth, anonymous denied. Loopback-only;
+  # OpenHAB reaches it through pasta's host-loopback splice
+  # (--map-host-loopback on the container, see below).
   services.mosquitto = {
     enable = true;
     listeners = [
@@ -69,6 +70,8 @@ in
         pan_id = 26632;
         ext_pan_id = [167 205 123 235 244 185 208 31];
       };
+
+      homeassistant.enabled = true;
     };
   };
 
@@ -175,16 +178,26 @@ in
       # container runs in its own namespace (rootless podman default, pasta
       # backend) and OH's HTTP port is published only on 127.0.0.1 of the
       # host. nginx (from mollusca.lanServices) proxies to it; nothing else
-      # on LAN/Tailscale can hit OH directly. --add-host gives the container
-      # a stable name to reach the host (for the Mosquitto broker on the
-      # host's 127.0.0.1) regardless of which rootless network backend is
-      # in use.
+      # on LAN/Tailscale can hit OH directly.
+      #
+      # `--network=pasta:--map-host-loopback,169.254.1.3` tells pasta to
+      # splice container traffic destined for 169.254.1.3 onto the host's
+      # loopback (packets arrive on the host with src=dst=127.0.0.1).
+      # `--add-host` then pins `host.containers.internal` to that same
+      # address inside the container. This is the supported way in current
+      # podman+pasta to reach a host service bound to 127.0.0.1 without
+      # exposing it externally; the older `--map-gw` no longer wires up
+      # `host.containers.internal` and silently leaves it pointing at an
+      # address nothing answers on (see containers/podman#28456).
+      # 169.254.1.3 is picked deliberately to avoid colliding with pasta's
+      # own internal use of 169.254.1.2.
       ExecStart = pkgs.writeShellScript "openhab-run" ''
         exec ${podman}/bin/podman run \
           --replace --name=openhab \
           --no-healthcheck \
+          --network=pasta:--map-host-loopback,169.254.1.3 \
           --publish=127.0.0.1:${toString openhab-port}:${toString openhab-port} \
-          --add-host=host.containers.internal:host-gateway \
+          --add-host=host.containers.internal:169.254.1.3 \
           --env=CRYPTO_POLICY=unlimited \
           --env=TZ=${config.time.timeZone} \
           --env=OPENHAB_HTTP_PORT=${toString openhab-port} \

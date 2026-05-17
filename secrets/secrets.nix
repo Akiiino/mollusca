@@ -45,4 +45,8 @@ in
     akiiino
     actinella
   ];
+  "mosquitto-valetudo-password.age".publicKeys = [
+    akiiino
+    actinella
+  ];
 }
