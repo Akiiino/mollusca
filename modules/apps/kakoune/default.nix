@@ -47,7 +47,13 @@ in
         {
           name = "WinSetOption";
           option = "filetype=(janet)";
-          commands = "parinfer-enable-window -smart";
+          commands = ''
+            parinfer-enable-window -smart
+            remove-hooks window parinfer                                                                                                            
+            hook -group parinfer window NormalKey (?![uU])(?!<a-[uU]>)(?!<c-[jk]>).+ %{ parinfer-try-mode -smart }                                  
+            hook -group parinfer window InsertChar (?!\n).* %{ parinfer-try-mode -smart }                                                           
+            hook -group parinfer window InsertDelete .* %{ parinfer-try-mode -smart }
+          '';
           group = "parinfer";
           once = false;
         }
