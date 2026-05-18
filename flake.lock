@@ -856,11 +856,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1778497135,
-        "narHash": "sha256-8ghB2XGJNQts3XdGCZ0rJjXClxYZgwR9IZvnCmRV23Y=",
+        "lastModified": 1778848017,
+        "narHash": "sha256-2B5Dde9aYujWdwj0LRlhF2pkHA1Ede6MlSxVKKHTGIY=",
         "owner": "Akiiino",
         "repo": "traveller",
-        "rev": "68c7bdb436473b5334cdad8affcf7c267f5e3dbd",
+        "rev": "7420fc08130981f5a36564775e538ae896d6c6e9",
         "type": "github"
       },
       "original": {
