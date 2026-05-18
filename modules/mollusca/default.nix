@@ -1,5 +1,6 @@
 {
   imports = [
+    ./acme.nix
     ./remote.nix
     ./gui.nix
     ./logitech.nix

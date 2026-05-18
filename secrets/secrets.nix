@@ -31,6 +31,7 @@ in
   ];
   "acme-dns.age".publicKeys = [
     akiiino
+    actinella
     pecten
   ];
   "zigbee2mqtt.age".publicKeys = [

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, self, ... }:
+{ config, pkgs, lib, self, minor-secrets, ... }:
 let
   mosquitto-port = 1883;
   zigbee2mqtt-port = 8085;
@@ -9,9 +9,15 @@ let
   openhab-image = "docker.io/openhab/openhab:5.1.4@sha256:d583a280a8a8cdbff5bcebe5bd7d04a7839769350a7e54f600b4aaa26162392f";
 in
 {
-  # Mosquitto: per-service auth, anonymous denied. Loopback-only;
-  # OpenHAB reaches it through pasta's host-loopback splice
-  # (--map-host-loopback on the container, see below).
+  mollusca.useDefaultDomain = true;
+
+  age.secrets.mosquitto-zigbee2mqtt-password.file =
+    "${self}/secrets/mosquitto-zigbee2mqtt-password.age";
+  age.secrets.mosquitto-openhab-password.file =
+    "${self}/secrets/mosquitto-openhab-password.age";
+  age.secrets.mosquitto-valetudo-password.file =
+    "${self}/secrets/mosquitto-valetudo-password.age";
+
   services.mosquitto = {
     enable = true;
     listeners = [
@@ -29,8 +35,26 @@ in
           };
         };
       }
+      {
+        address = "192.168.1.101";
+        port = 8883;
+        settings = {
+          certfile = "/var/lib/acme/${minor-secrets.personalDomain}/fullchain.pem";
+          keyfile  = "/var/lib/acme/${minor-secrets.personalDomain}/key.pem";
+        };
+        users = {
+          valetudo = {
+            hashedPasswordFile = config.age.secrets.mosquitto-valetudo-password.path;
+            acl = [ "readwrite valetudo/#" ];
+          };
+        };
+      }
     ];
   };
+  users.users.mosquitto.extraGroups = [ "acme" ];
+  security.acme.certs."${minor-secrets.personalDomain}".reloadServices = ["mosquitto.service"];
+  networking.firewall.allowedTCPPorts = [8883]; # mosquitto
+  mollusca.lanServices.extraDnsRecords."mqtt.akiiino.me" = "192.168.1.101";
 
   age.secrets.zigbee2mqtt-secrets = {
     file = "${self}/secrets/zigbee2mqtt.age";
@@ -38,11 +62,6 @@ in
     group = "zigbee2mqtt";
     mode = "0400";
   };
-
-  age.secrets.mosquitto-zigbee2mqtt-password.file =
-    "${self}/secrets/mosquitto-zigbee2mqtt-password.age";
-  age.secrets.mosquitto-openhab-password.file =
-    "${self}/secrets/mosquitto-openhab-password.age";
 
   services.zigbee2mqtt = {
     enable = true;
