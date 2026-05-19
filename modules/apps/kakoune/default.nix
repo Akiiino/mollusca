@@ -49,9 +49,20 @@ in
           option = "filetype=(janet)";
           commands = ''
             parinfer-enable-window -smart
-            remove-hooks window parinfer                                                                                                            
-            hook -group parinfer window NormalKey (?![uU])(?!<a-[uU]>)(?!<c-[jk]>).+ %{ parinfer-try-mode -smart }                                  
-            hook -group parinfer window InsertChar (?!\n).* %{ parinfer-try-mode -smart }                                                           
+            define-command -hidden parinfer-refresh-baseline %{
+              evaluate-commands -draft -save-regs '/"|^@' -no-hooks %{
+                  set-option buffer parinfer_previous_cursor_char_column %val{cursor_char_column}
+                  set-option buffer parinfer_previous_cursor_line %val{cursor_line}
+                  execute-keys '\%'
+                  set-option buffer parinfer_previous_text %val{selection}
+              }
+              set-option buffer parinfer_previous_timestamp %val{timestamp}
+            }
+
+            remove-hooks window parinfer
+            hook -group parinfer window NormalKey ([uU]|<a-[uU]>|<c-[jk]>) %{ parinfer-refresh-baseline }
+            hook -group parinfer window NormalKey (?![uU])(?!<a-[uU]>)(?!<c-[jk]>).+ %{ parinfer-try-mode -smart }
+            hook -group parinfer window InsertChar (?!\n).* %{ parinfer-try-mode -smart }
             hook -group parinfer window InsertDelete .* %{ parinfer-try-mode -smart }
           '';
           group = "parinfer";
