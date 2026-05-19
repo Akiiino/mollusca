@@ -1,0 +1,21 @@
+#compdef jcd
+emulate -L zsh
+setopt local_options extended_glob
+
+zstyle ':completion:*:*:jcd:*' menu select
+
+local -a lines cands
+lines=( ${(f)"$(_jcd_scan)"} )
+local word="${(L)PREFIX}${(L)SUFFIX}" line canon
+for line in $lines; do
+  canon="${line%%$'\t'*}"
+  [[ -z $word || ${(L)canon} == *${word}* ]] && cands+=( "$canon" )
+done
+
+# Skip the "insert longest common prefix" step that would
+# otherwise clobber the user's typed text (e.g. project -> PER11.).
+(( ${#cands} > 1 )) && compstate[insert]=menu
+# -Q: don't backslash-quote spaces in matches (affects both the
+# menu listing and the inserted command line). jcd reads $* so
+# the multi-word completion round-trips fine.
+compadd -Q -U -a cands

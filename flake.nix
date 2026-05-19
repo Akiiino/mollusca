@@ -193,6 +193,7 @@
             };
             packages = {
               cups-brother-dcpl3520cdw = pkgs.callPackage ./packages/cups-brother-dcpl3520cdw.nix { };
+              zsh-jcd = pkgs.callPackage ./packages/zsh-jcd { };
             };
             checks = {
               statix = pkgs.runCommand "statix-check" { nativeBuildInputs = [ pkgs.statix ]; } ''

@@ -1,5 +1,6 @@
 {
   self,
+  self',
   inputs,
   inputs',
   minor-secrets,
@@ -31,6 +32,7 @@
     extraSpecialArgs = {
       inherit
         self
+        self'
         inputs
         inputs'
         minor-secrets

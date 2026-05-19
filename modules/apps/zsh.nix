@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  self',
   ...
 }:
 {
@@ -10,6 +11,12 @@
     dotDir = config.xdg.configHome + "/zsh";
     history.path = config.xdg.stateHome + "/zsh/history";
     syntaxHighlighting.enable = true;
+    plugins = [
+      {
+        name = "jcd";
+        src = "${self'.packages.zsh-jcd}/share/zsh-jcd";
+      }
+    ];
     shellAliases = rec {
       ll = "${lib.getExe pkgs.eza} --long --header --git --icons --classify --group-directories-first";
       lla = "${ll} --all";

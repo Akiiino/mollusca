@@ -1,0 +1,15 @@
+# Walk ~/Documents Johnny.Decimal-ish trees. Emits TSV
+# <canon>\t<abspath> for every category (NN ...) and every item
+# (NN.NN ...) inside a category whose children match NN.NN.
+# canon is "<tree-prefix><folder-basename>", e.g. "PER11.44 project name".
+emulate -L zsh
+setopt local_options extended_glob null_glob
+local cat item tree catnum
+for cat in $HOME/Documents/[A-Z][A-Z][A-Z]\ */<0-99>-<0-99>\ */<0-99>\ *(/N); do
+  tree=${${cat:h:h:t}[1,3]}
+  catnum=${${cat:t}%% *}
+  printf '%s%s\t%s\n' "$tree" "${cat:t}" "$cat"
+  for item in $cat/${catnum}.<0-99>\ *(/N); do
+    printf '%s%s\t%s\n' "$tree" "${item:t}" "$item"
+  done
+done
