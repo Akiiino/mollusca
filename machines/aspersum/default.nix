@@ -39,6 +39,7 @@
     ];
 
     initrd.systemd.enable = true; # TODO: is it reasonable to enable for all machines? Investigate.
+    initrd.kernelModules = [ "amdgpu" ]; # helps plymouth start faster
   };
 
   systemd.sleep.extraConfig = ''
