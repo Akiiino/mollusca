@@ -69,6 +69,7 @@ let
       bind 127.0.0.1 ${cfg.lanAddress}
       ${blocklistDirective} {
     ${allLanHostsLines}
+        ttl 30
         fallthrough
       }
       forward . ${cfg.upstreamDNS}
@@ -80,6 +81,7 @@ let
     .:53 {
       bind TAILSCALE_IP
       hosts /run/lan-services-dns/ts-hosts {
+        ttl 30
         fallthrough
       }
       forward . ${cfg.upstreamDNS}
