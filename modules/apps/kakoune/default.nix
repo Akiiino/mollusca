@@ -6,9 +6,10 @@
   ...
 }:
 let
-  kakoune = pkgs.kakoune-unwrapped.overrideAttrs (_: {
+  kakoune = pkgs.kakoune-unwrapped.overrideAttrs (old: {
     version = "2025.06.03";
     src = self.inputs.kakoune;
+    patches = (old.patches or []) ++ [ ./parinfer.patch ];
   });
 in
 {
@@ -20,7 +21,9 @@ in
       pkgs.kakounePlugins.kak-ansi
       pkgs.kakounePlugins.powerline-kak
       pkgs.kakounePlugins.openscad-kak
-      inputs'.parinfer-rust.packages.parinfer-rust
+      (inputs'.parinfer-rust.packages.parinfer-rust.overrideAttrs (old: {
+        patches = (old.patches or []) ++ [ ./parinfer.patch ];
+      }))
       inputs'.kak-yac.packages.kak-yac
     ];
     config = {
@@ -49,21 +52,6 @@ in
           option = "filetype=(janet)";
           commands = ''
             parinfer-enable-window -smart
-            define-command -hidden parinfer-refresh-baseline %{
-              evaluate-commands -draft -save-regs '/"|^@' -no-hooks %{
-                  set-option buffer parinfer_previous_cursor_char_column %val{cursor_char_column}
-                  set-option buffer parinfer_previous_cursor_line %val{cursor_line}
-                  execute-keys '\%'
-                  set-option buffer parinfer_previous_text %val{selection}
-              }
-              set-option buffer parinfer_previous_timestamp %val{timestamp}
-            }
-
-            remove-hooks window parinfer
-            hook -group parinfer window NormalKey ([uU]|<a-[uU]>|<c-[jk]>) %{ parinfer-refresh-baseline }
-            hook -group parinfer window NormalKey (?![uU])(?!<a-[uU]>)(?!<c-[jk]>).+ %{ parinfer-try-mode -smart }
-            hook -group parinfer window InsertChar (?!\n).* %{ parinfer-try-mode -smart }
-            hook -group parinfer window InsertDelete .* %{ parinfer-try-mode -smart }
           '';
           group = "parinfer";
           once = false;

@@ -1,0 +1,49 @@
+diff --git a/rc/parinfer.kak b/rc/parinfer.kak
+index cc58131..6aab892 100644
+--- a/rc/parinfer.kak
++++ b/rc/parinfer.kak
+@@ -17,7 +17,22 @@ parinfer-enable-window -params ..1 %{
+         echo -debug %val{error}
+     }
+     evaluate-commands %sh{
+-    printf "%s\n" "hook -group parinfer window NormalKey .* %{ parinfer-try-mode ${1:--smart} }
++    # History-navigation keys (u, U, <a-u>, <a-U>, <c-k>, <c-j>) traverse
++    # existing undo atoms rather than create new edits. Running parinfer on
++    # them would land a "correction" in its own atom, orphaning the redo
++    # branch. Instead, we only realign parinfer's baseline (previous_text /
++    # previous_timestamp / previous_cursor_*) so the next genuine edit
++    # diffs against the post-traversal state. For every other NormalKey
++    # (including edits like d/p/>/<) parinfer rides the keypress's atom
++    # as before, so corrections remain valid->valid in history.
++    #
++    # `\n` is intentionally excluded from InsertChar: the builtin
++    # lisp/clojure/janet/scheme indent hooks pre-indent the new line so
++    # its contents stay inside the surrounding form. Without that
++    # auto-indent, parinfer smart mode sees a new line at column 0 and
++    # closes the form, which loses structure (commit 506ae2b).
++    printf "%s\n" "hook -group parinfer window NormalKey ([uU]|<a-[uU]>|<c-[jk]>) %{ parinfer-refresh-baseline }
++                   hook -group parinfer window NormalKey (?![uU])(?!<a-[uU]>)(?!<c-[jk]>).+ %{ parinfer-try-mode ${1:--smart} }
+                    hook -group parinfer window InsertChar (?!\n).* %{ parinfer-try-mode ${1:--smart} }
+                    hook -group parinfer window InsertDelete .* %{ parinfer-try-mode ${1:--smart} }"
+     }
+@@ -134,6 +149,20 @@ define-command -hidden parinfer-try-paren %{ try %{
+     remove-hooks window parinfer-try-paren
+ }}
+ 
++# parinfer-refresh-baseline: sync parinfer_previous_* to the current buffer
++# without running parinfer-rust or modifying the buffer. Bound to history
++# navigation keys so that subsequent edits diff against the post-traversal
++# state instead of the pre-traversal one.
++define-command -hidden parinfer-refresh-baseline %{
++    evaluate-commands -draft -save-regs '/"|^@' -no-hooks %{
++        set-option buffer parinfer_previous_cursor_char_column %val{cursor_char_column}
++        set-option buffer parinfer_previous_cursor_line %val{cursor_line}
++        execute-keys '\%'
++        set-option buffer parinfer_previous_text %val{selection}
++    }
++    set-option buffer parinfer_previous_timestamp %val{timestamp}
++}
++
+ # try apply modification accordingly to mode
+ # report if failed
+ define-command -hidden parinfer-try-mode -params 1 %{ evaluate-commands %sh{
