@@ -9,7 +9,7 @@ let
   kakoune = pkgs.kakoune-unwrapped.overrideAttrs (old: {
     version = "2025.06.03";
     src = self.inputs.kakoune;
-    patches = (old.patches or []) ++ [ ./parinfer.patch ];
+    patches = (old.patches or []) ++ [ ./kakoune.patch ];
   });
 in
 {

@@ -1,5 +1,5 @@
 diff --git a/rc/parinfer.kak b/rc/parinfer.kak
-index cc58131..6aab892 100644
+index cc58131..7905edd 100644
 --- a/rc/parinfer.kak
 +++ b/rc/parinfer.kak
 @@ -17,7 +17,22 @@ parinfer-enable-window -params ..1 %{
@@ -26,7 +26,20 @@ index cc58131..6aab892 100644
                     hook -group parinfer window InsertChar (?!\n).* %{ parinfer-try-mode ${1:--smart} }
                     hook -group parinfer window InsertDelete .* %{ parinfer-try-mode ${1:--smart} }"
      }
-@@ -134,6 +149,20 @@ define-command -hidden parinfer-try-paren %{ try %{
+@@ -101,7 +116,12 @@ parinfer -params ..2 %{
+             # kak_opt_parinfer_previous_cursor_char_column,
+             # kak_opt_parinfer_previous_cursor_line,
+             # kak_opt_parinfer_select_switches,
++            # kak_opt_tabstop,
+             # kak_selection
++            # Reference kak_opt_tabstop so Kakoune exports it; parinfer-rust
++            # needs it to compute display-column deletion ranges correctly
++            # on lines containing tabs.
++            : "${kak_opt_tabstop:-8}"
+             exec "$kak_opt_parinfer_path" --mode=$mode --input-format=kakoune --output-format=kakoune
+         }
+         evaluate-commands %{
+@@ -134,6 +154,20 @@ define-command -hidden parinfer-try-paren %{ try %{
      remove-hooks window parinfer-try-paren
  }}
  
@@ -47,3 +60,315 @@ index cc58131..6aab892 100644
  # try apply modification accordingly to mode
  # report if failed
  define-command -hidden parinfer-try-mode -params 1 %{ evaluate-commands %sh{
+diff --git a/src/changes.rs b/src/changes.rs
+index 6b3e153..97db2bf 100644
+--- a/src/changes.rs
++++ b/src/changes.rs
+@@ -1,6 +1,51 @@
++use super::parinfer::chomp_cr;
+ use super::types::*;
+ 
+-pub fn compute_text_changes<'a>(prev_text: &'a str, text: &'a str) -> Vec<Change> {
++/// Find the minimal `Change` describing a single-line edit from `prev` to
++/// `new`. Returns `None` if the two strings are equal.
++///
++/// "Minimal" means: trim the longest common prefix, then trim the longest
++/// common suffix of what remains. This is the standard tight diff between
++/// two strings, and is what `transform_change` needs in order to land
++/// `lookup_x` at the *actual* boundary of the edit (rather than at the
++/// end of the changed line, which would be too late to influence
++/// `indent_delta` for the opener on that line).
++fn line_diff(prev: &str, new: &str, line_no: LineNumber) -> Option<Change> {
++    if prev == new {
++        return None;
++    }
++    let prefix_chars = prev
++        .chars()
++        .zip(new.chars())
++        .take_while(|(a, b)| a == b)
++        .count();
++    let prev_after: Vec<char> = prev.chars().skip(prefix_chars).collect();
++    let new_after: Vec<char> = new.chars().skip(prefix_chars).collect();
++    let suffix_chars = prev_after
++        .iter()
++        .rev()
++        .zip(new_after.iter().rev())
++        .take_while(|(a, b)| a == b)
++        .count();
++    let old_text: String = prev_after[..prev_after.len() - suffix_chars]
++        .iter()
++        .collect();
++    let new_text: String = new_after[..new_after.len() - suffix_chars]
++        .iter()
++        .collect();
++    Some(Change {
++        x: prefix_chars,
++        line_no,
++        old_text,
++        new_text,
++    })
++}
++
++/// Fallback diff for the line-count-changes case: one `Change` spanning
++/// the first differing byte to the last differing byte. This is the
++/// original behaviour of `compute_text_changes` — preserved verbatim for
++/// edits we can't decompose per-line (e.g. newline insertion/deletion).
++fn whole_text_diff(prev_text: &str, text: &str) -> Vec<Change> {
+     let mut x: Column = 0;
+     let mut line_no: LineNumber = 0;
+     let mut start_text: usize = 0;
+@@ -36,7 +81,7 @@ pub fn compute_text_changes<'a>(prev_text: &'a str, text: &'a str) -> Vec<Change
+         }
+     }
+ 
+-    if different {
++    if different || prev_text.len() != text.len() {
+         vec![Change {
+             x,
+             line_no,
+@@ -48,6 +93,39 @@ pub fn compute_text_changes<'a>(prev_text: &'a str, text: &'a str) -> Vec<Change
+     }
+ }
+ 
++/// Compute the list of `Change`s representing the edit from `prev_text`
++/// to `text`.
++///
++/// When the two texts have the same line count, emits one `Change` per
++/// differing line, each carrying its own tight (prefix-and-suffix-
++/// trimmed) old/new content. This is what multi-cursor edits need:
++/// without it, a multi-region edit collapses into a single `Change`
++/// whose lookup position only ever lands at the *last* edit site, so
++/// `handle_change_delta` only fires there and only the last form sees
++/// its `indent_delta` propagate.
++///
++/// When line counts differ (e.g. a newline was added or removed),
++/// falls back to a single `Change` spanning first-diff..last-diff.
++pub fn compute_text_changes<'a>(prev_text: &'a str, text: &'a str) -> Vec<Change> {
++    if prev_text == text {
++        return vec![];
++    }
++
++    let prev_lines: Vec<&str> = prev_text.split('\n').map(chomp_cr).collect();
++    let new_lines: Vec<&str> = text.split('\n').map(chomp_cr).collect();
++
++    if prev_lines.len() != new_lines.len() {
++        return whole_text_diff(prev_text, text);
++    }
++
++    prev_lines
++        .iter()
++        .zip(new_lines.iter())
++        .enumerate()
++        .filter_map(|(i, (p, n))| line_diff(p, n, i))
++        .collect()
++}
++
+ #[cfg(test)]
+ #[test]
+ fn compute_text_changes_works() {
+@@ -89,3 +167,79 @@ fn compute_text_changes_works() {
+         compute_text_changes("helllo", "hello")
+     );
+ }
++
++#[cfg(test)]
++#[test]
++fn compute_text_changes_emits_per_line_for_same_line_count() {
++    // Multi-cursor indent: three forms each prefixed with "    " on
++    // their head line. Lines 0, 2, 4 changed; lines 1, 3, 5 unchanged.
++    let prev = "(do 1\n    2)\n(do 1\n    2)\n(do 1\n    2)\n";
++    let text = "    (do 1\n    2)\n    (do 1\n    2)\n    (do 1\n    2)\n";
++    let expected: Vec<Change> = [0, 2, 4]
++        .iter()
++        .map(|&i| Change {
++            x: 0,
++            line_no: i,
++            old_text: String::from(""),
++            new_text: String::from("    "),
++        })
++        .collect();
++    assert_eq!(expected, compute_text_changes(prev, text));
++}
++
++#[cfg(test)]
++#[test]
++fn compute_text_changes_per_line_prefix_insertion_lookup_position() {
++    // A pure prefix insertion on one line must produce a tight Change
++    // (empty oldText, just the inserted prefix as newText) so that
++    // transform_change's `lookup_x` lands at the *boundary* of the
++    // insertion, not at the end of the whole line. If we emitted
++    // {oldText: "(do 1", newText: "    (do 1"} instead, lookup_x
++    // would be 9 (end of new line) and handle_change_delta would fire
++    // past the opener — too late to give the opener the right
++    // indent_delta.
++    let changes = compute_text_changes("(do 1", "    (do 1");
++    assert_eq!(
++        vec![Change {
++            x: 0,
++            line_no: 0,
++            old_text: String::from(""),
++            new_text: String::from("    "),
++        }],
++        changes
++    );
++}
++
++#[cfg(test)]
++#[test]
++fn compute_text_changes_falls_back_when_line_count_differs() {
++    // Inserting a newline mid-line changes line count: per-line diff
++    // doesn't apply, so we fall back to a single Change spanning the
++    // whole edit region (the original behaviour).
++    let changes = compute_text_changes("(do 1 2)\n", "(do 1\n 2)\n");
++    assert_eq!(1, changes.len());
++    assert_eq!(0, changes[0].line_no);
++}
++
++#[cfg(test)]
++#[test]
++fn compute_text_changes_skips_unchanged_lines() {
++    // Among many lines, only the modified ones should produce a Change.
++    let prev = "a\nb\nc\nd\ne\n";
++    let text = "a\nB\nc\nD\ne\n";
++    let expected = vec![
++        Change {
++            x: 0,
++            line_no: 1,
++            old_text: String::from("b"),
++            new_text: String::from("B"),
++        },
++        Change {
++            x: 0,
++            line_no: 3,
++            old_text: String::from("d"),
++            new_text: String::from("D"),
++        },
++    ];
++    assert_eq!(expected, compute_text_changes(prev, text));
++}
+diff --git a/src/kakoune.rs b/src/kakoune.rs
+index c3dca39..bbca050 100644
+--- a/src/kakoune.rs
++++ b/src/kakoune.rs
+@@ -1,6 +1,7 @@
+ use crate::parinfer::chomp_cr;
+ use crate::types::*;
+ use std::env;
++use unicode_width::UnicodeWidthChar;
+ 
+ #[derive(Clone, Debug, Eq, PartialEq)]
+ pub struct Coord {
+@@ -58,12 +59,48 @@ pub struct Fixes {
+     pub insertions: Vec<Insertion>,
+ }
+ 
++/// Display width of `line`, treating `\t` as advancing to the next multiple
++/// of `tabstop`. Used to compute deletion end-columns that match Kakoune's
++/// `-display-column` selection interpretation, so tab-containing lines
++/// aren't truncated mid-grapheme.
++fn line_display_width(line: &str, tabstop: usize) -> usize {
++    let mut col: usize = 0;
++    for ch in line.chars() {
++        if ch == '\t' {
++            col = (col / tabstop + 1) * tabstop;
++        } else {
++            col += UnicodeWidthChar::width(ch).unwrap_or(0);
++        }
++    }
++    col
++}
++
+ pub fn fixes<'a>(from: &'a str, to: &'a str) -> Fixes {
+     let mut result = Fixes {
+         insertions: vec![],
+         deletions: vec![],
+     };
+ 
++    // When Kakoune's `select` is invoked with `-display-column`, coords are
++    // interpreted as display columns, so the deletion end-column must be the
++    // line's display width — not its character count — or selections on
++    // lines containing tabs (or other wide graphemes) land mid-grapheme and
++    // `<a-d>` truncates the line incorrectly.
++    let use_display_column = env::var("kak_opt_parinfer_select_switches")
++        .map(|v| v.contains("-display-column"))
++        .unwrap_or(false);
++    let tabstop: usize = env::var("kak_opt_tabstop")
++        .ok()
++        .and_then(|s| s.parse().ok())
++        .unwrap_or(8);
++    let end_column = |line: &str| -> usize {
++        if use_display_column {
++            line_display_width(line, tabstop)
++        } else {
++            line.chars().count()
++        }
++    };
++
+     let mut line: LineNumber = 1;
+     for (a_line, b_line) in from
+         .split('\n')
+@@ -73,7 +110,7 @@ pub fn fixes<'a>(from: &'a str, to: &'a str) -> Fixes {
+         if a_line != b_line {
+             result
+                 .deletions
+-                .push(Selection::new(line, 1, line, a_line.chars().count()));
++                .push(Selection::new(line, 1, line, end_column(a_line)));
+             if !b_line.is_empty() {
+                 result.insertions.push(Insertion::new(line, 1, b_line));
+             }
+@@ -209,4 +246,19 @@ mod test {
+             "it can produce a longer deletion"
+         );
+     }
++
++    #[test]
++    pub fn line_display_width_handles_tabs() {
++        // Plain ASCII: display width == char count.
++        assert_eq!(line_display_width("(do 1)", 8), 6);
++        // Tab at col 4 (0-based 3) advances to next multiple of 8 (col 8),
++        // then `)` lands at display col 9 (0-based 8), so width = 9.
++        assert_eq!(line_display_width("(do\t)", 8), 9);
++        // Two tabs back-to-back at the start: 0 -> 8 -> 16.
++        assert_eq!(line_display_width("\t\t", 8), 16);
++        // Tabstop=4: "(do\t)" -> "(do" is 3, tab advances to col 4, `)` at 5.
++        assert_eq!(line_display_width("(do\t)", 4), 5);
++        // Empty line.
++        assert_eq!(line_display_width("", 8), 0);
++    }
+ }
+diff --git a/src/parinfer.rs b/src/parinfer.rs
+index b63073b..b17e89b 100644
+--- a/src/parinfer.rs
++++ b/src/parinfer.rs
+@@ -1843,8 +1843,15 @@ pub fn smart_mode<'a>(text: &'a str, options: &Options) -> Answer<'a> {
+ pub fn process(request: &Request) -> Answer {
+     let mut options = request.options.clone();
+ 
+-    if let Some(ref prev_text) = request.options.prev_text {
+-        options.changes = changes::compute_text_changes(prev_text, &request.text);
++    // Only derive `changes` from `prev_text` when the caller hasn't
++    // already supplied an explicit list. Previously this unconditionally
++    // overwrote caller-supplied changes — a quiet footgun (multi-cursor
++    // edits had no way to feed parinfer accurate per-region changes
++    // while also providing prev_text).
++    if options.changes.is_empty() {
++        if let Some(ref prev_text) = request.options.prev_text {
++            options.changes = changes::compute_text_changes(prev_text, &request.text);
++        }
+     }
+ 
+     if request.mode == "paren" {
+@@ -1866,8 +1873,11 @@ pub fn process(request: &Request) -> Answer {
+ pub fn rc_process(request: &SharedRequest) -> Answer<'_> {
+     let mut options = request.options.clone();
+ 
+-    if let Some(ref prev_text) = request.options.prev_text {
+-        options.changes = changes::compute_text_changes(prev_text, &request.text);
++    // See `process` above — same caller-respects-explicit-changes fix.
++    if options.changes.is_empty() {
++        if let Some(ref prev_text) = request.options.prev_text {
++            options.changes = changes::compute_text_changes(prev_text, &request.text);
++        }
+     }
+ 
+     if request.mode == "paren" {
