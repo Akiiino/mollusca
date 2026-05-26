@@ -3,6 +3,7 @@
   self,
   self',
   inputs,
+  config,
   ...
 }:
 {
@@ -20,9 +21,8 @@
   #   includeAllModules = true;
   # };
 
-  users.users.akiiino = {
-    hashedPassword = "$6$nwRe8GAT99X9XVMD$EI8wRSBQF.zw6Evh7UVFKxfu/K9v2.i4hb1unxSnf26e50glpz6SkuVR9MQYr7/m.1IqgrstKvnPAVPa1i/JB0";
-  };
+  age.secrets.akiiino-password.file = "${self}/secrets/akiiino-password.age";
+  users.users.akiiino.hashedPasswordFile = config.age.secrets.akiiino-password.path;
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
@@ -34,8 +34,8 @@
 
       "rtc_cmos.use_acpi_alarm=1" # TODO: why is this here? Figure out if this fix is sill needed.
 
-      "amdgpu.cwsr_enable=0"  # possibly helps with unhibernation; if doesn't, add next line
-      # "amdgpu.sg_display=0"
+      "amdgpu.cwsr_enable=0" # possibly helps with unhibernation; if doesn't, add next line
+      "amdgpu.sg_display=0" # eeh... Maybe will also help? I hate AMD.
     ];
 
     initrd.systemd.enable = true; # TODO: is it reasonable to enable for all machines? Investigate.

@@ -207,14 +207,14 @@ in
             run = "${pkgs.brightnessctl}/bin/brightnessctl -s set 10%";
             resume = "${pkgs.brightnessctl}/bin/brightnessctl -r";
           };
-          lock.run = "${swaylockPackage}/bin/swaylock -f";
+          lock.run = "${pkgs.systemd}/bin/loginctl lock-session";
           displayOff.run = "${pkgs.niri}/bin/niri msg action power-off-monitors";
           suspend.run = "${pkgs.systemd}/bin/systemctl suspend";
         };
 
         schedule = [
           {
-            minutes = 5;
+            minutes = 1;
             battery = "dim";
             ac = null;
           }
@@ -279,7 +279,7 @@ in
           }
           {
             event = "lock";
-            command = "${swaylockPackage}/bin/swaylock -f";
+            command = " ${pkgs.brightnessctl}/bin/brightnessctl -r; ${swaylockPackage}/bin/swaylock -f; ${pkgs.niri}/bin/niri msg action power-off-monitors";
           }
         ];
         timeouts = map mkTimeout schedule;
@@ -299,7 +299,7 @@ in
         choice=$(printf '%s\n' Lock Logout Suspend Hibernate Reboot Shutdown \
           | fuzzel --dmenu --prompt 'Power: ')
         case "$choice" in
-          Lock)      swaylock -f ;;
+          Lock)      loginctl lock-session ;;
           Logout)    niri msg action quit ;;
           Suspend)   systemctl suspend ;;
           Hibernate) systemctl hibernate ;;
@@ -407,8 +407,8 @@ in
         action.spawn = "walker";
       };
       "Mod+Alt+L" = {
-        hotkey-overlay.title = "Lock the Screen: swaylock";
-        action.spawn = "swaylock";
+        hotkey-overlay.title = "Lock the Screen";
+        action.spawn = [ "loginctl" "lock-session" ];
       };
       "Mod+Shift+E" = {
         hotkey-overlay.title = "Power Menu";

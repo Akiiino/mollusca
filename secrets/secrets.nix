@@ -50,4 +50,8 @@ in
     akiiino
     actinella
   ];
+  "akiiino-password.age".publicKeys = [
+    akiiino
+    aspersum
+  ];
 }
