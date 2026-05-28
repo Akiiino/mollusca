@@ -144,7 +144,6 @@ in
     };
   };
   programs = {
-    kakoune.enable = true;
     bash.enable = true;
     zsh.enable = true;
     fzf.enable = true;

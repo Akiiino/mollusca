@@ -109,7 +109,7 @@
       inputs.pre-commit.follows = "";
     };
     kakoune = {
-      url = "github:mawww/kakoune";
+      url = "github:akiiino/kakoune";
       flake = false;
     };
     kak-yac = {
@@ -135,6 +135,7 @@
       url = "github:abenz1267/walker";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    wrapper-manager.url = "github:viperML/wrapper-manager";
   };
 
   outputs =

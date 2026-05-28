@@ -426,15 +426,15 @@
     "kakoune": {
       "flake": false,
       "locked": {
-        "lastModified": 1776384646,
-        "narHash": "sha256-SFZIlM8tmoUfL2WePUm1002CVS4xUNOxmsTRBlMgEBw=",
-        "owner": "mawww",
+        "lastModified": 1779980039,
+        "narHash": "sha256-CbzBg4SmMu995Vi2u9G24hh2aIDi+7HV/zcbM+PUvBk=",
+        "owner": "akiiino",
         "repo": "kakoune",
-        "rev": "1698e81c98b080ed7e35901cbaacdb368dea99a2",
+        "rev": "e7e8c8d71f1fab0781d3000002d08de42708c560",
         "type": "github"
       },
       "original": {
-        "owner": "mawww",
+        "owner": "akiiino",
         "repo": "kakoune",
         "type": "github"
       }
@@ -730,7 +730,8 @@
         "secondbrain": "secondbrain",
         "stevenBlackHosts": "stevenBlackHosts",
         "traveller": "traveller",
-        "walker": "walker"
+        "walker": "walker",
+        "wrapper-manager": "wrapper-manager"
       }
     },
     "secondbrain": {
@@ -909,6 +910,21 @@
       "original": {
         "owner": "abenz1267",
         "repo": "walker",
+        "type": "github"
+      }
+    },
+    "wrapper-manager": {
+      "locked": {
+        "lastModified": 1772780728,
+        "narHash": "sha256-fCm4sOeTDf3kBtYMmU4OHsviI/oF8rMbPkUMcQf6lw4=",
+        "owner": "viperML",
+        "repo": "wrapper-manager",
+        "rev": "51ad0422b925d830bf4af36979fed51209f79c0a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "viperML",
+        "repo": "wrapper-manager",
         "type": "github"
       }
     },

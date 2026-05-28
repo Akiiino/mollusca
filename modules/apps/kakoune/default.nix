@@ -1,125 +1,38 @@
 {
   pkgs,
-  lib,
   self,
+  inputs,
   inputs',
   ...
 }:
 let
-  kakoune = pkgs.kakoune-unwrapped.overrideAttrs (old: {
-    version = "2025.06.03";
+  kakoune-unwrapped = pkgs.kakoune-unwrapped.overrideAttrs (old: {
+    version = "2026.05.21";
     src = self.inputs.kakoune;
-    patches = (old.patches or []) ++ [ ./kakoune.patch ];
   });
+
+  plugins = [
+    pkgs.kakounePlugins.kak-ansi
+    pkgs.kakounePlugins.powerline-kak
+    pkgs.kakounePlugins.openscad-kak
+    (inputs'.parinfer-rust.packages.parinfer-rust.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [ ./parinfer.patch ];
+    }))
+    inputs'.kak-yac.packages.kak-yac
+  ];
+
+  kakoune-with-plugins = pkgs.wrapKakoune kakoune-unwrapped { inherit plugins; };
 in
 {
-  programs.kakoune = {
-    enable = true;
-    package = kakoune;
-    defaultEditor = true;
-    plugins = [
-      pkgs.kakounePlugins.kak-ansi
-      pkgs.kakounePlugins.powerline-kak
-      pkgs.kakounePlugins.openscad-kak
-      (inputs'.parinfer-rust.packages.parinfer-rust.overrideAttrs (old: {
-        patches = (old.patches or []) ++ [ ./parinfer.patch ];
-      }))
-      inputs'.kak-yac.packages.kak-yac
-    ];
-    config = {
-      colorScheme = "gruvbox-light";
-      ui = {
-        assistant = "none";
-        enableMouse = true;
-        statusLine = "top";
-      };
-      scrollOff = {
-        columns = 3;
-        lines = 1;
-      };
-      showMatching = true;
-      hooks = [
-        {
-          name = "WinDisplay";
-          option = ".*";
-          commands = ''
-            evaluate-commands %sh{ printf "%s" "set-option -add global ui_options %{terminal_title=$(basename "$kak_hook_param")}" }
-          '';
-          once = false;
-        }
-        {
-          name = "WinSetOption";
-          option = "filetype=(janet)";
-          commands = ''
-            parinfer-enable-window -smart
-          '';
-          group = "parinfer";
-          once = false;
-        }
-        {
-          name = "WinSetOption";
-          option = "filetype=(markdown)";
-          commands = ''
-            source ${./markdown.kak} "${lib.getExe pkgs.proselint}"
-          '';
-          once = false;
-        }
-        # {
-        #   name = "KakBegin";
-        #   option = ".*";
-        #   commands = "set-option global kitty_window_type os-window";
-        #   once = true;
-        # }
+  home.packages = [
+    (inputs.wrapper-manager.lib.wrapWith pkgs {
+      basePackage = kakoune-with-plugins;
+      pathAdd = [
+        pkgs.proselint
+        pkgs.wl-clipboard
       ];
-
-      keyMappings = [
-        {
-          mode = "user";
-          key = "/";
-          effect = ": comment-line<ret>";
-          docstring = "Comment line";
-        }
-        {
-          mode = "user";
-          key = "?";
-          effect = ": comment-block<ret>";
-          docstring = "Comment block";
-        }
-      ];
-    };
-    extraConfig = ''
-      source ${./powerline-config.kak}
-      source ${./utils.kak}
-
-      set-option global startup_info_version 20240518
-      set-option -add global ui_options terminal_set_title=true
-
-      yac-enable
-      set-option global yac_push_command "${lib.getExe' pkgs.wl-clipboard "wl-copy"} &> /dev/null"
-      set-option global yac_pull_command "timeout 1 ${lib.getExe' pkgs.wl-clipboard "wl-paste"} || true"
-
-      define-command -docstring "Prepare windows for IDE mode" ide %{
-          rename-client main
-          set global jumpclient main
-
-          new rename-client tools
-          set global toolsclient tools
-
-          new rename-client docs
-          set global docsclient docs
-      }
-
-      define-command -docstring "Open the tutorial" trampoline %{
-          evaluate-commands %sh{
-              tramp_file=$(mktemp -t "kakoune-trampoline.XXXXXXXX")
-              echo "edit -fifo $tramp_file *TRAMPOLINE*"
-              curl -s https://raw.githubusercontent.com/mawww/kakoune/master/contrib/TRAMPOLINE -o "$tramp_file"
-          }
-      }
-
-      define-command undefine-command -params 1 -docstring "Undefine a command by replacing it with a hidden nop" %{
-          define-command -override -hidden "%arg{1}" "nop"
-      }
-    '';
-  };
+      env.KAKOUNE_CONFIG_DIR.value = ./rc;
+    })
+  ];
+  home.sessionVariables.EDITOR = "kak";
 }
