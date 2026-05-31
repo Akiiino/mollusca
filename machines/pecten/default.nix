@@ -10,6 +10,7 @@
     ./disko.nix
     "${modulesPath}/profiles/perlless.nix"
     ./derper.nix
+    ./photos.nix
   ];
 
   mollusca = {

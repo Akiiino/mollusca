@@ -11,6 +11,7 @@
     inputs.WG-jail.nixosModules.default
     ./transmission.nix
     ./smarthome.nix
+    ./photos.nix
     ./hardware-configuration.nix
     ./disko.nix
     inputs.traveller.nixosModules.default
