@@ -54,4 +54,8 @@ in
     akiiino
     aspersum
   ];
+  "ds.age".publicKeys = [
+    akiiino
+    glabrata
+  ];
 }

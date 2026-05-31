@@ -25,6 +25,7 @@ in
       openscad-unstable
       prusa-slicer
       thunderbird
+      tremotesf
 
       gdu
       htop

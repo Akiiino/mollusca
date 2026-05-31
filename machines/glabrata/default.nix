@@ -290,5 +290,12 @@ in
     home.stateVersion = "23.11";
   };
 
+  age.secrets.ds = {
+    file = "${self}/secrets/ds.age";
+    owner = "claude";
+    group = "users";
+    mode = "0400";
+  };
+
   networking.hostName = "glabrata";
 }
