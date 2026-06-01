@@ -42,10 +42,6 @@
     initrd.kernelModules = [ "amdgpu" ]; # helps plymouth start faster
   };
 
-  systemd.sleep.extraConfig = ''
-    HibernateMode=shutdown
-  ''; # possibly helps with unhibernation
-
   powerManagement.enable = true;
 
   services.logind.settings.Login = {
@@ -154,7 +150,6 @@
 
   programs = {
     steam.enable = true;
-    adb.enable = true;
   };
 
   hardware = {
