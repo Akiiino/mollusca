@@ -146,6 +146,11 @@
       ];
     })
     pkgs.android-tools-xdg
+    (pkgs.mpv.override {
+      scripts = [
+        pkgs.mpvScripts.autoload
+      ];
+    })
   ];
 
   programs = {

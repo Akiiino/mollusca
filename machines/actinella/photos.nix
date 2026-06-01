@@ -1,4 +1,7 @@
-{ ... }:
+{
+  minor-secrets,
+  ...
+}:
 {
   services.photoview = {
     enable = true;
@@ -6,6 +9,7 @@
     port = 8300;
     mediaPath = "/var/lib/photoview/media";
     database.type = "sqlite";
+    settings.mapboxToken = minor-secrets.mapboxToken;
   };
   networking = {
     firewall = {
@@ -13,7 +17,10 @@
     };
   };
 
+  # photo upload stuff
   systemd.tmpfiles.rules = [
-    "d /var/lib/photoview/media 0750 photoview photoview -"
+    "d /var/lib/photoview/media 2770 photoview photoview -"
   ];
+
+  users.users.builder.extraGroups = [ "photoview" ];
 }

@@ -50,7 +50,8 @@ rec {
             if isAge then
               builtins.importAge {
                 file = src;
-                hash = "sha256-DoWrqzSB1Pyh0HJASYuIWIlN5G8APS+2KgcSuNglxa4=";
+                hash = "sha256-5eV3Nsu+EDuY1hSWYJizB4J2UAdPrW1CUPglhA+WRog=";
+
               }
             else
               import src;
