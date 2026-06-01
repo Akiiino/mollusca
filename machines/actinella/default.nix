@@ -3,6 +3,7 @@
   config,
   pkgs,
   inputs,
+  minor-secrets,
   ...
 }:
 {
@@ -22,11 +23,13 @@
     useTailscale = true;
     isExitNode = true;
     bluetooth.enable = true;
+    advertiseRoutes = [ "192.168.1.101/32" ];
   };
 
   mollusca.lanServices = {
     enable = true;
     lanAddress = "192.168.1.101";
+    acmeHost = minor-secrets.personalDomain;
     blocklist = self.inputs.stevenBlackHosts + "/hosts";
 
     services = {

@@ -1,37 +1,33 @@
-# lan-services.nix — Expose LAN services to Tailscale peers via nginx + DNS.
+# lan-services.nix — Expose LAN services to LAN + Tailscale peers.
 #
-# Instead of advertising the whole LAN as a Tailscale subnet route, this
-# module runs nginx as a reverse proxy on actinella.  Tailscale peers
-# connect to actinella's Tailscale IP; nginx routes by Host header to
-# the actual backend.  A single CoreDNS instance serves both LAN and
-# Tailscale clients, with ad-blocking on the LAN side.
+# nginx runs as a reverse proxy on actinella and routes by Host header to
+# the actual backend.  A single CoreDNS instance serves the same answers to
+# everyone (no split-horizon): each service name resolves to actinella's LAN
+# address, with ad-blocking applied for all clients.
+#
+# How names resolve (one answer everywhere)
+# ──────────────────────────────────────────
+#   Every service host → `lanAddress` (e.g. 192.168.1.101), for LAN clients
+#   and Tailscale peers alike.  CoreDNS listens on all interfaces, so the
+#   same records are served on the LAN IP and the Tailscale IP without any
+#   runtime IP discovery.
+#
+#   • LAN clients reach `lanAddress` directly.
+#   • Tailscale peers reach `lanAddress` because actinella advertises it as a
+#     subnet route (`mollusca.advertiseRoutes = [ "192.168.1.101/32" ]`), and
+#     peers `--accept-routes`.  RFC1918 ⇒ the address is unroutable from the
+#     internet, so these services are private by construction.
 #
 # Setup (one-time)
 # ────────────────
-#   In the Tailscale admin console → DNS → Nameservers, add a
-#   Split DNS entry:
-#     Domain:      akiiino.me   (or whatever you set as `domain`)
-#     Nameserver:  <actinella's Tailscale IP>  (`tailscale ip -4`)
-#
-# How it works
-# ────────────
-#   LAN client                          Tailscale peer
-#       │                                    │
-#       │ DNS: jellyfin.akiiino.me?          │ DNS (split): jellyfin.akiiino.me?
-#       ▼                                    ▼
-#   CoreDNS (192.168.1.101)           CoreDNS (Tailscale IP)
-#   answers: 192.168.1.101            answers: <Tailscale IP>
-#       │                                    │
-#       ▼                                    ▼
-#   nginx ──► proxy_pass backend     nginx ──► proxy_pass backend
-#
-#   Both paths hit the same nginx, which routes by Host header.
-#   No subnet route required — only actinella is reachable.
+#   • Tailscale admin → DNS → Split DNS: one restricted-nameserver entry,
+#       Domain:     <your domain>   Nameserver: <actinella's Tailscale IP>
+#     so remote peers send those queries to this resolver.
+#   • Tailscale admin → approve the advertised subnet route from actinella.
 
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
@@ -40,12 +36,12 @@ let
 
   serviceHosts = builtins.attrNames cfg.services;
 
-  # ── Hosts entries for the LAN CoreDNS block ───────────────────────
+  # ── Hosts entries for the CoreDNS block ───────────────────────────
   lanHostsLines = lib.concatMapStringsSep "\n" (
     host: "        ${cfg.lanAddress} ${host}"
   ) serviceHosts;
 
-  # ── Extra static DNS records (non-proxied, LAN only) ──────────────
+  # ── Extra static DNS records (non-proxied) ────────────────────────
   extraHostsLines = lib.concatStringsSep "\n" (
     lib.mapAttrsToList (host: ip: "        ${ip} ${host}") cfg.extraDnsRecords
   );
@@ -57,16 +53,15 @@ let
     ]
   );
 
-  # ── CoreDNS Corefile template ─────────────────────────────────────
-  # TAILSCALE_IP is replaced at runtime by the wrapper script.
-  # The LAN block is always present; the Tailscale block is only
-  # included when a Tailscale IP is available.
-
   blocklistDirective = if cfg.blocklist != null then "hosts ${cfg.blocklist}" else "hosts";
 
-  lanBlock = ''
+  # ── CoreDNS Corefile (single view) ────────────────────────────────
+  # No `bind` directive: CoreDNS listens on all interfaces, so the same
+  # answers are served on the LAN IP and the Tailscale IP. The hosts block
+  # serves the blocklist + our internal records; everything else is
+  # forwarded upstream.
+  corefile = ''
     .:53 {
-      bind 127.0.0.1 ${cfg.lanAddress}
       ${blocklistDirective} {
     ${allLanHostsLines}
         ttl 30
@@ -76,30 +71,6 @@ let
       cache
     }
   '';
-
-  tsBlock = ''
-    .:53 {
-      bind TAILSCALE_IP
-      hosts /run/lan-services-dns/ts-hosts {
-        ttl 30
-        fallthrough
-      }
-      forward . ${cfg.upstreamDNS}
-      cache
-    }
-  '';
-
-  corefileFull = pkgs.writeText "Corefile.full" ''
-    ${lanBlock}
-    ${tsBlock}
-  '';
-
-  corefileLanOnly = pkgs.writeText "Corefile.lan-only" lanBlock;
-
-  # ── Shell fragments for writing the Tailscale hosts file ──────────
-  tsHostsWriteLines = lib.concatMapStringsSep "\n" (
-    host: ''echo "$TS_IP ${host}" >> "$RD/ts-hosts"''
-  ) serviceHosts;
 
   serviceModule = lib.types.submodule {
     options = {
@@ -137,6 +108,18 @@ in
       example = "192.168.1.101";
     };
 
+    acmeHost = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = ''
+        If set, serve every virtual host over HTTPS using this ACME
+        certificate (passed as nginx `useACMEHost`).  The certificate
+        must already be provisioned (e.g. a wildcard via security.acme).
+        nginx is added to the `acme` group automatically.
+      '';
+      example = "akiiino.me";
+    };
+
     services = lib.mkOption {
       type = lib.types.attrsOf serviceModule;
       default = { };
@@ -161,10 +144,10 @@ in
       type = lib.types.attrsOf lib.types.str;
       default = { };
       description = ''
-        Additional hostname → IP mappings for LAN DNS only.
+        Additional hostname → IP mappings for DNS only.
         These are NOT proxied by nginx — they resolve directly
         to the given IP.  Useful for devices that aren't
-        HTTP services (printers, etc.).
+        HTTP services (printers, MQTT brokers, etc.).
       '';
       example = {
         "printer.akiiino.me" = "192.168.1.50";
@@ -176,7 +159,7 @@ in
       default = null;
       description = ''
         Path to a hosts-format blocklist (e.g. Steven Black).
-        Applied only to the LAN DNS listener, not to Tailscale peers.
+        Applied to all DNS clients.
       '';
     };
 
@@ -193,16 +176,6 @@ in
 
   config = lib.mkIf cfg.enable {
 
-    assertions = [
-      {
-        assertion = !config.services.coredns.enable;
-        message = ''
-          mollusca.lanServices manages its own CoreDNS instance.
-          Remove or disable services.coredns to avoid conflicts.
-        '';
-      }
-    ];
-
     # ── nginx reverse proxy ─────────────────────────────────────────
 
     services.nginx = {
@@ -213,14 +186,23 @@ in
       recommendedOptimisation = true;
       recommendedGzipSettings = true;
 
-      virtualHosts = lib.mapAttrs (_host: svc: {
-        locations."/" = {
-          inherit (svc) proxyPass;
-          proxyWebsockets = svc.websocket;
-          extraConfig = svc.extraLocationConfig;
-        };
-      }) cfg.services;
+      virtualHosts = lib.mapAttrs (
+        _host: svc:
+        {
+          locations."/" = {
+            inherit (svc) proxyPass;
+            proxyWebsockets = svc.websocket;
+            extraConfig = svc.extraLocationConfig;
+          };
+        }
+        // lib.optionalAttrs (cfg.acmeHost != null) {
+          forceSSL = true;
+          useACMEHost = cfg.acmeHost;
+        }
+      ) cfg.services;
     };
+
+    users.users.nginx.extraGroups = lib.optionals (cfg.acmeHost != null) [ "acme" ];
 
     # ── Firewall ────────────────────────────────────────────────────
 
@@ -228,60 +210,16 @@ in
       allowedTCPPorts = [
         53
         80
+        443
       ];
       allowedUDPPorts = [ 53 ];
     };
 
-    # ── CoreDNS (unified LAN + Tailscale) ───────────────────────────
+    # ── CoreDNS (single view, all interfaces) ───────────────────────
 
-    systemd.services.lan-services-dns = {
-      description = "CoreDNS — LAN (with ad-blocking) + Tailscale";
-      after = [
-        "tailscaled.service"
-        "network.target"
-      ];
-      wants = [ "tailscaled.service" ];
-      wantedBy = [ "multi-user.target" ];
-
-      path = [ config.services.tailscale.package ];
-
-      serviceConfig = {
-        Type = "simple";
-        Restart = "on-failure";
-        RestartSec = 10;
-        RuntimeDirectory = "lan-services-dns";
-        DynamicUser = true;
-        AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
-        CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
-      };
-
-      script = ''
-        set -euo pipefail
-        RD="$RUNTIME_DIRECTORY"
-
-        # Try to get Tailscale IP (up to 60 s).
-        TS_IP=""
-        for _ in $(seq 1 30); do
-          TS_IP=$(tailscale ip -4 2>/dev/null || true)
-          [ -n "$TS_IP" ] && break
-          sleep 2
-        done
-
-        if [ -n "$TS_IP" ]; then
-          echo "Tailscale IP: $TS_IP — enabling Tailscale DNS block"
-
-          # Build the Tailscale-side hosts file at runtime.
-          : > "$RD/ts-hosts"
-        ${tsHostsWriteLines}
-
-          sed "s/TAILSCALE_IP/$TS_IP/g" ${corefileFull} > "$RD/Corefile"
-        else
-          echo "Warning: Tailscale IP not available — LAN DNS only"
-          cp ${corefileLanOnly} "$RD/Corefile"
-        fi
-
-        exec ${pkgs.coredns}/bin/coredns -conf "$RD/Corefile"
-      '';
+    services.coredns = {
+      enable = true;
+      config = corefile;
     };
   };
 }

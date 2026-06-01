@@ -61,7 +61,8 @@
         ]
         ++ config.services.tailscale.extraSetFlags;
         extraSetFlags =
-          (lib.optional config.mollusca.isExitNode "--advertise-exit-node")
+          ["--accept-routes"]
+          ++ (lib.optional config.mollusca.isExitNode "--advertise-exit-node")
           ++ (lib.optional (
             config.mollusca.advertiseRoutes != [ ]
           ) "--advertise-routes=${lib.concatStringsSep "," config.mollusca.advertiseRoutes}");

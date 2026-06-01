@@ -1,4 +1,4 @@
-{ minor-secrets, ... }:
+{ ... }:
 {
   services.photoview = {
     enable = true;
@@ -11,9 +11,4 @@
   systemd.tmpfiles.rules = [
     "d /var/lib/photoview/media 0750 photoview photoview -"
   ];
-
-  mollusca.lanServices.services."photos.${minor-secrets.personalDomain}" = {
-    proxyPass = "http://127.0.0.1:8300";
-    websocket = true;
-  };
 }
