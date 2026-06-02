@@ -214,11 +214,6 @@ in
 
         schedule = [
           {
-            minutes = 1;
-            battery = "dim";
-            ac = null;
-          }
-          {
             minutes = 10;
             battery = "lock";
             ac = "lock";
