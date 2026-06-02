@@ -403,6 +403,65 @@
         "type": "github"
       }
     },
+    "janet-lsp": {
+      "inputs": {
+        "janet-lsp-src": "janet-lsp-src",
+        "janet-nix": "janet-nix",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780442805,
+        "narHash": "sha256-xOOPQQI/Kr/l7eMuvehYPS3sNGYqsL2BuucQlWQz1Ck=",
+        "owner": "akiiino",
+        "repo": "janet-lsp-flake",
+        "rev": "18270e710502549795ee94224f751ac911b56ef6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "akiiino",
+        "repo": "janet-lsp-flake",
+        "type": "github"
+      }
+    },
+    "janet-lsp-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771699735,
+        "narHash": "sha256-OLY1G4YL1eFRltWQpBfmdRiHiPVvLEthWCPJchUUPj4=",
+        "owner": "CFiggers",
+        "repo": "janet-lsp",
+        "rev": "e31cd7f78608c2516aa43532888b040c2a5900b1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "CFiggers",
+        "repo": "janet-lsp",
+        "type": "github"
+      }
+    },
+    "janet-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "janet-lsp",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1776872502,
+        "narHash": "sha256-17D5xeTKJpv14qyrT8dssdD5Q3jw+UODBFNp2C50big=",
+        "owner": "turnerdev",
+        "repo": "janet-nix",
+        "rev": "a2329660ee80f09d5a95491bfd4d98e988b32319",
+        "type": "github"
+      },
+      "original": {
+        "owner": "turnerdev",
+        "repo": "janet-nix",
+        "type": "github"
+      }
+    },
     "kak-yac": {
       "inputs": {
         "nixpkgs": [
@@ -716,6 +775,7 @@
         "gitsh": "gitsh",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
+        "janet-lsp": "janet-lsp",
         "kak-yac": "kak-yac",
         "kakoune": "kakoune",
         "mac-app-util": "mac-app-util",

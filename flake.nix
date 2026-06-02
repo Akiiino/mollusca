@@ -120,6 +120,10 @@
       url = "github:eraserhd/parinfer-rust";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    janet-lsp = {
+      url = "github:akiiino/janet-lsp-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     niri = {
       url = "github:sodiboo/niri-flake";
       inputs = {

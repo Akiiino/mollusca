@@ -1,8 +1,19 @@
 colorscheme gruvbox-light
 add-highlighter global/ show-matching
+add-highlighter global/ number-lines -hlcursor
+add-highlighter global/ wrap -word -indent
+add-highlighter global/ regex \h+$ 0:Error
 set-option global startup_info_version 20260521
 set-option global scrolloff 1,3
 set-option global ui_options terminal_set_title=true terminal_status_on_top=true terminal_assistant=none terminal_enable_mouse=true terminal_change_colors=true terminal_builtin_key_parser=false
+
+set-option global indentwidth 4
+set-option global tabstop 4
+hook global WinSetOption filetype=nix %{ set-option window indentwidth 2 }
+hook global WinSetOption filetype=janet %{ set-option window indentwidth 2 }
+
+# Trim trailing whitespace on save
+hook global BufWritePre .* %{ try %{ execute-keys -draft %s\h+$<ret>d } }
 
 map global user / ': comment-line<ret>' -docstring 'Comment line'
 map global user ? ': comment-block<ret>' -docstring 'Comment block'
@@ -30,3 +41,65 @@ set-option global yac_pull_command "timeout 1 wl-paste || true"
 define-command undefine-command -params 1 -docstring "Undefine a command by replacing it with a hidden nop" %{
     define-command -override -hidden "%arg{1}" "nop"
 }
+
+# LSP
+eval %sh{kak-lsp}
+
+set-option global modelinefmt "%opt{lsp_modeline} %opt{modelinefmt}"
+
+map global user l ': enter-user-mode lsp<ret>' -docstring 'LSP mode'
+map global goto d '<esc>: lsp-definition<ret>' -docstring 'LSP definition'
+map global goto r '<esc>: lsp-references<ret>' -docstring 'LSP references'
+map global goto y '<esc>: lsp-type-definition<ret>' -docstring 'LSP type definition'
+map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
+map global object f '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
+map global object t '<a-semicolon>lsp-object Class Interface Module Namespace Struct<ret>' -docstring 'LSP class or module'
+map global object d '<a-semicolon>lsp-diagnostic-object error warning<ret>' -docstring 'LSP errors and warnings'
+map global object D '<a-semicolon>lsp-diagnostic-object error<ret>' -docstring 'LSP errors'
+
+hook global WinSetOption filetype=python %{ lsp-enable-window }
+hook global WinSetOption filetype=nix %{ lsp-enable-window }
+hook global WinSetOption filetype=janet %{ lsp-enable-window }
+
+# Python
+remove-hooks global lsp-filetype-python
+hook -group lsp-filetype-python global BufSetOption filetype=python %{
+    set-option buffer lsp_servers %{
+        [basedpyright-langserver]
+        root_globs = ["pyproject.toml", "setup.py", "poetry.lock", "pyrightconfig.json", ".git", ".hg"]
+        args = ["--stdio"]
+    }
+    set-option -add buffer lsp_servers %{
+        [ruff]
+        args = ["server"]
+        root_globs = ["pyproject.toml", "setup.py", "poetry.lock", ".git", ".hg"]
+        settings_section = "_"
+        [ruff.settings._.globalSettings]
+        organizeImports = true
+        fixAll = true
+    }
+}
+
+# Nix
+remove-hooks global lsp-filetype-nix
+hook -group lsp-filetype-nix global BufSetOption filetype=nix %{
+    set-option buffer lsp_servers %{
+        [nixd]
+        root_globs = ["flake.nix", "shell.nix", ".git", ".hg"]
+    }
+}
+
+# Janet
+hook -group lsp-filetype-janet global BufSetOption filetype=janet %{
+    set-option buffer lsp_servers %{
+        [janet-lsp]
+        root_globs = ["project.janet", ".git", ".hg"]
+        args = ["--stdio"]
+    }
+}
+
+# Format on save via LSP
+hook global BufSetOption filetype=python %{ hook buffer BufWritePre .* lsp-formatting-sync }
+hook global BufSetOption filetype=nix %{ hook buffer BufWritePre .* lsp-formatting-sync }
+hook global BufSetOption filetype=janet %{ hook buffer BufWritePre .* lsp-formatting-sync }

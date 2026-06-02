@@ -30,6 +30,11 @@ in
       pathAdd = [
         pkgs.proselint
         pkgs.wl-clipboard
+        pkgs.kakoune-lsp
+        pkgs.nixd
+        pkgs.basedpyright
+        pkgs.ruff
+        inputs'.janet-lsp.packages.janet-lsp
       ];
       env.KAKOUNE_CONFIG_DIR.value = ./rc;
     })
