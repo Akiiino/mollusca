@@ -1,50 +1,31 @@
-# kakrc — mollusca kakoune configuration.
-# Shipped read-only as $KAKOUNE_CONFIG_DIR/kakrc.
-# Bare-name binaries (proselint, wl-copy, wl-paste) are pinned onto PATH
-# by wrapper-manager's pathAdd; see modules/apps/kakoune/default.nix.
-
 colorscheme gruvbox-light
 add-highlighter global/ show-matching
+set-option global startup_info_version 20260521
 set-option global scrolloff 1,3
-set-option global ui_options terminal_set_title=false terminal_status_on_top=true terminal_assistant=none terminal_enable_mouse=true terminal_change_colors=true terminal_builtin_key_parser=false
+set-option global ui_options terminal_set_title=true terminal_status_on_top=true terminal_assistant=none terminal_enable_mouse=true terminal_change_colors=true terminal_builtin_key_parser=false
 
-# Key mappings
 map global user / ': comment-line<ret>' -docstring 'Comment line'
 map global user ? ': comment-block<ret>' -docstring 'Comment block'
 
-# Hooks
-hook global WinDisplay .* %{ evaluate-commands %sh{ printf "%s" "set-option -add global ui_options %{terminal_title=$(basename "$kak_hook_param")}" } }
-hook -group parinfer global WinSetOption filetype=(janet) %{ parinfer-enable-window -smart }
-hook global WinSetOption filetype=(markdown) %{ source "%val{config}/markdown.kak" proselint }
+hook global WinDisplay .* %{
+    evaluate-commands %sh{
+        printf "%s" "set-option -add global ui_options %{terminal_title=$(basename "$kak_hook_param")}"
+    }
+}
+
+hook -group parinfer global WinSetOption filetype=(janet) %{
+    parinfer-enable-window -smart
+}
+
+hook global WinSetOption filetype=(markdown) %{
+    source "%val{config}/markdown.kak"
+}
 
 source "%val{config}/powerline-config.kak"
-source "%val{config}/utils.kak"
-
-set-option global startup_info_version 20240518
-set-option -add global ui_options terminal_set_title=true
 
 yac-enable
 set-option global yac_push_command "wl-copy &> /dev/null"
 set-option global yac_pull_command "timeout 1 wl-paste || true"
-
-define-command -docstring "Prepare windows for IDE mode" ide %{
-    rename-client main
-    set global jumpclient main
-
-    new rename-client tools
-    set global toolsclient tools
-
-    new rename-client docs
-    set global docsclient docs
-}
-
-define-command -docstring "Open the tutorial" trampoline %{
-    evaluate-commands %sh{
-        tramp_file=$(mktemp -t "kakoune-trampoline.XXXXXXXX")
-        echo "edit -fifo $tramp_file *TRAMPOLINE*"
-        curl -s https://raw.githubusercontent.com/mawww/kakoune/master/contrib/TRAMPOLINE -o "$tramp_file"
-    }
-}
 
 define-command undefine-command -params 1 -docstring "Undefine a command by replacing it with a hidden nop" %{
     define-command -override -hidden "%arg{1}" "nop"
