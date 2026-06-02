@@ -117,6 +117,10 @@
       extraSetFlags = [ "--operator=akiiino" ];
     };
     displayManager.autoLogin.user = "akiiino";
+
+    # yubikey
+    pcscd.enable = true;
+    udev.packages = [ pkgs.yubikey-personalization ];
   };
 
   security.rtkit.enable = true;
@@ -151,6 +155,8 @@
         pkgs.mpvScripts.autoload
       ];
     })
+    pkgs.yubikey-manager
+    pkgs.yubico-piv-tool
   ];
 
   programs = {
