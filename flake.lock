@@ -917,14 +917,17 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1780236407,
-        "narHash": "sha256-9epjyxNyHjqDR8mm/Gg2naaIsbabrlBWuzo17vIFUK0=",
-        "path": "/home/akiiino/Documents/PER Personal/10-19 Projects/11 General coding/11.07 Traveller",
-        "type": "path"
+        "lastModified": 1780236404,
+        "narHash": "sha256-foDBKVnaN5DY+0jSVf6TtMYDgX5qUyrUEbzokXEpe4k=",
+        "owner": "Akiiino",
+        "repo": "traveller",
+        "rev": "f66eaaf34340add9dad4e25a5bb35f8c39d7998a",
+        "type": "github"
       },
       "original": {
-        "path": "/home/akiiino/Documents/PER Personal/10-19 Projects/11 General coding/11.07 Traveller",
-        "type": "path"
+        "owner": "Akiiino",
+        "repo": "traveller",
+        "type": "github"
       }
     },
     "treefmt-nix": {

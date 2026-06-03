@@ -132,8 +132,8 @@
       };
     };
     traveller = {
-      # url = "github:Akiiino/traveller";
-      url = "/home/akiiino/Documents/PER Personal/10-19 Projects/11 General coding/11.07 Traveller";
+      url = "github:Akiiino/traveller";
+      # url = "/home/akiiino/Documents/PER Personal/10-19 Projects/11 General coding/11.07 Traveller";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     walker = {
