@@ -63,8 +63,7 @@ hook global WinSetOption filetype=nix %{ lsp-enable-window }
 hook global WinSetOption filetype=janet %{ lsp-enable-window }
 
 # Python
-remove-hooks global lsp-filetype-python
-hook -group lsp-filetype-python global BufSetOption filetype=python %{
+define-command -hidden python-lsp-config %{
     set-option buffer lsp_servers %{
         [basedpyright-langserver]
         root_globs = ["pyproject.toml", "setup.py", "poetry.lock", "pyrightconfig.json", ".git", ".hg"]
@@ -78,6 +77,46 @@ hook -group lsp-filetype-python global BufSetOption filetype=python %{
         [ruff.settings._.globalSettings]
         organizeImports = true
         fixAll = true
+    }
+}
+
+remove-hooks global lsp-filetype-python
+hook -group lsp-filetype-python global BufSetOption filetype=python %{ python-lsp-config }
+
+# Point basedpyright at the interpreter from this buffer's `#!nix-shell` shebang.
+# Blocking (runs nix-shell) and evals shebang text, so it is opt-in, not a hook.
+# Resets to the base config first so re-running stays idempotent, then appends
+# only the pythonPath subtable (basedpyright requests the "python" section itself).
+define-command nix-shell-lsp -docstring "Load this buffer's nix-shell shebang env into basedpyright" %{
+    evaluate-commands %sh{
+        shebang=$(grep -hE '^#![[:space:]]*nix-shell([[:space:]]|$)' "$kak_buffile" 2>/dev/null)
+        if [ -z "$shebang" ]; then
+            printf 'fail %%{no #!nix-shell shebang in this buffer}'
+            exit
+        fi
+        # tokenize the shebang args (quotes respected), then drop `-i <interp>`
+        eval "set -- $(printf '%s\n' "$shebang" | sed -E 's/^#![[:space:]]*nix-shell[[:space:]]*//')"
+        skip=0; n=$#
+        while [ $n -gt 0 ]; do
+            a=$1; shift; n=$((n-1))
+            [ "$skip" = 1 ] && { skip=0; continue; }
+            [ "$a" = "-i" ] && { skip=1; continue; }
+            set -- "$@" "$a"
+        done
+        interp=$(cd "$(dirname "$kak_buffile")" && nix-shell "$@" --run 'command -v python' 2>/dev/null)
+        if [ -z "$interp" ]; then
+            printf 'fail %%{nix-shell did not resolve a python interpreter}'
+            exit
+        fi
+        cat <<EOF
+python-lsp-config
+set-option -add buffer lsp_servers %{
+    [basedpyright-langserver.settings.python]
+    pythonPath = "$interp"
+}
+lsp-did-change-config
+echo -markup "{Information}basedpyright: $interp"
+EOF
     }
 }
 
@@ -96,6 +135,8 @@ hook -group lsp-filetype-janet global BufSetOption filetype=janet %{
         [janet-lsp]
         root_globs = ["project.janet", ".git", ".hg"]
         args = ["--stdio"]
+        [janet-lsp.envs]
+        JANET_PATH = "jpm_tree/lib"
     }
 }
 

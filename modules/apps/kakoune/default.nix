@@ -30,8 +30,11 @@ in
       pathAdd = [
         pkgs.proselint
         pkgs.wl-clipboard
-        pkgs.kakoune-lsp
+        (pkgs.kakoune-lsp.overrideAttrs (old: {
+          patches = (old.patches or [ ]) ++ [ ./kakoune-lsp.patch ];
+        }))
         pkgs.nixd
+        pkgs.nixfmt
         pkgs.basedpyright
         pkgs.ruff
         inputs'.janet-lsp.packages.janet-lsp

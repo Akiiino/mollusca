@@ -1,0 +1,95 @@
+diff --git a/src/text_edit.rs b/src/text_edit.rs
+index 4564556..239a04c 100644
+--- a/src/text_edit.rs
++++ b/src/text_edit.rs
+@@ -310,6 +310,49 @@ pub fn lsp_text_edits_to_kakoune<T: TextEditish<T>>(
+             for te in &text_edits {
+                 debug!(to_editor, "{:?}", te.as_ref());
+             }
++        } else if range.start.character == 0
++            && range.end.character == 0
++            && range.end.line > range.start.line
++            && (range.end.line as usize) <= text.len_lines()
++        {
++            // A single line-aligned edit that replaces a multi-line region but does not start at
++            // the beginning of the buffer (e.g. ruff coalesces all its formatting changes into one
++            // edit from the first changed line to EOF). Applied as-is this is one big replacement,
++            // collapsing the cursor to the edit's end. Split it into a minimal line-based edit
++            // sequence so untouched lines keep the cursor in place.
++            let start_line = range.start.line as usize;
++            let end_line = range.end.line as usize;
++            let start_byte = text.line_to_byte(start_line);
++            let end_byte = text.line_to_byte(end_line);
++            let mut old_sub = String::new();
++            for chunk in text.byte_slice(start_byte..end_byte).chunks() {
++                old_sub.push_str(chunk);
++            }
++            let new_text = &text_edits[0].as_ref().new_text;
++            let new_text = if new_text.ends_with('\n') || !old_sub.ends_with('\n') {
++                Cow::Borrowed(new_text)
++            } else {
++                Cow::Owned(new_text.to_string() + "\n")
++            };
++            let sub_edits = minimal_edit_sequence::<TextEdit>(
++                &Rope::from_str(&old_sub),
++                &Rope::from_str(&new_text),
++            );
++            text_edits = sub_edits
++                .into_iter()
++                .map(|mut te| {
++                    te.range.start.line += start_line as u32;
++                    te.range.end.line += start_line as u32;
++                    T::from_text_edit(te)
++                })
++                .collect();
++            debug!(
++                to_editor,
++                "Computed edit script to split up multi-line text edit"
++            );
++            for te in &text_edits {
++                debug!(to_editor, "{:?}", te.as_ref());
++            }
+         }
+     }
+
+@@ -1264,4 +1307,40 @@ mod tests {
+         .to_string();
+         assert_eq!(result, Some(expected));
+     }
++
++    #[test]
++    pub fn lsp_text_edits_to_kakoune_split_partial_buffer_edit() {
++        // Mirrors ruff's formatting output: a single edit that spans from the first changed line
++        // to EOF, not starting at the beginning of the buffer. It should be split so untouched
++        // lines do not move the cursor.
++        let buffer = Rope::from_str(indoc!(
++            r#"line0
++               line1
++               line2 needs reformatting
++               line3
++               line4
++             "#
++        ));
++        let text_edits = vec![edit(
++            2,
++            0,
++            5,
++            0,
++            "line2 reformatted\nline3\nline4\n",
++        )];
++        let result = lsp_text_edits_to_kakoune(
++            &mock_to_editor(),
++            &Some(ClientId("test_client".to_string())),
++            text_edits,
++            &buffer,
++            OffsetEncoding::Utf8,
++        );
++        let expected = indoc!(
++            r#"select 3.1,3.1000000
++               execute-keys "cline2 reformatted
++               <esc>""#
++        )
++        .to_string();
++        assert_eq!(result, Some(expected));
++    }
+ }
