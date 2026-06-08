@@ -11,11 +11,6 @@
     database.type = "sqlite";
     settings.mapboxToken = minor-secrets.mapboxToken;
   };
-  networking = {
-    firewall = {
-      allowedTCPPorts = [ 8300 ];
-    };
-  };
 
   # photo upload stuff
   systemd.tmpfiles.rules = [

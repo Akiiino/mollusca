@@ -53,13 +53,13 @@
     hostName = "aspersum";
     firewall = {
       allowedTCPPorts = [
-        5000
-        53317
+        # 5000  # can't remember what it is, scream testing. #TODO: remove on 2026-08-01
+        53317 # Localsend
         22000 # Syncthing
       ];
       allowedUDPPorts = [
-        34197
-        53317
+        34197 # Factorio
+        53317 # Localsend
         21027 # Syncthing
         22000 # Syncthing
       ];
@@ -120,7 +120,10 @@
 
     # yubikey
     pcscd.enable = true;
-    udev.packages = [ pkgs.yubikey-personalization pkgs.ccid ];
+    udev.packages = [
+      pkgs.yubikey-personalization
+      pkgs.ccid
+    ];
   };
 
   security.rtkit.enable = true;

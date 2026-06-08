@@ -90,13 +90,12 @@
     ];
   };
 
-
   age.secrets.actinella-backup.file = "${self}/secrets/actinella-backup.age";
 
   services = {
     traveller = {
       enable = true;
-      bind = "0.0.0.0:3456";
+      bind = "127.0.0.1:3456";
     };
     fwupd.enable = true;
 
@@ -109,24 +108,6 @@
         addresses = true;
         workstation = true;
         userServices = true;
-      };
-    };
-
-    hostapd = {
-      enable = false; # TODO: enable after tvFilter rewrite
-      radios.wlp170s0 = {
-        band = "2g";
-        channel = 11;
-        wifi4.enable = true;
-
-        networks.wlp170s0 = {
-          ssid = "0ct0ptic0n";
-          authentication = {
-            mode = "wpa2-sha256";
-            wpaPassword = "asynchronous rondo";
-          };
-          ignoreBroadcastSsid = "empty";
-        };
       };
     };
 
