@@ -62,7 +62,7 @@
       };
     };
     mini-agenix = {
-      url = "github:akiiino/mini-agenix";
+      url = "github:Akiiino/mini-agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # to evaluate without the correct `age` key, override this input with the stub:
@@ -78,18 +78,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     autoraise = {
-      url = "github:akiiino/autoraise-flake";
+      url = "github:Akiiino/autoraise-flake";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
       };
     };
     gitsh = {
-      url = "github:akiiino/gitsh-flake";
+      url = "github:Akiiino/gitsh-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     secondbrain = {
-      url = "github:akiiino/secondbrain";
+      url = "github:Akiiino/secondbrain";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
@@ -109,7 +109,7 @@
       inputs.pre-commit.follows = "";
     };
     kakoune = {
-      url = "github:akiiino/kakoune";
+      url = "github:Akiiino/kakoune";
       flake = false;
     };
     kak-yac = {
@@ -121,7 +121,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     janet-lsp = {
-      url = "github:akiiino/janet-lsp-flake";
+      url = "github:Akiiino/janet-lsp-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    filewatcher123d = {
+      url = "github:Akiiino/filewatcher123d-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     niri = {
@@ -133,7 +137,6 @@
     };
     traveller = {
       url = "github:Akiiino/traveller";
-      # url = "/home/akiiino/Documents/PER Personal/10-19 Projects/11 General coding/11.07 Traveller";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     walker = {

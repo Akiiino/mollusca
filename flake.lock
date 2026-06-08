@@ -82,13 +82,13 @@
       "locked": {
         "lastModified": 1684250158,
         "narHash": "sha256-PjTYCWm1CdqVWGmBHrKKfGLpoAcZCPg1D/O0tB405hA=",
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "autoraise-flake",
         "rev": "184e4bedffe0ff20b1323ce55dcc51e292b12fc1",
         "type": "github"
       },
       "original": {
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "autoraise-flake",
         "type": "github"
       }
@@ -193,6 +193,29 @@
       "original": {
         "owner": "abenz1267",
         "repo": "elephant",
+        "type": "github"
+      }
+    },
+    "filewatcher123d": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "pyproject-build-systems": "pyproject-build-systems",
+        "pyproject-nix": "pyproject-nix",
+        "uv2nix": "uv2nix"
+      },
+      "locked": {
+        "lastModified": 1780648641,
+        "narHash": "sha256-zrRiNIQ0ZuekIsL0AaFSRr1O++jsGOPO8NfqUmd/3R0=",
+        "owner": "Akiiino",
+        "repo": "filewatcher123d-flake",
+        "rev": "24bd65e75c8c8446f9a6420a10ef3e16533e5c3c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Akiiino",
+        "repo": "filewatcher123d-flake",
         "type": "github"
       }
     },
@@ -317,13 +340,13 @@
       "locked": {
         "lastModified": 1767959533,
         "narHash": "sha256-g/+zLHwye3b2K4HqsoQxAPFOOYzk0/y+AMkNB1KE4KY=",
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "gitsh-flake",
         "rev": "304b8cc1c4090b0285cf82d2b7992599fa20cf37",
         "type": "github"
       },
       "original": {
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "gitsh-flake",
         "type": "github"
       }
@@ -414,13 +437,13 @@
       "locked": {
         "lastModified": 1780442805,
         "narHash": "sha256-xOOPQQI/Kr/l7eMuvehYPS3sNGYqsL2BuucQlWQz1Ck=",
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "janet-lsp-flake",
         "rev": "18270e710502549795ee94224f751ac911b56ef6",
         "type": "github"
       },
       "original": {
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "janet-lsp-flake",
         "type": "github"
       }
@@ -487,13 +510,13 @@
       "locked": {
         "lastModified": 1779980039,
         "narHash": "sha256-CbzBg4SmMu995Vi2u9G24hh2aIDi+7HV/zcbM+PUvBk=",
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "kakoune",
         "rev": "e7e8c8d71f1fab0781d3000002d08de42708c560",
         "type": "github"
       },
       "original": {
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "kakoune",
         "type": "github"
       }
@@ -532,13 +555,13 @@
       "locked": {
         "lastModified": 1780263833,
         "narHash": "sha256-31wRLotiTToH3HYGbD4HvO5ytpqcWgxlmHy+r8lLyCc=",
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "mini-agenix",
         "rev": "6952cf111a5d919715b5efcb3f403e23d8e2f99f",
         "type": "github"
       },
       "original": {
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "mini-agenix",
         "type": "github"
       }
@@ -741,7 +764,57 @@
         "type": "github"
       }
     },
+    "pyproject-build-systems": {
+      "inputs": {
+        "nixpkgs": [
+          "filewatcher123d",
+          "nixpkgs"
+        ],
+        "pyproject-nix": [
+          "filewatcher123d",
+          "pyproject-nix"
+        ],
+        "uv2nix": [
+          "filewatcher123d",
+          "uv2nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1779676664,
+        "narHash": "sha256-MbXylBTkWqVm8/VYjoULtMoVRgWBN1gSHbeRKsOsPlU=",
+        "owner": "pyproject-nix",
+        "repo": "build-system-pkgs",
+        "rev": "7bff980f37fc24e09dbc986643719900c139bf12",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "build-system-pkgs",
+        "type": "github"
+      }
+    },
     "pyproject-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "filewatcher123d",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780416763,
+        "narHash": "sha256-rRK3IFixgsrK6S3e14Xz9HAZm7+kMAIl3oi5zZlcwYI=",
+        "owner": "pyproject-nix",
+        "repo": "pyproject.nix",
+        "rev": "ad83f1ead0e78e57b188f35cb57298affb06fc5f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "pyproject.nix",
+        "type": "github"
+      }
+    },
+    "pyproject-nix_2": {
       "inputs": {
         "nixpkgs": [
           "traveller",
@@ -770,6 +843,7 @@
         "autoraise": "autoraise",
         "darwin": "darwin",
         "disko": "disko",
+        "filewatcher123d": "filewatcher123d",
         "firefox-addons": "firefox-addons",
         "flake-parts": "flake-parts",
         "gitsh": "gitsh",
@@ -806,13 +880,13 @@
       "locked": {
         "lastModified": 1700481531,
         "narHash": "sha256-O+61uRj/NyYaQnkQKFmOd8aydjoSRmZWMwjjmCALtDA=",
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "secondbrain",
         "rev": "6917d7d569a4e98eeea3105aaf4f106d5a83f717",
         "type": "github"
       },
       "original": {
-        "owner": "akiiino",
+        "owner": "Akiiino",
         "repo": "secondbrain",
         "type": "github"
       }
@@ -913,15 +987,15 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "pyproject-nix": "pyproject-nix",
+        "pyproject-nix": "pyproject-nix_2",
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1780236404,
-        "narHash": "sha256-foDBKVnaN5DY+0jSVf6TtMYDgX5qUyrUEbzokXEpe4k=",
+        "lastModified": 1780830114,
+        "narHash": "sha256-ENvjp2QV8XilR+ozKbGRiWm1iMZd3ulOCAf2r8JY7jI=",
         "owner": "Akiiino",
         "repo": "traveller",
-        "rev": "f66eaaf34340add9dad4e25a5bb35f8c39d7998a",
+        "rev": "e1635520efefe43e041d1800c5e00e5661c0b0d8",
         "type": "github"
       },
       "original": {
@@ -948,6 +1022,31 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "uv2nix": {
+      "inputs": {
+        "nixpkgs": [
+          "filewatcher123d",
+          "nixpkgs"
+        ],
+        "pyproject-nix": [
+          "filewatcher123d",
+          "pyproject-nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780418295,
+        "narHash": "sha256-yZVQNvmDx1SFjvlwevywsXWJnieSRqmQr7/fCTMyyd0=",
+        "owner": "pyproject-nix",
+        "repo": "uv2nix",
+        "rev": "0497ccef038da091002be7c05263a7f27820974f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "uv2nix",
         "type": "github"
       }
     },
