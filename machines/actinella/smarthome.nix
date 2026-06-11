@@ -1,4 +1,11 @@
-{ config, pkgs, lib, self, minor-secrets, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  self,
+  minor-secrets,
+  ...
+}:
 let
   mosquitto-port = 1883;
   zigbee2mqtt-port = 8085;
@@ -11,12 +18,9 @@ in
 {
   mollusca.useDefaultDomain = true;
 
-  age.secrets.mosquitto-zigbee2mqtt-password.file =
-    "${self}/secrets/mosquitto-zigbee2mqtt-password.age";
-  age.secrets.mosquitto-openhab-password.file =
-    "${self}/secrets/mosquitto-openhab-password.age";
-  age.secrets.mosquitto-valetudo-password.file =
-    "${self}/secrets/mosquitto-valetudo-password.age";
+  age.secrets.mosquitto-zigbee2mqtt-password.file = "${self}/secrets/mosquitto-zigbee2mqtt-password.age";
+  age.secrets.mosquitto-openhab-password.file = "${self}/secrets/mosquitto-openhab-password.age";
+  age.secrets.mosquitto-valetudo-password.file = "${self}/secrets/mosquitto-valetudo-password.age";
 
   services.mosquitto = {
     enable = true;
@@ -40,7 +44,7 @@ in
         port = 8883;
         settings = {
           certfile = "/var/lib/acme/${minor-secrets.personalDomain}/fullchain.pem";
-          keyfile  = "/var/lib/acme/${minor-secrets.personalDomain}/key.pem";
+          keyfile = "/var/lib/acme/${minor-secrets.personalDomain}/key.pem";
         };
         users = {
           valetudo = {
@@ -52,8 +56,8 @@ in
     ];
   };
   users.users.mosquitto.extraGroups = [ "acme" ];
-  security.acme.certs."${minor-secrets.personalDomain}".reloadServices = ["mosquitto.service"];
-  networking.firewall.allowedTCPPorts = [8883]; # mosquitto
+  security.acme.certs."${minor-secrets.personalDomain}".reloadServices = [ "mosquitto.service" ];
+  networking.firewall.allowedTCPPorts = [ 8883 ]; # mosquitto
   mollusca.lanServices.extraDnsRecords."mqtt.akiiino.me" = "192.168.1.101";
 
   age.secrets.zigbee2mqtt-secrets = {
@@ -87,7 +91,16 @@ in
       advanced = {
         network_key = "!secrets.yaml network_key";
         pan_id = 26632;
-        ext_pan_id = [167 205 123 235 244 185 208 31];
+        ext_pan_id = [
+          167
+          205
+          123
+          235
+          244
+          185
+          208
+          31
+        ];
       };
 
       homeassistant.enabled = true;
@@ -139,8 +152,18 @@ in
     home = "/var/lib/openhab";
     createHome = true;
     homeMode = "0750";
-    subUidRanges = [ { startUid = 200000; count = 65536; } ];
-    subGidRanges = [ { startGid = 200000; count = 65536; } ];
+    subUidRanges = [
+      {
+        startUid = 200000;
+        count = 65536;
+      }
+    ];
+    subGidRanges = [
+      {
+        startGid = 200000;
+        count = 65536;
+      }
+    ];
   };
 
   systemd.services.openhab = {

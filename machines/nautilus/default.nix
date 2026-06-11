@@ -50,7 +50,8 @@
         (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
       ];
     };
-    akiiino = { # intentionally modified from users/akiiino
+    akiiino = {
+      # intentionally modified from users/akiiino
       isNormalUser = true;
       password = "";
       extraGroups = [

@@ -3,7 +3,6 @@
 
 _: prev: {
   swaylock-effects = prev.swaylock-effects.overrideAttrs (old: {
-    patches = (old.patches or []) ++ [ ./swaylock-blur-centering.patch ];
+    patches = (old.patches or [ ]) ++ [ ./swaylock-blur-centering.patch ];
   });
 }
-

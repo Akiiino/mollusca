@@ -60,12 +60,13 @@
           "--hostname=${config.networking.hostName}"
         ]
         ++ config.services.tailscale.extraSetFlags;
-        extraSetFlags =
-          ["--accept-routes"]
-          ++ (lib.optional config.mollusca.isExitNode "--advertise-exit-node")
-          ++ (lib.optional (
-            config.mollusca.advertiseRoutes != [ ]
-          ) "--advertise-routes=${lib.concatStringsSep "," config.mollusca.advertiseRoutes}");
+        extraSetFlags = [
+          "--accept-routes"
+        ]
+        ++ (lib.optional config.mollusca.isExitNode "--advertise-exit-node")
+        ++ (lib.optional (
+          config.mollusca.advertiseRoutes != [ ]
+        ) "--advertise-routes=${lib.concatStringsSep "," config.mollusca.advertiseRoutes}");
         disableUpstreamLogging = true;
         disableTaildrop = true;
       };
