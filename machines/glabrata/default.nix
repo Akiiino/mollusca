@@ -7,7 +7,7 @@
 let
   fli-mcp = pkgs.writeShellScriptBin "fli-mcp" ''
     export LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-    exec ${pkgs.uv}/bin/uv tool run --with click --from flights fli-mcp "$@"
+    exec ${pkgs.uv}/bin/uv tool run --with click --from flights[mcp] fli-mcp "$@"
   ''; # TODO: remove or properly Nixify
 
   # Wrap claude-code so it always loads our home-manager-managed MCP config
