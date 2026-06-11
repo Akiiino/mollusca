@@ -5,6 +5,11 @@
   ...
 }:
 let
+  fli-mcp = pkgs.writeShellScriptBin "fli-mcp" ''
+    export LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    exec ${pkgs.uv}/bin/uv tool run --with click --from flights fli-mcp "$@"
+  ''; # TODO: remove or properly Nixify
+
   # Wrap claude-code so it always loads our home-manager-managed MCP config
   # without touching the mutable ~/.claude.json or ~/.claude/settings.json.
   mcpJson = pkgs.writeText "claude-mcp.json" (builtins.toJSON {
@@ -12,6 +17,10 @@ let
       nixos = {
         type = "stdio";
         command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
+      };
+      fli = {
+        type = "stdio";
+        command = "${fli-mcp}/bin/fli-mcp";
       };
     };
   });
@@ -83,6 +92,8 @@ in
   environment.systemPackages = with pkgs; [
     claude-code-wrapped
     mcp-nixos
+    fli-mcp
+    uv
     abduco
     tmux
     git
