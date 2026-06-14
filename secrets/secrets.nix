@@ -26,9 +26,6 @@ in
   "minor-secrets.age".publicKeys = [
     akiiino
   ];
-  "extraText.age".publicKeys = [
-    akiiino
-  ];
   "acme-dns.age".publicKeys = [
     akiiino
     actinella
