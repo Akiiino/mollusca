@@ -56,6 +56,35 @@ in
     nixos-install.enable = false;
   };
 
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 100;
+  };
+  boot.kernel.sysctl = {
+    # zram is RAM-backed, swap eagerly
+    "vm.swappiness" = 180;
+    "vm.page-cluster" = 0;
+  };
+
+  systemd.oomd.enable = false;
+  services.earlyoom = {
+    enable = true;
+    freeMemThreshold = 5;
+    freeSwapThreshold = 10;
+    extraArgs = [
+      "--avoid"
+      "^(sshd|systemd|tailscaled)$"
+      "--prefer"
+      "^(cc1|cc1plus|rustc|ld|cargo|ninja|gcc|go)$"
+    ];
+  };
+
+  nix.settings = {
+    max-jobs = 2;
+    cores = 2;
+  };
+
   # Persistent volume — survives nixos-anywhere reinstalls.
   # Deliberately NOT in disko.nix so it won't be reformatted on reinstall.
   fileSystems."/mnt/persist" = {
