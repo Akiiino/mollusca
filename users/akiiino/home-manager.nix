@@ -7,11 +7,13 @@
   home-manager.users.akiiino = {
     imports = [
       inputs.walker.homeManagerModules.default
+      "${self}/modules/apps/desktop-shell.nix"
       "${self}/modules/apps/direnv.nix"
       "${self}/modules/apps/firefox"
       "${self}/modules/apps/git.nix"
       "${self}/modules/apps/kakoune"
       "${self}/modules/apps/kitty.nix"
+      "${self}/modules/apps/niri"
       "${self}/modules/apps/starship.nix"
       "${self}/modules/apps/syncthing"
       "${self}/modules/apps/zsh.nix"
