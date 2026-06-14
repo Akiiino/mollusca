@@ -24,8 +24,8 @@
       lta = "${lt} --all";
       lln = "${ll} --sort modified";
       ltn = "${lt} --sort modified";
-      kdiff = "kitty +kitten diff";
-      icat = "kitty +kitten icat";
+      kdiff = "${lib.getExe pkgs.kitty} +kitten diff";
+      icat = "${lib.getExe pkgs.kitty} +kitten icat";
     };
     siteFunctions = {
       launch = ''

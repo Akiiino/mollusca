@@ -2,6 +2,7 @@
   pkgs,
   config,
   inputs',
+  lib,
   ...
 }:
 {
@@ -67,7 +68,7 @@
     desktopEntries.kakoune-kitty = {
       name = "Kakoune (via Kitty)";
       genericName = "Text Editor";
-      exec = "kitty kak %F";
+      exec = "${lib.getExe pkgs.kitty} ${lib.getExe pkgs.mollusca.kakoune} %F";
       terminal = false; # TODO: is this necessary?
       categories = [
         "Utility"

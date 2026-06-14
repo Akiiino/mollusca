@@ -35,7 +35,7 @@ in
     # Suggested binds for running programs: terminal, app launcher, screen locker.
     "Mod+T" = {
       hotkey-overlay.title = "Open a Terminal: kitty";
-      action.spawn = "kitty";
+      action.spawn = lib.getExe pkgs.kitty;
     };
     "Mod+Shift+D" = {
       hotkey-overlay.title = "Run an Application: fuzzel";
@@ -43,12 +43,12 @@ in
     };
     "Mod+D" = {
       hotkey-overlay.title = "Run an Application: walker";
-      action.spawn = "walker";
+      action.spawn = lib.getExe config.programs.walker.package;
     };
     "Mod+Alt+L" = {
       hotkey-overlay.title = "Lock the Screen";
       action.spawn = [
-        "loginctl"
+        (lib.getExe' pkgs.systemd "loginctl")
         "lock-session"
       ];
     };
@@ -69,7 +69,7 @@ in
     "XF86AudioRaiseVolume" = {
       allow-when-locked = true;
       action.spawn = [
-        "swayosd-client"
+        (lib.getExe' pkgs.swayosd "swayosd-client")
         "--output-volume"
         "raise"
       ];
@@ -77,7 +77,7 @@ in
     "XF86AudioLowerVolume" = {
       allow-when-locked = true;
       action.spawn = [
-        "swayosd-client"
+        (lib.getExe' pkgs.swayosd "swayosd-client")
         "--output-volume"
         "lower"
       ];
@@ -85,7 +85,7 @@ in
     "XF86AudioMute" = {
       allow-when-locked = true;
       action.spawn = [
-        "swayosd-client"
+        (lib.getExe' pkgs.swayosd "swayosd-client")
         "--output-volume"
         "mute-toggle"
       ];
@@ -93,7 +93,7 @@ in
     "XF86AudioMicMute" = {
       allow-when-locked = true;
       action.spawn = [
-        "swayosd-client"
+        (lib.getExe' pkgs.swayosd "swayosd-client")
         "--input-volume"
         "mute-toggle"
       ];
@@ -101,7 +101,7 @@ in
     "XF86MonBrightnessUp" = {
       allow-when-locked = true;
       action.spawn = [
-        "swayosd-client"
+        (lib.getExe' pkgs.swayosd "swayosd-client")
         "--brightness"
         "raise"
       ];
@@ -109,7 +109,7 @@ in
     "XF86MonBrightnessDown" = {
       allow-when-locked = true;
       action.spawn = [
-        "swayosd-client"
+        (lib.getExe' pkgs.swayosd "swayosd-client")
         "--brightness"
         "lower"
       ];
