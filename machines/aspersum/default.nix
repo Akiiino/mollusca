@@ -110,9 +110,10 @@
         "2"
       ];
     };
-    udev.extraRules = ''
-      ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1022", KERNEL=="0000:c3:00.0", ATTR{power/control}="on"
-    ''; # fixes the annoying "xhci_hcd 0000:c3:00.0: Refused to change power state from D0 to D3hot"
+    # udev.extraRules = ''
+    #   ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1022", KERNEL=="0000:c3:00.0", ATTR{power/control}="on"
+    # ''; # fixes the annoying "xhci_hcd 0000:c3:00.0: Refused to change power state from D0 to D3hot"
+    # commented out because it prevents proper sleep I think?
     tailscale = {
       extraSetFlags = [ "--operator=akiiino" ];
     };
