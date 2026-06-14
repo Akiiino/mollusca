@@ -159,8 +159,7 @@
         systems = [
           "x86_64-linux"
           "aarch64-linux"
-          "x86_64-darwin"
-          "aarch64-darwin"
+          # "aarch64-darwin"  # disabled until I get a Mac again and can test that everything works
         ];
 
         flake = {
@@ -177,6 +176,10 @@
             actinella = { };
             glabrata = { };
           };
+
+          packages."x86_64-linux".cups-brother-dcpl3520cdw = withSystem "x86_64-linux" (
+            { pkgs, ... }: pkgs.callPackage ./packages/cups-brother-dcpl3520cdw.nix { }
+          );
         };
 
         perSystem =
@@ -201,7 +204,7 @@
                 ;
             };
             packages = {
-              cups-brother-dcpl3520cdw = pkgs.callPackage ./packages/cups-brother-dcpl3520cdw.nix { };
+
               zsh-jcd = pkgs.callPackage ./packages/zsh-jcd { };
             };
             checks = {

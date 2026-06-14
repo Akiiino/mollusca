@@ -16,11 +16,12 @@ let
   openhab-image = "docker.io/openhab/openhab:5.1.4@sha256:d583a280a8a8cdbff5bcebe5bd7d04a7839769350a7e54f600b4aaa26162392f";
 in
 {
-  mollusca.useDefaultDomain = true;
 
-  age.secrets.mosquitto-zigbee2mqtt-password.file = "${self}/secrets/mosquitto-zigbee2mqtt-password.age";
-  age.secrets.mosquitto-openhab-password.file = "${self}/secrets/mosquitto-openhab-password.age";
-  age.secrets.mosquitto-valetudo-password.file = "${self}/secrets/mosquitto-valetudo-password.age";
+  age.secrets = {
+    mosquitto-zigbee2mqtt-password.file = "${self}/secrets/mosquitto-zigbee2mqtt-password.age";
+    mosquitto-openhab-password.file = "${self}/secrets/mosquitto-openhab-password.age";
+    mosquitto-valetudo-password.file = "${self}/secrets/mosquitto-valetudo-password.age";
+  };
 
   services.mosquitto = {
     enable = true;
@@ -55,10 +56,8 @@ in
       }
     ];
   };
-  users.users.mosquitto.extraGroups = [ "acme" ];
   security.acme.certs."${minor-secrets.personalDomain}".reloadServices = [ "mosquitto.service" ];
   networking.firewall.allowedTCPPorts = [ 8883 ]; # mosquitto
-  mollusca.lanServices.extraDnsRecords."mqtt.akiiino.me" = "192.168.1.101";
 
   age.secrets.zigbee2mqtt-secrets = {
     file = "${self}/secrets/zigbee2mqtt.age";
@@ -145,25 +144,30 @@ in
     events_logger = "file";
   };
 
-  users.groups.openhab = { };
-  users.users.openhab = {
-    isSystemUser = true;
-    group = "openhab";
-    home = "/var/lib/openhab";
-    createHome = true;
-    homeMode = "0750";
-    subUidRanges = [
-      {
-        startUid = 200000;
-        count = 65536;
-      }
-    ];
-    subGidRanges = [
-      {
-        startGid = 200000;
-        count = 65536;
-      }
-    ];
+  users = {
+    users = {
+      mosquitto.extraGroups = [ "acme" ];
+      openhab = {
+        isSystemUser = true;
+        group = "openhab";
+        home = "/var/lib/openhab";
+        createHome = true;
+        homeMode = "0750";
+        subUidRanges = [
+          {
+            startUid = 200000;
+            count = 65536;
+          }
+        ];
+        subGidRanges = [
+          {
+            startGid = 200000;
+            count = 65536;
+          }
+        ];
+      };
+    };
+    groups.openhab = { };
   };
 
   systemd.services.openhab = {
@@ -260,14 +264,20 @@ in
     };
   };
 
-  mollusca.lanServices.services = {
-    "oh.akiiino.me" = {
-      proxyPass = "http://127.0.0.1:${toString openhab-port}";
-      websocket = true;
-    };
-    "z2m.akiiino.me" = {
-      proxyPass = "http://127.0.0.1:${toString zigbee2mqtt-port}";
-      websocket = true;
+  mollusca = {
+    useDefaultDomain = true;
+    lanServices = {
+      extraDnsRecords."mqtt.akiiino.me" = "192.168.1.101";
+      services = {
+        "oh.akiiino.me" = {
+          proxyPass = "http://127.0.0.1:${toString openhab-port}";
+          websocket = true;
+        };
+        "z2m.akiiino.me" = {
+          proxyPass = "http://127.0.0.1:${toString zigbee2mqtt-port}";
+          websocket = true;
+        };
+      };
     };
   };
 }

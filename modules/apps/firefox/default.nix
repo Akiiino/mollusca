@@ -8,6 +8,8 @@
     self.inputs.arkenfox.hmModules.arkenfox
   ];
   programs.firefox = {
+    configPath = ".mozilla/firefox";
+    # TODO: migrate to new default, "${config.xdg.configHome}/mozilla/firefox";
     enable = true;
     policies = {
       # doesn't work on darwin ;(
@@ -25,6 +27,7 @@
     arkenfox = {
       enable = true;
       version = "133.0"; # TODO: update arkenfox or drop it completely
+      disableWarning = true; # `arkenfox-nixos` seems abandoned — last version is 140.1
     };
     profiles.akiiino = {
       id = 0;

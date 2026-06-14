@@ -78,6 +78,7 @@
   };
   fileSystems."/home/akiiino/SteamLibrary" = {
     device = "/dev/disk/by-partlabel/disk-main-steam";
+    fsType = "ext4";
   };
   # fileSystems."/steam".options = ["uid=1002" "gid=100"];
 }

@@ -188,13 +188,15 @@ in
 
       git = {
         enable = true;
-        userName = "Claude (glabrata)";
-        userEmail = "noreply@anthropic.com";
-        aliases = {
-          mkpatch = "!git diff --quiet && git diff --cached --quiet || { echo 'Error: uncommitted changes exist. Commit or stash them first.'; exit 1; } && git diff @{u} HEAD > ~/claude.patch && echo 'Patch written to ~/claude.patch'";
-          syncup = "!git fetch && git diff HEAD..@{u} && git reset --hard @{u}";
-        };
-        extraConfig = {
+        settings = {
+          user = {
+            name = "Claude (glabrata)";
+            email = "noreply@anthropic.com";
+          };
+          alias = {
+            mkpatch = "!git diff --quiet && git diff --cached --quiet || { echo 'Error: uncommitted changes exist. Commit or stash them first.'; exit 1; } && git diff @{u} HEAD > ~/claude.patch && echo 'Patch written to ~/claude.patch'";
+            syncup = "!git fetch && git diff HEAD..@{u} && git reset --hard @{u}";
+          };
           init.defaultBranch = "main";
           pull.rebase = true;
           push.autoSetupRemote = true;

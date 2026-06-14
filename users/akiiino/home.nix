@@ -14,7 +14,7 @@
       spotify
       keepassxc
       discord
-      protonvpn-gui
+      proton-vpn
       obsidian
       dolphin-emu
       vlc
@@ -63,6 +63,7 @@
     userDirs = {
       enable = true;
       createDirectories = true;
+      setSessionVariables = true; # TODO: this is a legacy value. What breaks if I change to `false` - the new default?
     };
 
     desktopEntries.kakoune-kitty = {

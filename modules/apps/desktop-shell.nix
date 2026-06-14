@@ -70,10 +70,6 @@ in
         '';
 
         actions = {
-          dim = {
-            run = "${pkgs.brightnessctl}/bin/brightnessctl -s set 10%";
-            resume = "${pkgs.brightnessctl}/bin/brightnessctl -r";
-          };
           lock.run = "${pkgs.systemd}/bin/loginctl lock-session";
           displayOff.run = "${pkgs.niri}/bin/niri msg action power-off-monitors";
           suspend.run = "${pkgs.systemd}/bin/systemctl suspend";
@@ -129,16 +125,10 @@ in
       in
       {
         enable = true;
-        events = [
-          {
-            event = "before-sleep";
-            command = "${swaylockPackage}/bin/swaylock -f";
-          }
-          {
-            event = "lock";
-            command = " ${pkgs.brightnessctl}/bin/brightnessctl -r; ${swaylockPackage}/bin/swaylock -f; ${pkgs.niri}/bin/niri msg action power-off-monitors";
-          }
-        ];
+        events = {
+          "before-sleep" = "${swaylockPackage}/bin/swaylock -f";
+          "lock" = "${swaylockPackage}/bin/swaylock -f; ${pkgs.niri}/bin/niri msg action power-off-monitors";
+        };
         timeouts = map mkTimeout schedule;
       };
 
