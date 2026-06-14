@@ -9,4 +9,5 @@
   personalDomain = "vardenis.pavardenis.lt";
   acmeEmail = "erika@mustermann.de";
   shortName = "John";
+  extraText = "";
 }
