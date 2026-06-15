@@ -83,29 +83,47 @@ define-command -hidden python-lsp-config %{
 remove-hooks global lsp-filetype-python
 hook -group lsp-filetype-python global BufSetOption filetype=python %{ python-lsp-config }
 
-# Point basedpyright at the interpreter from this buffer's `#!nix-shell` shebang.
-# Blocking (runs nix-shell) and evals shebang text, so it is opt-in, not a hook.
-# Resets to the base config first so re-running stays idempotent, then appends
-# only the pythonPath subtable (basedpyright requests the "python" section itself).
-define-command nix-shell-lsp -docstring "Load this buffer's nix-shell shebang env into basedpyright" %{
+# Point basedpyright at the interpreter from this buffer's nix shebang.
+# Handles both old-style `#!nix-shell -i ...` and new-style `#!/usr/bin/env nix`
+# + `#!nix shell <installable> --command ...`. Blocking (runs nix) and evals
+# shebang text, so it is opt-in, not a hook. Resets to the base config first so
+# re-running stays idempotent, then appends only the pythonPath subtable
+# (basedpyright requests the "python" section itself).
+define-command nix-shell-lsp -docstring "Load this buffer's nix shebang env into basedpyright" %{
     evaluate-commands %sh{
-        shebang=$(grep -hE '^#![[:space:]]*nix-shell([[:space:]]|$)' "$kak_buffile" 2>/dev/null)
-        if [ -z "$shebang" ]; then
-            printf 'fail %%{no #!nix-shell shebang in this buffer}'
+        old=$(grep -hE '^#![[:space:]]*nix-shell([[:space:]]|$)' "$kak_buffile" 2>/dev/null)
+        # new-style: one or more `#!nix ...` lines (not `#!nix-shell`), concatenated
+        new=$(grep -hE '^#![[:space:]]*nix([[:space:]]|$)' "$kak_buffile" 2>/dev/null)
+        if [ -n "$old" ]; then
+            # tokenize the shebang args (quotes respected), then drop `-i <interp>`
+            eval "set -- $(printf '%s\n' "$old" | sed -E 's/^#![[:space:]]*nix-shell[[:space:]]*//')"
+            skip=0; n=$#
+            while [ $n -gt 0 ]; do
+                a=$1; shift; n=$((n-1))
+                [ "$skip" = 1 ] && { skip=0; continue; }
+                [ "$a" = "-i" ] && { skip=1; continue; }
+                set -- "$@" "$a"
+            done
+            interp=$(cd "$(dirname "$kak_buffile")" && nix-shell "$@" --run 'command -v python' 2>/dev/null)
+        elif [ -n "$new" ]; then
+            # concatenate all `#!nix` lines into one arg list (quotes respected)
+            eval "set -- $(printf '%s\n' "$new" | sed -E 's/^#![[:space:]]*nix[[:space:]]*//' | tr '\n' ' ')"
+            case "$1" in shell) shift ;; esac
+            # keep installables/options; drop `--command <cmd> [args...]` (rest of line)
+            stop=0; n=$#
+            while [ $n -gt 0 ]; do
+                a=$1; shift; n=$((n-1))
+                [ "$stop" = 1 ] && continue
+                [ "$a" = "--command" ] && { stop=1; continue; }
+                set -- "$@" "$a"
+            done
+            interp=$(cd "$(dirname "$kak_buffile")" && nix shell "$@" --command sh -c 'command -v python' 2>/dev/null)
+        else
+            printf 'fail %%{no #!nix-shell or #!nix shebang in this buffer}'
             exit
         fi
-        # tokenize the shebang args (quotes respected), then drop `-i <interp>`
-        eval "set -- $(printf '%s\n' "$shebang" | sed -E 's/^#![[:space:]]*nix-shell[[:space:]]*//')"
-        skip=0; n=$#
-        while [ $n -gt 0 ]; do
-            a=$1; shift; n=$((n-1))
-            [ "$skip" = 1 ] && { skip=0; continue; }
-            [ "$a" = "-i" ] && { skip=1; continue; }
-            set -- "$@" "$a"
-        done
-        interp=$(cd "$(dirname "$kak_buffile")" && nix-shell "$@" --run 'command -v python' 2>/dev/null)
         if [ -z "$interp" ]; then
-            printf 'fail %%{nix-shell did not resolve a python interpreter}'
+            printf 'fail %%{nix shebang did not resolve a python interpreter}'
             exit
         fi
         cat <<EOF
