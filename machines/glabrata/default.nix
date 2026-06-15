@@ -332,7 +332,7 @@ in
             email = "noreply@anthropic.com";
           };
           alias = {
-            syncup = "!git fetch && git diff HEAD..@{u} && git reset --hard @{u}";
+            syncup = "!git fetch && git log --oneline HEAD..@{u} && git diff -R @{u} && git reset --hard @{u}";
           };
           init.defaultBranch = "main";
           pull.rebase = true;
@@ -467,7 +467,7 @@ in
 
         Commands (defined in the mollusca config, available globally):
         - `mkpatch` — diff working tree vs freshly-fetched upstream → `~/claude.patch`
-        - `git syncup` — `git fetch && git diff HEAD..@{u} && git reset --hard @{u}`
+        - `git syncup` — `git fetch && git log --oneline HEAD..@{u} && git diff -R @{u} && git reset --hard @{u}` (the `git diff -R @{u}` compares upstream against your working tree, so it's empty when your on-disk files already match what was pushed; `git log` still lists the new commits)
       '';
     };
 

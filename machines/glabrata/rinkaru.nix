@@ -60,7 +60,7 @@
         userEmail = "noreply@anthropic.com";
         aliases = {
           mkpatch = "!git diff --quiet && git diff --cached --quiet || { echo 'Error: uncommitted changes exist. Commit or stash them first.'; exit 1; } && git diff @{u} HEAD > ~/claude.patch && echo 'Patch written to ~/claude.patch'";
-          syncup = "!git fetch && git diff HEAD..@{u} && git reset --hard @{u}";
+          syncup = "!git fetch && git log --oneline HEAD..@{u} && git diff -R @{u} && git reset --hard @{u}";
         };
         extraConfig = {
           init.defaultBranch = "main";
@@ -186,7 +186,7 @@
 
         Git aliases (defined in home-manager, available globally):
         - `git mkpatch` — `git diff @{u} HEAD > ~/claude.patch`
-        - `git syncup` — `git fetch && git diff HEAD..@{u} && git reset --hard @{u}`
+        - `git syncup` — `git fetch && git log --oneline HEAD..@{u} && git diff -R @{u} && git reset --hard @{u}` (the `git diff -R @{u}` compares upstream against your working tree, so it's empty when your on-disk files already match what was pushed; `git log` still lists the new commits)
       '';
     };
 
