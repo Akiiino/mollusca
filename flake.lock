@@ -553,11 +553,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780263833,
-        "narHash": "sha256-31wRLotiTToH3HYGbD4HvO5ytpqcWgxlmHy+r8lLyCc=",
+        "lastModified": 1781509767,
+        "narHash": "sha256-FPZOK1K+fn18wMWxaaP9vsooMQegHZgGLNTQSQz/zb0=",
         "owner": "Akiiino",
         "repo": "mini-agenix",
-        "rev": "6952cf111a5d919715b5efcb3f403e23d8e2f99f",
+        "rev": "6962be7ae9b34dde7522c2706c82d58806e75d95",
         "type": "github"
       },
       "original": {
@@ -565,18 +565,6 @@
         "repo": "mini-agenix",
         "type": "github"
       }
-    },
-    "minor-secrets": {
-      "flake": false,
-      "locked": {
-        "path": "./secrets/minor-secrets.age",
-        "type": "path"
-      },
-      "original": {
-        "path": "./secrets/minor-secrets.age",
-        "type": "path"
-      },
-      "parent": []
     },
     "niri": {
       "inputs": {
@@ -854,7 +842,6 @@
         "kakoune": "kakoune",
         "mac-app-util": "mac-app-util",
         "mini-agenix": "mini-agenix",
-        "minor-secrets": "minor-secrets",
         "niri": "niri",
         "nixcasks": "nixcasks",
         "nixos-anywhere": "nixos-anywhere",

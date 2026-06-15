@@ -37,24 +37,20 @@ rec {
             inputs'
             ;
 
-          # minor-secrets comes from the `minor-secrets` flake input, which
-          # defaults to secrets/minor-secrets.age (age-encrypted). If the
-          # input path ends in `.age` we decrypt via mini-agenix; otherwise
-          # we import it as a plain Nix file. This lets this flake get evaluated
-          # in untrusted environments.
+          # minor-secrets is age-encrypted (secrets/minor-secrets.age), decrypted
+          # at eval time via mini-agenix's importAge. On a machine without an age
+          # identity (e.g. the glabrata sandbox) importAge raises an error, so we
+          # fall back to the stub
           minor-secrets =
             let
-              src = inputs.minor-secrets.outPath;
-              isAge = (builtins.match ".*\\.age" (toString src)) != null;
+              attempt = builtins.tryEval (
+                builtins.importAge {
+                  file = "${self}/secrets/minor-secrets.age";
+                  hash = "sha256-HYaQNwKM5cBHr/ZamVt0QXDkNuJj0fugTqKT0nRQlAE=";
+                }
+              );
             in
-            if isAge then
-              builtins.importAge {
-                file = src;
-                hash = "sha256-e6G9rS0LDQmi2E7js3amZ2tZBfHNotlDacYWPq7QMRU=";
-
-              }
-            else
-              import src;
+            if attempt.success then attempt.value else import "${self}/secrets/minor-secrets-stub.nix";
         };
       }
     );

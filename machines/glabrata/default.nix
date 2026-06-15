@@ -32,9 +32,121 @@ let
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/claude \
-        --add-flags "--mcp-config ${mcpJson}"
+        --add-flags "--mcp-config ${mcpJson}" \
+        --set ENABLE_TOOL_SEARCH false
     '';
     inherit (pkgs.claude-code) meta;
+  };
+
+  # Generic "diff working tree against freshly-fetched upstream" patch builder.
+  # Not git- or repo-specific: works in any clone with an upstream. Captures
+  # tracked AND untracked changes (with binary content), requires no commit, and
+  # mutates nothing — `git fetch` only moves remote-tracking refs, and the diff
+  # is computed in a throwaway index so the real index/worktree are untouched.
+  mkpatch = pkgs.writeShellApplication {
+    name = "mkpatch";
+    runtimeInputs = [
+      pkgs.git
+      pkgs.coreutils
+    ];
+    text = ''
+      if ! git rev-parse --git-dir >/dev/null 2>&1; then
+        echo "mkpatch: not inside a git repository" >&2
+        exit 1
+      fi
+      git fetch --quiet || echo "mkpatch: warning: fetch failed; using cached refs" >&2
+      upstream=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)
+      if [ -z "$upstream" ]; then
+        upstream=$(git rev-parse --abbrev-ref origin/HEAD 2>/dev/null || true)
+      fi
+      if [ -z "$upstream" ]; then
+        echo "mkpatch: no upstream branch found (set one or add an 'origin' remote)" >&2
+        exit 1
+      fi
+      out="$HOME/claude.patch"
+      tmpindex=$(mktemp)
+      trap 'rm -f "$tmpindex"' EXIT
+      GIT_INDEX_FILE="$tmpindex" git read-tree "$upstream"
+      GIT_INDEX_FILE="$tmpindex" git add -A
+      GIT_INDEX_FILE="$tmpindex" git diff --cached --binary "$upstream" >"$out"
+      echo "mkpatch: wrote $out ($(grep -c '^' "$out") lines, vs $upstream)"
+    '';
+  };
+
+  # PostToolUse hook (Write|Edit|Bash): after Claude touches the filesystem,
+  # `git add -N` every untracked `.nix` in the enclosing flake repo, so flakes
+  # (which ignore untracked files) can see brand-new modules. Write/Edit carry a
+  # `.tool_input.file_path`; Bash carries only `.cwd`, so we can't key on a single
+  # path — instead we stage all untracked `.nix` in the repo. `add -N` on an
+  # already-tracked file is a no-op, and the `flake.nix` guard keeps us from
+  # mutating git index state in unrelated repos.
+  nix-intent-add = pkgs.writeShellApplication {
+    name = "nix-intent-add";
+    runtimeInputs = [
+      pkgs.git
+      pkgs.jq
+      pkgs.coreutils
+    ];
+    text = ''
+      input=$(cat)
+      fp=$(printf '%s' "$input" | jq -r '.tool_input.file_path // empty')
+      cwd=$(printf '%s' "$input" | jq -r '.cwd // empty')
+      if [ -n "$fp" ]; then dir=$(dirname "$fp"); else dir="$cwd"; fi
+      [ -n "$dir" ] || exit 0
+      cd "$dir" 2>/dev/null || exit 0
+      git rev-parse --git-dir >/dev/null 2>&1 || exit 0
+      root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+      [ -e "$root/flake.nix" ] || exit 0
+      cd "$root" || exit 0
+      while IFS= read -r -d "" f; do
+        git add -N -- "$f" 2>/dev/null || true
+      done < <(git ls-files -o --exclude-standard -z -- '*.nix')
+    '';
+  };
+
+  # Stop hook: fires when Claude finishes a turn. Auto-formats and validates any
+  # flake in the cwd (surfacing failures back to Claude so it fixes them before
+  # finishing), then refreshes ~/claude.patch. `nix` is inherited from the
+  # direnv-activated devshell env (which sets NIX_CONFIG for the agenix plugin).
+  claude-stop-hook = pkgs.writeShellApplication {
+    name = "claude-stop-hook";
+    runtimeInputs = [
+      pkgs.git
+      pkgs.jq
+      pkgs.coreutils
+      pkgs.nix
+      mkpatch
+    ];
+    text = ''
+      input=$(cat)
+      stop_active=$(printf '%s' "$input" | jq -r '.stop_hook_active // false' 2>/dev/null || echo false)
+
+      # Feed a failure back to Claude (exit 2) so it keeps working — but only
+      # once per stop cluster, so an unfixable error can't loop forever.
+      surface() {
+        if [ "$stop_active" = "true" ]; then
+          exit 0
+        fi
+        printf '%s\n' "$1" >&2
+        exit 2
+      }
+
+      if [ -e flake.nix ]; then
+        if ! out=$(nix fmt 2>&1); then
+          surface "nix fmt failed:
+      $out"
+        fi
+        if ! out=$(nix flake check 2>&1); then
+          surface "nix flake check failed; fix before finishing:
+      $out"
+        fi
+      fi
+
+      if git rev-parse --git-dir >/dev/null 2>&1; then
+        mkpatch >/dev/null 2>&1 || true
+      fi
+      exit 0
+    '';
   };
 in
 {
@@ -42,8 +154,6 @@ in
     ./hardware-configuration.nix
     ./disko.nix
     self.inputs.impermanence.nixosModules.impermanence
-    # "${modulesPath}/profiles/perlless.nix"
-    # ./rinkaru.nix
   ];
 
   mollusca = {
@@ -120,35 +230,63 @@ in
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    claude-code-wrapped
-    mcp-nixos
-    fli-mcp
-    uv
-    abduco
-    tmux
-    git
-    curl
-    jq
-    ripgrep
-    fd
-    tree
-    htop
-    # Additional tools for a productive agent environment
-    python3
-    file
-    less
-    wget
-    unzip
-    gnumake
-    gcc
-    openssh
-    diffutils
-    patch
-    which
-  ];
+  environment = {
+    systemPackages =
+      (with pkgs; [
+        claude-code-wrapped
+        mcp-nixos
+        fli-mcp
+        uv
+        tmux
+        git
+        curl
+        jq
+        ripgrep
+        fd
+        tree
+        htop
+        python3
+        file
+        less
+        wget
+        unzip
+        gnumake
+        gcc
+        openssh
+        diffutils
+        patch
+        which
+      ])
+      ++ [ mkpatch ];
 
-  # The claude user is the dedicated Claude Code operator on this machine.
+    etc."claude-code/managed-settings.json".text = builtins.toJSON {
+      hooks = {
+        Stop = [
+          {
+            hooks = [
+              {
+                type = "command";
+                command = "${claude-stop-hook}/bin/claude-stop-hook";
+                timeout = 600;
+              }
+            ];
+          }
+        ];
+        PostToolUse = [
+          {
+            matcher = "Write|Edit|Bash";
+            hooks = [
+              {
+                type = "command";
+                command = "${nix-intent-add}/bin/nix-intent-add";
+              }
+            ];
+          }
+        ];
+      };
+    };
+  };
+
   users.users.claude = {
     isNormalUser = true;
     extraGroups = [
@@ -194,7 +332,6 @@ in
             email = "noreply@anthropic.com";
           };
           alias = {
-            mkpatch = "!git diff --quiet && git diff --cached --quiet || { echo 'Error: uncommitted changes exist. Commit or stash them first.'; exit 1; } && git diff @{u} HEAD > ~/claude.patch && echo 'Patch written to ~/claude.patch'";
             syncup = "!git fetch && git diff HEAD..@{u} && git reset --hard @{u}";
           };
           init.defaultBranch = "main";
@@ -307,21 +444,29 @@ in
         Use this workflow when making code changes for ${minor-secrets.shortName} to review:
 
         **Delivering changes:**
-        1. Do your work, making one or multiple commits locally as needed (WIP commits are fine).
-        2. When ready, run `git mkpatch` — writes all changes vs upstream to `~/claude.patch`.
+        1. Do your work. No commit is required.
+        2. When you finish your work, `mkpatch` runs automatically — it fetches upstream
+           and writes your full working-tree diff (tracked changes AND new untracked files,
+           with binary content) versus fresh upstream to `~/claude.patch`. It mutates nothing:
+           `git fetch` only moves remote-tracking refs, and the diff is computed in a throwaway
+           index, so your branch, index, and working tree are untouched.
         3. Tell ${minor-secrets.shortName} the patch is ready. They apply it with:
            `ssh claude@glabrata 'cat ~/claude.patch' | git apply -`
         4. ${minor-secrets.shortName} modifies as needed, commits, and pushes to `origin`.
 
+        `mkpatch` is generic (works in any clone with an upstream). In directories that are not
+        repos, or do not have an upstream, just let ${minor-secrets.shortName} know that the
+        changes are ready — they will fetch the changes from `glabrata` manually.
+
         **Continuing after ${minor-secrets.shortName} pushes:**
-        1. Run `git syncup` — fetches origin, shows what ${minor-secrets.shortName} changed vs your last commit,
-           then resets to upstream. Note that if you're continuing your work it's more token-efficient to read
-           the entire output of `git syncup`, rather than `| head -n *` it and have to look through `git log`
-           and read the files again.
+        1. Run `git syncup` — fetches origin, shows what ${minor-secrets.shortName} changed vs your last
+           state, then resets to upstream. Read the entire output rather than
+           `| head -n *`-ing it, so you see ${minor-secrets.shortName}'s changes in full and your next
+           `mkpatch` builds on top of what was accepted.
         2. Continue working from the clean upstream state.
 
-        Git aliases (defined in home-manager, available globally):
-        - `git mkpatch` — `git diff @{u} HEAD > ~/claude.patch`
+        Commands (defined in the mollusca config, available globally):
+        - `mkpatch` — diff working tree vs freshly-fetched upstream → `~/claude.patch`
         - `git syncup` — `git fetch && git diff HEAD..@{u} && git reset --hard @{u}`
       '';
     };

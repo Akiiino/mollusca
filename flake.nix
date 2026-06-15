@@ -65,13 +65,6 @@
       url = "github:Akiiino/mini-agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # to evaluate without the correct `age` key, override this input with the stub:
-    # --override-input minor-secrets path:./secrets/minor-secrets-stub.nix
-    minor-secrets = {
-      url = "path:./secrets/minor-secrets.age";
-      flake = false;
-    };
-
     # Packages outside nixpkgs
     nixcasks = {
       url = "github:jacekszymanski/nixcasks";
