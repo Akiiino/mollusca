@@ -32,6 +32,7 @@
       fdupes
       koreader
       nomacs
+      yafc-ce
     ];
     file = {
       ".local/share".source = config.lib.file.mkOutOfStoreSymlink config.xdg.dataHome;
