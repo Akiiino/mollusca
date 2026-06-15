@@ -4,7 +4,8 @@
 #   imports = [ ./transmission.nix ];
 #
 # Prerequisites:
-#   - The vpn-confinement module is loaded (via flake nixosModules.default)
+#   - The WG-Jail module is loaded (inputs.WG-jail.nixosModules.default),
+#     which provides the vpnNamespaces options used below.
 #   - A ProtonVPN WireGuard config file at the path below, from a P2P server
 #     with "NAT-PMP (Port Forwarding) = on"
 #
@@ -71,6 +72,58 @@ let
     set -euo pipefail
     cp -al "$TR_TORRENT_DIR/$TR_TORRENT_NAME" "${stagingDir}/$TR_TORRENT_NAME"
   '';
+
+  settingsJson = "/var/lib/transmission/.config/transmission-daemon/settings.json";
+
+  # Runs as an ExecStartPre of transmission, ordered *after* the nixpkgs module's
+  # own prestart (which regenerates settings.json from the static config). It
+  # primes settings.json with the real NAT-PMP forwarded port before the daemon
+  # starts, so the very first tracker announce advertises the correct port
+  # instead of the 51413 placeholder.
+  #
+  # This needs only the VPN namespace (for natpmpc), not Transmission's RPC — so
+  # unlike the sidecar it can run before the daemon. It deliberately does NOT
+  # touch the firewall (that needs CAP_NET_ADMIN); the sidecar opens the port a
+  # few seconds later, and inbound peers retry. If NAT-PMP is unavailable it
+  # leaves the placeholder and exits 0, so a slow tunnel never blocks startup —
+  # the sidecar then corrects the port over RPC exactly as before.
+  peerPortPrestart = pkgs.writeShellScript "transmission-peer-port-prestart" ''
+    set -uo pipefail
+
+    natpmpc='${pkgs.libnatpmp}/bin/natpmpc'
+    jq='${pkgs.jq}/bin/jq'
+    awk='${pkgs.gawk}/bin/awk'
+
+    get_port() {
+      "$natpmpc" -a 1 0 udp 60 -g ${natpmpGateway} 2>/dev/null \
+        | "$awk" '/Mapped public port/ { print $4 }'
+    }
+
+    port=""
+    for _ in 1 2 3 4 5; do
+      port=$(get_port)
+      [ -n "$port" ] && break
+      sleep 3
+    done
+
+    if [ -z "$port" ]; then
+      echo "prestart: NAT-PMP unavailable, leaving placeholder; sidecar will update" >&2
+      exit 0
+    fi
+
+    # Refresh the TCP mapping too (same public port) so inbound works once the
+    # sidecar opens the firewall.
+    "$natpmpc" -a 1 0 tcp 60 -g ${natpmpGateway} > /dev/null 2>&1 || true
+
+    tmp="${settingsJson}.tmp"
+    if "$jq" --arg p "$port" '."peer-port" = ($p | tonumber)' "${settingsJson}" > "$tmp"; then
+      mv "$tmp" "${settingsJson}"
+      echo "prestart: peer-port set to $port"
+    else
+      rm -f "$tmp"
+      echo "prestart: failed to update settings.json, leaving placeholder" >&2
+    fi
+  '';
 in
 {
 
@@ -107,16 +160,13 @@ in
 
       bind-address-ipv6 = "::";
 
-      # TODO: remove with 4.1
-      announce-ip-enabled = true;
-      announce-ip = minor-secrets.vpn_ip;
-
       # Disable Transmission's built-in port forwarding — the sidecar
       # handles this via NAT-PMP directly with ProtonVPN.
       port-forwarding-enabled = false;
 
-      # Start with a placeholder peer port. The sidecar will update
-      # this at runtime once it gets the NAT-PMP assignment.
+      # Placeholder peer port. An ExecStartPre primes settings.json with the
+      # real NAT-PMP port before the daemon starts (so the first announce is
+      # correct); the sidecar then keeps it updated at runtime.
       peer-port = 51413;
 
       # Download into the seeding directory. Transmission owns this —
@@ -137,22 +187,27 @@ in
         vpnNamespace = "wg";
       };
 
-      # Transmission stores data under /var/lib/transmission — the default
-      # ProtectHome=true is fine since that's not under /home. But
-      # ProtectSystem=strict makes / read-only, and Transmission needs to
-      # write to its state and download directories. NixOS's transmission
-      # module already handles this via ReadWritePaths, but if you store
-      # downloads elsewhere, add the path here:
-      #
+      # mkForce the whole BindPaths list. The nixpkgs module derives
+      # BindPaths from the configured download-dir, which would bind-mount
+      # /mnt/media/Seeding on its own. That separate mount breaks the
+      # Seeding→Staging hardlinks (links can't span mount points), so we
+      # bind the parent /mnt/media instead and keep Seeding and Staging on
+      # one filesystem.
       serviceConfig = {
         BindPaths = lib.mkForce [
-          # force to prevent /mnt/media/Seeding being added and breaking hardlinks
           "/var/lib/transmission/.config/transmission-daemon"
           "/run"
           "/var/lib/transmission/.incomplete"
           "/mnt/media"
         ];
         ReadWritePaths = [ "/var/lib/transmission" ];
+
+        # Prime settings.json with the real NAT-PMP port before the daemon
+        # starts. mkAfter so it runs after the module's own prestart, which
+        # regenerates settings.json from the static config. No "+" prefix: it
+        # must run as the transmission user (owns settings.json) and inside the
+        # VPN namespace (for natpmpc).
+        ExecStartPre = lib.mkAfter [ "${peerPortPrestart}" ];
       };
     };
 
@@ -173,23 +228,20 @@ in
         vpnNamespace = "wg";
       };
 
-      # The sidecar needs CAP_NET_ADMIN to modify nftables rules.
-      # Override some hardening defaults that would interfere.
+      # Restart on failure so the lease keeps getting renewed. No hardening
+      # overrides are needed: nft modifies the namespace's nftables via
+      # netlink sockets, which work under the service's default caps.
       serviceConfig = {
         Type = "simple";
         Restart = "on-failure";
         RestartSec = 10;
-
-        # nft needs netlink access (CAP_NET_ADMIN). The hardening
-        # defaults from vpnConfinement are fine — nft uses netlink
-        # sockets, not sysfs or procfs.
       };
 
-      path = with pkgs; [
-        libnatpmp # natpmpc
-        nftables # nft
-        transmission_4 # transmission-remote
-        gawk # awk
+      path = [
+        pkgs.libnatpmp # natpmpc
+        pkgs.nftables # nft
+        config.services.transmission.package # transmission-remote
+        pkgs.gawk # awk
       ];
 
       script = ''
