@@ -206,11 +206,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1780648641,
-        "narHash": "sha256-zrRiNIQ0ZuekIsL0AaFSRr1O++jsGOPO8NfqUmd/3R0=",
+        "lastModified": 1781518726,
+        "narHash": "sha256-/cESnZvkDdChgFYN7BbtOvUEc2oJnhYrBGui/vtBR3A=",
         "owner": "Akiiino",
         "repo": "filewatcher123d-flake",
-        "rev": "24bd65e75c8c8446f9a6420a10ef3e16533e5c3c",
+        "rev": "c013b7b152636f5c2fdf437485d1a7aee6f2766a",
         "type": "github"
       },
       "original": {
