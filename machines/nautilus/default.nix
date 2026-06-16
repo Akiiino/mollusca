@@ -14,7 +14,7 @@
     self.inputs.nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
     self.inputs.nixos-hardware.nixosModules.common-pc
     self.inputs.nixos-hardware.nixosModules.common-pc-ssd
-    "${self}/users/akiiino"
+    "${self}/users/akiiino/base.nix"
     "${self}/users/rinkaru"
   ];
 

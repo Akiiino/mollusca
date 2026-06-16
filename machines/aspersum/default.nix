@@ -11,15 +11,10 @@
     inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series
     ./hardware-configuration.nix
     ./disko.nix
-    "${self}/users/akiiino"
-    "${self}/users/akiiino/home-manager.nix"
+    "${self}/users/akiiino/base.nix"
+    "${self}/users/akiiino/desktop.nix"
+    "${self}/users/akiiino/personal.nix"
   ];
-
-  # documentation.nixos = {
-  #   enable = true;
-  #   options.warningsAreErrors = false;
-  #   includeAllModules = true;
-  # };
 
   age.secrets.akiiino-password.file = "${self}/secrets/akiiino-password.age";
   users.users.akiiino.hashedPasswordFile = config.age.secrets.akiiino-password.path;
@@ -110,13 +105,7 @@
         "2"
       ];
     };
-    # udev.extraRules = ''
-    #   ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1022", KERNEL=="0000:c3:00.0", ATTR{power/control}="on"
-    # ''; # fixes the annoying "xhci_hcd 0000:c3:00.0: Refused to change power state from D0 to D3hot"
-    # commented out because it prevents proper sleep I think?
-    tailscale = {
-      extraSetFlags = [ "--operator=akiiino" ];
-    };
+    tailscale.extraSetFlags = [ "--operator=akiiino" ];
     displayManager.autoLogin.user = "akiiino";
 
     # yubikey
@@ -138,30 +127,6 @@
   ''; # allow ProtonVPN et al. to change settings without pestering
 
   environment.localBinInPath = true;
-  environment.systemPackages = [
-    pkgs.trayscale
-    pkgs.cheese
-    pkgs.usbutils
-    pkgs.btdu
-    pkgs.kdePackages.partitionmanager
-    pkgs.kdePackages.skanlite
-    pkgs.evince
-    (pkgs.kdePackages.skanpage.override {
-      tesseractLanguages = [
-        "eng"
-        "deu"
-        "rus"
-      ];
-    })
-    pkgs.android-tools-xdg
-    (pkgs.mpv.override {
-      scripts = [
-        pkgs.mpvScripts.autoload
-      ];
-    })
-    pkgs.yubikey-manager
-    pkgs.yubico-piv-tool
-  ];
 
   programs = {
     steam.enable = true;
