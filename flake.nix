@@ -40,13 +40,6 @@
       url = "github:Akiiino/gitsh-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    secondbrain = {
-      url = "github:Akiiino/secondbrain";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-parts.follows = "flake-parts";
-      };
-    };
     stevenBlackHosts = {
       url = "github:StevenBlack/hosts";
       flake = false;

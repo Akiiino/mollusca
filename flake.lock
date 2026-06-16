@@ -636,33 +636,9 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "parinfer-rust": "parinfer-rust",
-        "secondbrain": "secondbrain",
         "stevenBlackHosts": "stevenBlackHosts",
         "traveller": "traveller",
         "wrapper-manager": "wrapper-manager"
-      }
-    },
-    "secondbrain": {
-      "inputs": {
-        "flake-parts": [
-          "flake-parts"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1700481531,
-        "narHash": "sha256-O+61uRj/NyYaQnkQKFmOd8aydjoSRmZWMwjjmCALtDA=",
-        "owner": "Akiiino",
-        "repo": "secondbrain",
-        "rev": "6917d7d569a4e98eeea3105aaf4f106d5a83f717",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Akiiino",
-        "repo": "secondbrain",
-        "type": "github"
       }
     },
     "stevenBlackHosts": {
