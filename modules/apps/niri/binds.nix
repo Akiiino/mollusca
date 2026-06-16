@@ -43,7 +43,7 @@ in
     };
     "Mod+D" = {
       hotkey-overlay.title = "Run an Application: walker";
-      action.spawn = lib.getExe config.programs.walker.package;
+      action.spawn = lib.getExe config.services.walker.package;
     };
     "Mod+Alt+L" = {
       hotkey-overlay.title = "Lock the Screen";

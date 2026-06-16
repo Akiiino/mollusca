@@ -11,11 +11,6 @@ in
   ];
 
   programs = {
-    walker = {
-      enable = true;
-      runAsService = true;
-    };
-
     swaylock = {
       enable = true;
       package = swaylockPackage;
@@ -35,6 +30,12 @@ in
   };
 
   services = {
+    walker = {
+      enable = true;
+      systemd.enable = true;
+    };
+    elephant.enable = true;
+
     swayosd = {
       enable = true;
       topMargin = 0.75;

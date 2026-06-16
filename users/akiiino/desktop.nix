@@ -10,7 +10,6 @@
     { config, ... }: # TODO: this feels ugly
     {
       imports = [
-        inputs.walker.homeManagerModules.default
         "${self}/modules/apps/desktop-shell.nix"
         "${self}/modules/apps/firefox"
         "${self}/modules/apps/kitty.nix"
