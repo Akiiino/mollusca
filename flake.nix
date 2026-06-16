@@ -22,18 +22,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    nixos-anywhere = {
-      # only here to make it work with mini-agenix
-      url = "github:nix-community/nixos-anywhere";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        disko.follows = "disko";
-        flake-parts.follows = "flake-parts";
-        nixos-stable.follows = "nixpkgs";
-        nixos-images.follows = "nixpkgs"; # never evaluated
-        nix-vm-test.follows = "nixpkgs"; # never evaluated
-        treefmt-nix.follows = "nixpkgs"; # conditional check fails gracefully
-      };
     };
 
     # Secrets
