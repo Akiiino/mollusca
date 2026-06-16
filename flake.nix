@@ -13,10 +13,6 @@
     };
 
     # Machine configuration
-    darwin = {
-      url = "github:LnL7/nix-darwin/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,18 +22,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    mac-app-util = {
-      url = "github:hraban/mac-app-util";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        cl-nix-lite.inputs = {
-          flake-parts.follows = "flake-parts";
-          nixpkgs.follows = "nixpkgs";
-          treefmt-nix.follows = "";
-        };
-        treefmt-nix.follows = "";
-      };
-    };
     nixos-anywhere = {
       # only here to make it work with mini-agenix
       url = "github:nix-community/nixos-anywhere";
@@ -57,7 +41,6 @@
       url = "github:ryantm/agenix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        darwin.follows = "darwin";
         home-manager.follows = "home-manager";
       };
     };
@@ -66,17 +49,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Packages outside nixpkgs
-    nixcasks = {
-      url = "github:jacekszymanski/nixcasks";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    autoraise = {
-      url = "github:Akiiino/autoraise-flake";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-parts.follows = "flake-parts";
-      };
-    };
     gitsh = {
       url = "github:Akiiino/gitsh-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -152,7 +124,6 @@
         systems = [
           "x86_64-linux"
           "aarch64-linux"
-          # "aarch64-darwin"  # disabled until I get a Mac again and can test that everything works
         ];
 
         flake = {

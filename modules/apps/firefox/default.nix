@@ -12,7 +12,6 @@
     # TODO: migrate to new default, "${config.xdg.configHome}/mozilla/firefox";
     enable = true;
     policies = {
-      # doesn't work on darwin ;(
       DisableFirefoxAccounts = true;
       DisableFirefoxStudies = true;
       DisablePocket = true;
