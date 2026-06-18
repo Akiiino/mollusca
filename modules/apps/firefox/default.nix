@@ -54,6 +54,33 @@
           display: none;
         }
       '';
+      userContent = ''
+        /* === Tone down Anubis interstitials ===================================== */
+
+        :root:has(img[src*="/.within.website/x/cmd/anubis/static/img/"]) {
+          /* neutral palette */
+          --background:               Canvas !important;
+          --text:                     CanvasText !important;
+          --text-selection:           Highlight !important;
+          --link-foreground:          LinkText !important;
+          --link-background:          transparent !important;
+          --preformatted-background:  color-mix(in srgb, CanvasText 8%, Canvas) !important;
+          --blockquote-border-left:   1px solid color-mix(in srgb, CanvasText 35%, Canvas) !important;
+          --progress-bar-fill:        color-mix(in srgb, CanvasText 65%, Canvas) !important;
+          --progress-bar-outline:     color-mix(in srgb, CanvasText 45%, Canvas) solid 4px !important;
+
+          /* default fonts */
+          --body-sans-font:           system-ui, sans-serif !important;
+          --body-title-font:          system-ui, sans-serif !important;
+          --body-preformatted-font:   ui-monospace, monospace !important;
+        }
+
+        /* no mascot */
+        :root:has(img[src*="/.within.website/x/cmd/anubis/static/img/"])
+          img[src*="/.within.website/x/cmd/anubis/static/img/"] {
+          display: none !important;
+        }
+      '';
       containersForce = true;
       containers = {
         "Personal" = {
