@@ -55,4 +55,9 @@ in
     akiiino
     glabrata
   ];
+  "eunomia.age".publicKeys = [
+    akiiino
+    glabrata
+    pecten
+  ];
 }

@@ -10,6 +10,7 @@
     self.inputs.home-manager.nixosModules.default
     self.inputs.disko.nixosModules.disko
     self.inputs.niri.nixosModules.niri
+    self.inputs.horai.nixosModules.eunomia
 
     "${self}/modules/mollusca"
   ];

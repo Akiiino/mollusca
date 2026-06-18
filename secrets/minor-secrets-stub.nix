@@ -3,11 +3,14 @@
 # Used when evaluation without decryption is needed. Opt in by
 # overriding the `minor-secrets` flake input (see flake.nix).
 {
-  gitEmail = "git@anna.kowalska.pl";
-  derpDomain = "derp.ivan.ivanov.ru";
-  personalDomain = "vardenis.pavardenis.lt";
   acmeEmail = "erika@mustermann.de";
+  gitEmail = "git@anna.kowalska.pl";
+  personalDomain = "vardenis.pavardenis.lt";
+  name = "Jonathan";
   shortName = "John";
-  extraText = "";
+  surname = "Smith";
+  derpDomain = "derp.ivan.ivanov.ru";
   mapboxToken = "AA.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.AAAAAAAAAAAAAAAAAAAAAA";
+  extraText = "";
+  telegramId = 1;
 }

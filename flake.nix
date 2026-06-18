@@ -85,6 +85,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     wrapper-manager.url = "github:viperML/wrapper-manager";
+    horai = {
+      url = "github:Akiiino/horai";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

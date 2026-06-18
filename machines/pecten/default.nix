@@ -2,6 +2,9 @@
   lib,
   modulesPath,
   inputs,
+  config,
+  self,
+  minor-secrets,
   ...
 }:
 {
@@ -18,7 +21,12 @@
     useTailscale = true;
     isExitNode = true;
   };
-
+  services.eunomia = {
+    enable = true;
+    tokenFile = config.age.secrets.eunomia.path;
+    chatId = minor-secrets.telegramId;
+  };
+  age.secrets.eunomia.file = "${self}/secrets/eunomia.age";
   # TODO: move to `mollusca.remote` or `mollusca.headless`?
   system.tools = {
     nixos-rebuild.enable = false;

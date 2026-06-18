@@ -281,6 +281,27 @@
         "type": "github"
       }
     },
+    "horai": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "pyproject-nix": "pyproject-nix_2"
+      },
+      "locked": {
+        "lastModified": 1781794298,
+        "narHash": "sha256-AjX8bMW6qubmqh4AqKOL34esvuxZDFyiJYpYEdp3WLo=",
+        "owner": "Akiiino",
+        "repo": "horai",
+        "rev": "951f68f8b060f3ad733850d37fec3dd865eb418f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Akiiino",
+        "repo": "horai",
+        "type": "github"
+      }
+    },
     "impermanence": {
       "inputs": {
         "home-manager": "home-manager_2",
@@ -598,6 +619,27 @@
     "pyproject-nix_2": {
       "inputs": {
         "nixpkgs": [
+          "horai",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1781585874,
+        "narHash": "sha256-T4e8kqZ/fsuqYWbcXDcr0EBLClh3VRKVV1XcL/ibf3A=",
+        "owner": "pyproject-nix",
+        "repo": "pyproject.nix",
+        "rev": "112aebcc00ecf20d48a5c08e80660a6852a4707a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "pyproject.nix",
+        "type": "github"
+      }
+    },
+    "pyproject-nix_3": {
+      "inputs": {
+        "nixpkgs": [
           "traveller",
           "nixpkgs"
         ]
@@ -627,6 +669,7 @@
         "flake-parts": "flake-parts",
         "gitsh": "gitsh",
         "home-manager": "home-manager",
+        "horai": "horai",
         "impermanence": "impermanence",
         "janet-lsp": "janet-lsp",
         "kak-yac": "kak-yac",
@@ -692,7 +735,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "pyproject-nix": "pyproject-nix_2",
+        "pyproject-nix": "pyproject-nix_3",
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {

@@ -41,7 +41,7 @@ rec {
               attempt = builtins.tryEval (
                 builtins.importAge {
                   file = "${self}/secrets/minor-secrets.age";
-                  hash = "sha256-HYaQNwKM5cBHr/ZamVt0QXDkNuJj0fugTqKT0nRQlAE=";
+                  hash = "sha256-WjPIl8eYQIRnTqXQnuEdgNxM/ptVrgSQaRkciDcVLCo=";
                 }
               );
             in
