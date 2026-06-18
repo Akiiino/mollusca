@@ -12,6 +12,7 @@ let
     pkgs.kakounePlugins.kak-ansi
     pkgs.kakounePlugins.powerline-kak
     pkgs.kakounePlugins.openscad-kak
+    pkgs.kakounePlugins.kakoune-buffers
     (inputs.parinfer-rust.packages.${pkgs.stdenv.hostPlatform.system}.parinfer-rust.overrideAttrs
       (old: {
         patches = (old.patches or [ ]) ++ [ ./parinfer.patch ];
@@ -35,6 +36,7 @@ inputs.wrapper-manager.lib.wrapWith pkgs {
     pkgs.basedpyright
     pkgs.ruff
     inputs.janet-lsp.packages.${pkgs.stdenv.hostPlatform.system}.janet-lsp
+    pkgs.ripgrep
   ];
   env.KAKOUNE_CONFIG_DIR.value = ./rc;
 }

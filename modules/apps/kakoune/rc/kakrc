@@ -11,6 +11,7 @@ set-option global indentwidth 4
 set-option global tabstop 4
 hook global WinSetOption filetype=nix %{ set-option window indentwidth 2 }
 hook global WinSetOption filetype=janet %{ set-option window indentwidth 2 }
+hook global WinSetOption filetype=yaml %{ set-option window indentwidth 2 }
 
 # Trim trailing whitespace on save
 hook global BufWritePre .* %{ try %{ execute-keys -draft %s\h+$<ret>d } }
@@ -33,6 +34,7 @@ hook global WinSetOption filetype=(markdown) %{
 }
 
 source "%val{config}/powerline-config.kak"
+source "%val{config}/git.kak"
 
 yac-enable
 set-option global yac_push_command "wl-copy &> /dev/null"
@@ -52,7 +54,6 @@ map global goto d '<esc>: lsp-definition<ret>' -docstring 'LSP definition'
 map global goto r '<esc>: lsp-references<ret>' -docstring 'LSP references'
 map global goto y '<esc>: lsp-type-definition<ret>' -docstring 'LSP type definition'
 map global object a '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
-map global object <a-a> '<a-semicolon>lsp-object<ret>' -docstring 'LSP any symbol'
 map global object f '<a-semicolon>lsp-object Function Method<ret>' -docstring 'LSP function or method'
 map global object t '<a-semicolon>lsp-object Class Interface Module Namespace Struct<ret>' -docstring 'LSP class or module'
 map global object d '<a-semicolon>lsp-diagnostic-object error warning<ret>' -docstring 'LSP errors and warnings'
@@ -162,3 +163,84 @@ hook -group lsp-filetype-janet global BufSetOption filetype=janet %{
 hook global BufSetOption filetype=python %{ hook buffer BufWritePre .* lsp-formatting-sync }
 hook global BufSetOption filetype=nix %{ hook buffer BufWritePre .* lsp-formatting-sync }
 hook global BufSetOption filetype=janet %{ hook buffer BufWritePre .* lsp-formatting-sync }
+
+
+define-command -hidden git-status-goto-source %{
+    evaluate-commands -draft -save-regs c %{
+        execute-keys 'x'
+        set-register c %sh{
+            path=$(printf '%s' "$kak_selection" | sed -n '
+                /^\t/ {
+                    s/^\t//
+                    s/^\(both \)\?\(added\|copied\|deleted\|modified\|renamed\|typechange\|unmerged\|new file\)\( by us\| by them\)\?: *//
+                    s/.* -> //
+                    p
+                    b
+                }
+                /^[ ACDMRTU?!][ ACDMRTU?!] / {
+                    s/^...//
+                    s/.* -> //
+                    p
+                }')
+            [ -n "$path" ] || exit 0
+            case "$path" in
+                /*) printf '%s' "$path" ;;
+                *)  printf '%s/%s' "${PWD}" "$path" ;;
+            esac
+        }
+        evaluate-commands %sh{
+            [ -n "$kak_reg_c" ] || echo "fail 'git-status: no file on this line'"
+        }
+        evaluate-commands -client %val{client} %{
+            evaluate-commands -try-client %opt{jumpclient} %{
+                edit -existing -- %reg{c}
+            }
+        }
+    }
+}
+
+hook -group git-status-goto-source global WinSetOption filetype=git-status %{
+    map buffer normal <ret> ':git-status-goto-source<ret>' -docstring 'Jump to file under cursor'
+    hook -once -always window WinSetOption filetype=.* %{
+        unmap buffer normal <ret> ':git-status-goto-source<ret>'
+    }
+}
+
+map global goto g ''
+map global goto a ''
+
+map global normal ^ q
+map global normal <a-^> Q
+map global normal q b
+map global normal Q B
+map global normal <a-q> <a-b>
+map global normal <a-Q> <a-B>
+map global normal b ': enter-buffers-mode<ret>' -docstring 'buffers'
+map global normal B ': enter-user-mode -lock buffers<ret>' -docstring 'buffers (lock)'
+
+define-command fuzzy-edit -docstring "find file and edit" -params 1 %{ edit %arg{1} }
+complete-command fuzzy-edit shell-script-candidates %{
+    rg --files | awk -F/ '{
+        k = ""
+        for (i = 1; i < NF; i++) k = k "1" $i "\001"
+        print k "0" $NF "\t" $0
+    }' | sort | cut -f2-
+}
+
+define-command cwd-edit -params 1 \
+    -docstring "edit a file in the current buffer's directory (no cd)" %{
+    edit %sh{
+        dir=$(dirname "$kak_bufname")
+        if [ "$dir" = "." ]; then printf %s "$1"; else printf %s "$dir/$1"; fi
+    }
+}
+complete-command cwd-edit shell-script-candidates %{
+    cd "$(dirname "$kak_buffile")" && rg --files | awk -F/ '{
+        k = ""
+        for (i = 1; i < NF; i++) k = k "1" $i "\001"
+        print k "0" $NF "\t" $0
+    }' | sort | cut -f2-
+}
+
+map global user e ': fuzzy-edit ' -docstring 'edit with fuzzy matching'
+map global user E ': cwd-edit ' -docstring 'edit next to current buffer'
