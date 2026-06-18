@@ -248,6 +248,7 @@ in
         python3
         file
         less
+        abduco
         wget
         unzip
         gnumake
