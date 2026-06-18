@@ -50,6 +50,10 @@
       "traveller.akiiino.me" = {
         proxyPass = "http://127.0.0.1:3456";
       };
+      "rustical.akiiino.me" = {
+        proxyPass = "http://pecten:4000";
+        websocket = true;
+      };
     };
   };
 

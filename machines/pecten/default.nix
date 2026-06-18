@@ -14,6 +14,7 @@
     "${modulesPath}/profiles/perlless.nix"
     ./derper.nix
     ./photos.nix
+    ./rustical.nix
   ];
 
   mollusca = {
