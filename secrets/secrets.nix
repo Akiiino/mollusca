@@ -55,7 +55,12 @@ in
     akiiino
     glabrata
   ];
-  "eunomia.age".publicKeys = [
+  "eunomia-telegram.age".publicKeys = [
+    akiiino
+    glabrata
+    pecten
+  ];
+  "horai-rustical.age".publicKeys = [
     akiiino
     glabrata
     pecten

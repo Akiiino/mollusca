@@ -24,10 +24,10 @@
   };
   services.eunomia = {
     enable = true;
-    tokenFile = config.age.secrets.eunomia.path;
+    tokenFile = config.age.secrets.eunomia-telegram.path;
     chatId = minor-secrets.telegramId;
   };
-  age.secrets.eunomia.file = "${self}/secrets/eunomia.age";
+  age.secrets.eunomia-telegram.file = "${self}/secrets/eunomia-telegram.age";
   # TODO: move to `mollusca.remote` or `mollusca.headless`?
   system.tools = {
     nixos-rebuild.enable = false;
