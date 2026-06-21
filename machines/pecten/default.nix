@@ -15,6 +15,7 @@
     ./derper.nix
     ./photos.nix
     ./rustical.nix
+    ./kanidm.nix
   ];
 
   mollusca = {

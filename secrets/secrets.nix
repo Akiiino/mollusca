@@ -65,4 +65,8 @@ in
     glabrata
     pecten
   ];
+  "kanidm-idm-admin.age".publicKeys = [
+    akiiino
+    pecten
+  ];
 }
