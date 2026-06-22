@@ -2,6 +2,7 @@
   self,
   pkgs,
   inputs',
+  lib,
   ...
 }:
 {
@@ -22,6 +23,7 @@
         obsidian
         tremotesf
         inputs'.filewatcher123d.packages.filewatcher123d
+        yafc-ce
       ];
 
       programs.thunderbird.enable = true;
@@ -30,6 +32,20 @@
         configHome = config.home.homeDirectory + "/Configuration";
         dataHome = config.home.homeDirectory + "/Data";
         stateHome = config.home.homeDirectory + "/State";
+
+        dataFile."icons/hicolor/64x64/apps/yafc.png".source =
+          pkgs.runCommand "yafc-icon.png" { nativeBuildInputs = [ pkgs.imagemagick ]; }
+            ''
+              magick "${pkgs.yafc-ce}/lib/yafc-ce/image.ico" "$out"
+            '';
+        desktopEntries.yafc = {
+          name = "YAFC";
+          genericName = "Factorio Production Calculator";
+          exec = lib.getExe pkgs.yafc-ce;
+          icon = "yafc";
+          categories = [ "Utility" ];
+        };
+
       };
 
       home.file = {
