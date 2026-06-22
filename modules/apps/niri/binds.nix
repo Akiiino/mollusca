@@ -82,6 +82,22 @@ in
         "lower"
       ];
     };
+    "Shift+XF86AudioRaiseVolume" = {
+      allow-when-locked = true;
+      action.spawn = [
+        (lib.getExe' pkgs.swayosd "swayosd-client")
+        "--output-volume"
+        "+1"
+      ];
+    };
+    "Shift+XF86AudioLowerVolume" = {
+      allow-when-locked = true;
+      action.spawn = [
+        (lib.getExe' pkgs.swayosd "swayosd-client")
+        "--output-volume"
+        "-1"
+      ];
+    };
     "XF86AudioMute" = {
       allow-when-locked = true;
       action.spawn = [
@@ -112,6 +128,22 @@ in
         (lib.getExe' pkgs.swayosd "swayosd-client")
         "--brightness"
         "lower"
+      ];
+    };
+    "Shift+XF86MonBrightnessUp" = {
+      allow-when-locked = true;
+      action.spawn = [
+        (lib.getExe' pkgs.swayosd "swayosd-client")
+        "--brightness"
+        "+1"
+      ];
+    };
+    "Shift+XF86MonBrightnessDown" = {
+      allow-when-locked = true;
+      action.spawn = [
+        (lib.getExe' pkgs.swayosd "swayosd-client")
+        "--brightness"
+        "-1"
       ];
     };
 
