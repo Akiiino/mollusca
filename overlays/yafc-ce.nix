@@ -17,6 +17,7 @@
 # texture is regenerated against the current renderer.
 _final: prev: {
   yafc-ce = prev.yafc-ce.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ./yafc-2.1.patch ];
     postPatch = (old.postPatch or "") + ''
       substituteInPlace Yafc.UI/ImGui/ImGuiCache.cs \
         --replace-fail \
