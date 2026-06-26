@@ -1,0 +1,75 @@
+diff --git a/Yafc.Model/Data/DataClasses.cs b/Yafc.Model/Data/DataClasses.cs
+index 551722b6..daf6ad57 100644
+--- a/Yafc.Model/Data/DataClasses.cs
++++ b/Yafc.Model/Data/DataClasses.cs
+@@ -860,7 +860,11 @@ public sealed class Quality : FactorioObject {
+     public float AccumulatorCapacityBonus => level;
+     public float BeaconTransmissionBonus => .2f * level;
+     public float BeaconConsumptionFactor { get; internal set; }
++    /// <summary>The quality prototype's <c>next_probability</c>, which scales the quality effect for the first roll step.</summary>
+     public float UpgradeChance { get; internal set; }
++    /// <summary>The quality prototype's <c>chain_probability</c>, which scales the chance of each additional quality jump beyond the
++    /// first. Defaults to <see cref="UpgradeChance"/> for pre-2.1 data, where <c>next_probability</c> governed every step.</summary>
++    public float ChainProbability { get; internal set; }
+ 
+     public static bool operator <(Quality left, Quality right) => left.level < right.level;
+     public static bool operator >(Quality left, Quality right) => left.level > right.level;
+diff --git a/Yafc.Model/Model/ProductionTableContent.cs b/Yafc.Model/Model/ProductionTableContent.cs
+index 095fa2df..263c28ba 100644
+--- a/Yafc.Model/Model/ProductionTableContent.cs
++++ b/Yafc.Model/Model/ProductionTableContent.cs
+@@ -545,20 +545,29 @@ public sealed class RecipeRow : ModelObject<ProductionTable>, IGroupedElement<Pr
+             spentFuel = fuel.FuelResult();
+         }
+ 
++        // upgradeProbabilities[j] is the chance of producing exactly the j-th quality at or above the recipe's quality.
+         List<float> upgradeProbabilities = [1];
+         if (parameters.activeEffects.qualityMod > 0) {
+-            Quality? quality = recipe.quality;
+-            float runningProbability = 1;
+-            // Fill upgradeProbabilities with "this quality or better" probabilities.
+-            while (quality != null && quality < Quality.MaxAccessible) {
+-                runningProbability *= quality.UpgradeChance;
+-                upgradeProbabilities.Add(Math.Min(1, runningProbability * parameters.activeEffects.qualityMod));
+-                quality = quality.nextQuality;
+-            }
+-            // Subtract the "next quality or better" probabilities to get just the "exactly this quality" probability.
+-            for (int j = 0; j < upgradeProbabilities.Count - 1; j++) {
+-                upgradeProbabilities[j] -= upgradeProbabilities[j + 1];
++            upgradeProbabilities.Clear();
++            Quality quality = recipe.quality;
++            // Replicates Factorio's quality roll (data/quality/prototypes/tips-and-tricks-simulations.lua): the module bonus is
++            // scaled by next_probability for the first jump, then by each subsequent quality's chain_probability. `remaining` is
++            // the probability mass that has reached at least the current quality; `threshold` is the share of it that jumps higher.
++            float threshold = quality.UpgradeChance * parameters.activeEffects.qualityMod;
++            float remaining = 1;
++            while (quality < Quality.MaxAccessible) {
++                if (remaining >= threshold) {
++                    upgradeProbabilities.Add(remaining - threshold);
++                    remaining = threshold;
++                }
++                else {
++                    // The bonus guarantees a jump past this quality, so none of the mass stops here.
++                    upgradeProbabilities.Add(0);
++                }
++                quality = quality.nextQuality!; // null-forgiving: quality < MaxAccessible guarantees a higher accessible quality.
++                threshold *= quality.ChainProbability;
+             }
++            upgradeProbabilities.Add(remaining);
+         }
+ 
+         int i = 0;
+diff --git a/Yafc.Parser/Data/FactorioDataDeserializer_RecipeAndTechnology.cs b/Yafc.Parser/Data/FactorioDataDeserializer_RecipeAndTechnology.cs
+index 8b2358f0..770af2de 100644
+--- a/Yafc.Parser/Data/FactorioDataDeserializer_RecipeAndTechnology.cs
++++ b/Yafc.Parser/Data/FactorioDataDeserializer_RecipeAndTechnology.cs
+@@ -92,6 +92,9 @@ internal partial class FactorioDataDeserializer {
+         quality.BeaconConsumptionFactor = table.Get("beacon_power_usage_multiplier", 1f);
+         quality.level = table.Get("level", 0);
+         quality.UpgradeChance = table.Get("next_probability", 0f);
++        // 2.1 split the quality roll: next_probability scales only the first jump, while the new chain_probability scales each
++        // additional jump. Pre-2.1 data has no chain_probability and used next_probability for every step, so default to it.
++        quality.ChainProbability = table.Get("chain_probability", quality.UpgradeChance);
+     }
+ 
+     private void UpdateRecipeCatalysts() {
