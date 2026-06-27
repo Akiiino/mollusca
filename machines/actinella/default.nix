@@ -13,6 +13,7 @@
     ./transmission.nix
     ./smarthome.nix
     ./photos.nix
+    ./factorio.nix
     ./hardware-configuration.nix
     ./disko.nix
     inputs.traveller.nixosModules.default

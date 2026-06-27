@@ -1,0 +1,15 @@
+{
+  "x86_64-linux": {
+    "headless": {
+      "stable": {
+        "candidateHashFilenames": ["factorio-headless_linux_2.1.8.tar.xz"],
+        "name": "factorio_headless_x64-2.1.8.tar.xz",
+        "needsAuth": false,
+        "sha256": "16b122cd5f48118cd44bcaf1d27fd933aea60b9902bbd426fd26359440759f12",
+        "tarDirectory": "x64",
+        "url": "https://factorio.com/get-download/2.1.8/headless/linux64",
+        "version": "2.1.8"
+      }
+    }
+  }
+}
