@@ -53,6 +53,7 @@
         22000 # Syncthing
       ];
       allowedUDPPorts = [
+        34196 # Factorio LAN discovery
         34197 # Factorio
         53317 # Localsend
         21027 # Syncthing
