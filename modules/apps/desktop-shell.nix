@@ -1,6 +1,24 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   swaylockPackage = pkgs.swaylock-effects;
+  tomlFormat = pkgs.formats.toml { };
+
+  # elephant reads one TOML file per provider (~/.config/elephant/<provider>.toml),
+  # not a single config.toml — so these are written directly via xdg.configFile
+  # rather than through services.elephant.settings (which targets config.toml and
+  # is inert for this elephant version).
+  elephantProviderConfig = {
+    desktopapplications = {
+      # Focus an already-open window instead of spawning a new instance.
+      window_integration = true;
+      # Disable most-used (frecency) sorting entirely.
+      history = false;
+    };
+    # Providers reachable via their own keybind are hidden from the Super+D list.
+    clipboard.hide_from_providerlist = true;
+    windows.hide_from_providerlist = true;
+    symbols.hide_from_providerlist = true;
+  };
 in
 {
   home.packages = with pkgs; [
@@ -33,8 +51,32 @@ in
     walker = {
       enable = true;
       systemd.enable = true;
+      settings.providers = {
+        default = [
+          "desktopapplications"
+          "calc"
+        ];
+        empty = [ "desktopapplications" ];
+        prefixes = [
+          {
+            prefix = ">";
+            provider = "niriactions";
+          }
+          {
+            prefix = "%";
+            provider = "nirisessions";
+          }
+          {
+            prefix = "@";
+            provider = "unicode";
+          }
+        ];
+      };
     };
-    elephant.enable = true;
+    elephant = {
+      enable = true;
+      package = pkgs.mollusca.elephant;
+    };
 
     swayosd = {
       enable = true;
@@ -142,4 +184,23 @@ in
       ];
     };
   };
+
+  systemd.user.services.elephant = {
+    # By default elephant tries to start before graphics and dies.
+    # TODO: suggest upstream?
+    Unit = {
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    # do not persist clipboard history
+    Service.Environment = [ "XDG_CACHE_HOME=%t/elephant-cache" ];
+  };
+
+  # elephant reads one TOML file per provider; write the ones we override.
+  xdg.configFile = lib.mapAttrs' (
+    provider: settings:
+    lib.nameValuePair "elephant/${provider}.toml" {
+      source = tomlFormat.generate "elephant-${provider}.toml" settings;
+    }
+  ) elephantProviderConfig;
 }

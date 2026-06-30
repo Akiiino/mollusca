@@ -45,6 +45,30 @@ in
       hotkey-overlay.title = "Run an Application: walker";
       action.spawn = lib.getExe config.services.walker.package;
     };
+    "Mod+Tab" = {
+      hotkey-overlay.title = "Switch Window: walker";
+      action.spawn = [
+        (lib.getExe config.services.walker.package)
+        "--provider"
+        "windows"
+      ];
+    };
+    "Mod+Shift+C" = {
+      hotkey-overlay.title = "Clipboard History: walker";
+      action.spawn = [
+        (lib.getExe config.services.walker.package)
+        "--provider"
+        "clipboard"
+      ];
+    };
+    "Mod+Semicolon" = {
+      hotkey-overlay.title = "Emoji & Symbols: walker";
+      action.spawn = [
+        (lib.getExe config.services.walker.package)
+        "--provider"
+        "symbols"
+      ];
+    };
     "Mod+Alt+L" = {
       hotkey-overlay.title = "Lock the Screen";
       action.spawn = [
