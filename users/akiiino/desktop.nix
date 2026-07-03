@@ -6,6 +6,7 @@
   ...
 }:
 {
+  programs.thunar.enable = true;
   home-manager.users.akiiino =
     { config, ... }: # TODO: this feels ugly
     {

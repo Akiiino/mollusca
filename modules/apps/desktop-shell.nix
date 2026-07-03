@@ -6,7 +6,6 @@ in
   home.packages = with pkgs; [
     pavucontrol
     networkmanagerapplet
-    thunar
     kdePackages.ark
   ];
 
