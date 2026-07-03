@@ -98,7 +98,7 @@
       }
       {
         matches = [ { app-id = "^steam$"; } ];
-        default-column-width = { }; # TODO: maybe unnecessary?
+        default-column-width = { }; # TODO: maybe unnecessary? What does it do?
       }
       {
         matches = [
