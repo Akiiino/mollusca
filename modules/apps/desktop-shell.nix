@@ -168,7 +168,6 @@ in
       Description = "Elephant - Data provider for application launchers";
       # By default elephant tries to start before graphics and dies.
       # TODO: suggest upstream?
-      After = [ "graphical-session.target" ];
       PartOf = [ "graphical-session.target" ];
     };
     Install.WantedBy = [ "graphical-session.target" ];

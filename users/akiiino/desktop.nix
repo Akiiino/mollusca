@@ -1,12 +1,13 @@
 {
   self,
-  inputs,
   pkgs,
-  lib,
   ...
 }:
 {
-  programs.thunar.enable = true;
+  programs.thunar = {
+    enable = true;
+    plugins = [ pkgs.thunar-archive-plugin ];
+  };
   home-manager.users.akiiino =
     { config, ... }: # TODO: this feels ugly
     {
@@ -51,21 +52,9 @@
       ];
 
       xdg = {
-        desktopEntries.kakoune-kitty = {
-          name = "Kakoune (via Kitty)";
-          genericName = "Text Editor";
-          exec = "${lib.getExe pkgs.kitty} ${lib.getExe pkgs.mollusca.kakoune} %F";
-          terminal = false; # TODO: is this necessary?
-          categories = [
-            "Utility"
-            "TextEditor"
-          ];
-          mimeType = [
-            "text/plain"
-            "text/markdown"
-            "text/csv"
-            "application/json"
-          ];
+        terminal-exec = {
+          enable = true;
+          settings.default = [ "kitty.desktop" ];
         };
 
         mimeApps = {
@@ -78,7 +67,7 @@
               mail = "thunderbird.desktop";
               files = "org.xfce.thunar.desktop";
               archive = "org.kde.ark.desktop";
-              text = "kakoune-kitty.desktop";
+              text = "kakoune.desktop";
             in
             {
               "application/pdf" = "org.gnome.Evince.desktop";

@@ -29,35 +29,13 @@ tinker with. Nothing fancy.
 - [ ] Use niri-native modules (`niri/workspaces`, `niri/window`) instead of the
       sway/hyprland defaults. Optional niri extras: niri-taskbar,
       waybar-niri-windows, niri_window_buttons (see refs).
-- [ ] Decide the module set deliberately and know what each shows: workspaces,
-      window title, clock, tray, audio, network, battery/power-profile,
-      backlight, plus a night-light toggle (see item 5). Drop metrics we don't
-      actually want.
-- [ ] Style it: nicer colors + spacing. **Depends on Stylix (item 4)** — Waybar
-      colors come from Stylix's base16 palette. Do the Stylix wiring
-      first before deep-styling the bar.
+- [ ] Otherwise preserve the default module set; list them explicitly.
+- [ ] Style it: nicer colors + spacing. **Depends on item 4** — Waybar
+      colors come from Flexoki-light.
 - [ ] Drop the `waybar` spawn-at-startup entry in favor of the
       systemd user service.
 
-## 2. File managers — give Dolphin a proper second try; keep Thunar
-
-**Context:** Keep Thunar available. Dolphin was tried before on niri but
-"didn't look right" and didn't pick up file associations — worth doing properly
-this time, since the Dolphin niceties (ark archive integration — already
-installed! — split view, embedded terminal, service menus) are exactly what's
-missing from Thunar.
-
-- [ ] Install Dolphin properly for a Wayland/niri-outside-Plasma environment.
-- [ ] Fix the "doesn't look right": Qt/KDE theming outside Plasma (qt platform
-      theme, icon theme, color scheme). **Overlaps with Stylix (item 4)** — Stylix
-      themes Qt/KDE too, so this may largely fall out of that work.
-- [ ] Fix file-type associations: Dolphin uses KDE's mimeapps handling; make sure
-      our `xdg.mimeApps` defaults (in `users/akiiino/desktop.nix`) are actually
-      honored. Investigate whether the KDE side needs its own config.
-- [ ] Keep both installed; leave Thunar as the default `inode/directory` handler
-      unless Dolphin proves better, then flip the association.
-
-## 3. Sleep / idle — keep swayidle, but configure it *well*
+## 2. Sleep / idle — keep swayidle, but configure it *well*
 
 **Decision:** stay on **swayidle** (it's the right choice on niri — hypridle
 misbehaves because niri doesn't implement `hyprland-lock-notify-v1`). Hand-rolling
@@ -82,29 +60,31 @@ trap). Idle inhibition already works (don't re-solve it).
 - [ ] Keep the AC-vs-battery distinction (don't suspend on AC) but express it
       cleanly.
 
-## 4. Stylix — unified theming (the keystone)
+## 3. Theming
 
-**Decision:** adopt Stylix for declarative, system-wide theming. **IMPORTANT:
-light theme, not dark** — pick a light base16 scheme (`polarity = "light"`).
-This is the keystone task: it clears several separate papercuts at once and
-several other items above depend on it.
+**Decision:** adopt declarative, system-wide theming; use Flexoki-light.
+- [ ] Start with theming the core apps that are in active use every day:
+      Niri, Kitty, Kakoune, Walker, Waybar, Swaylock, Firefox, and GTK+Qt apps.
+- [ ] Where possible, use popular first- or third-party implementations of
+      the theme (as-is or as a base), as opposed to hand-rolling the theming completely.
+- [ ] Replace pre-existing hardcoded colors with ones derived from the theme.
 
-- [ ] Wire Stylix (NixOS + home-manager). Choose a light base16 color scheme and
-      fonts (we already have Fira Code / Iosevka / Hack Nerd / Noto).
-- [ ] Let Stylix theme: GTK, Qt/KDE (helps Dolphin, item 2), swaylock, Waybar
-      (coordinate with item 1), terminal (kitty), cursor theme + size, and the
-      wallpaper (item 4a).
-- [ ] Where makes sense, bring existing hard-coded colors under Stylix's umbrella.
+**Requirement:** avoid Stylix and base16 in general! base16's theme handling is lossy,
+and Stylix generally suffers from the "does everything, poorly" problem.
 
-### 4a. Wallpaper (folded into Stylix)
-- [ ] Set a static wallpaper via Stylix (no video/parallax needed, rarely
-      changed). Currently there's **no wallpaper at all** — blank background.
+## 4. Wallpaper
+- [ ] Set a static wallpaper — no video/parallax needed, rarely changed. Currently
+      there's **no wallpaper at all** — blank background.
 
-### 4b. Cursor theme/size (folded into Stylix)
-- [ ] No problems noticed, but set a proper cursor theme + size via Stylix while
-      we're here (HiDPI 1.75× panel).
+## 5. Cursor theme/size
+- [ ] No problems noticed, but set a proper cursor theme + size while we're here
+      (HiDPI 1.75× panel).
 
-## 5. Night light — nice-to-have, manually toggleable
+## 6. Fonts
+
+Set Nokia Sans as a system-wide font; keep Iosevka as the monospaced font.
+
+## 7. Night light — nice-to-have, manually toggleable
 
 Requirement: **must be manually toggleable in addition to a timer**
 (tray icon or a Waybar module), not just a schedule.
@@ -114,13 +94,16 @@ Requirement: **must be manually toggleable in addition to a timer**
 - [ ] Add a manual toggle — a Waybar module or a tray icon (click to toggle on/off /
       cycle) is the natural home, ties into item 1.
 
-## 6. Screenshot annotation / light image editor
+## 8. Battery status notifications
 
-**Context:** niri's built-in screenshot flow is fine (interactive, saves +
-clipboard). Just want a *lightweight* editor for quick annotation — way lighter
-than GIMP (already installed).
+**Problem:** poweralertd works, but produces multiple notifications on every event
+(AC power enabled, battery power disabled, battery charging), as well as spams
+notifications every few minutes at 100% battery charge (battery charging, battery
+stopped charging).
 
-- [ ] Add a light raster editor (e.g. Pinta / Drawing).
+**Decision:** configure properly or replace with a less chatty alternative; the only
+notifications that should happen are "battery low", "battery very low", "battery charging",
+"battery stopped charging", **without** oscillating between the last two at 100%.
 
 ---
 
@@ -183,12 +166,7 @@ Everything useful gathered during the July 2026 survey.
   [vibepanel](https://github.com/prankstr/vibepanel).
 - [Hyprland wiki — Status bars](https://wiki.hypr.land/Useful-Utilities/Status-Bars/) (general Wayland reference).
 
-### File managers (item 2)
-- [Hyprland wiki — File Managers](https://wiki.hypr.land/Useful-Utilities/File-Managers/)
-- [NixOS Thunar settings issue #65771](https://github.com/NixOS/nixpkgs/issues/65771) (the xfconf fix).
-- [Thunar FAQ — xfconf](https://docs.xfce.org/xfce/thunar/faq)
-
-### Sleep / idle (item 3)
+### Sleep / idle (item 2)
 - [Configure Swayidle for Niri (Andrew McCall)](https://andrew-mccall.com/blog/2026/01/configure-swayidle-for-niri-and-noctalia-quickshell/) — niri-specific swayidle writeup.
 - [niri lock-notify discussion #3459](https://github.com/niri-wm/niri/discussions/3459) — why swayidle > hypridle on niri.
 - [niri idle-inhibit issue #2006](https://github.com/niri-wm/niri/issues/2006) — inhibitor edge case when already locked.
@@ -196,15 +174,10 @@ Everything useful gathered during the July 2026 survey.
 - [Arch wiki — Session lock](https://wiki.archlinux.org/title/Session_lock)
 - Modern alternative (not chosen): [Stasis](https://github.com/saltnpepper97/stasis) — media-aware idle manager.
 
-### Theming (item 4)
-- [Stylix](https://github.com/nix-community/stylix) — the framework.
-- [Stylix — configuration](https://nix-community.github.io/stylix/configuration.html) · [tips & tricks](https://nix-community.github.io/stylix/tricks.html)
-
-### All-in-one shells (surveyed, NOT chosen — kept for reference)
-- [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) — trialed, too much.
-- [Noctalia](https://github.com/noctalia-dev/noctalia-shell) — KaOS default niri shell.
+### Fonts (item 6)
+- [Nokia Sans](https://www.osnews.com/story/143222/it-turns-out-nokias-legendary-font-makes-for-a-great-general-user-interface-font/)
 
 ### Handy niri-ecosystem extras (from awesome-niri, for later tinkering)
-- Scratchpad: [niri-scratchpad](https://github.com/gvolpe/niri-scratchpad). Run-or-raise: [niri-ror](https://github.com/boomskats/niri-ror).
-- Session save/restore: [nirinit](https://github.com/amaanq/nirinit). Per-keyboard layout: [kunai](https://github.com/mikkurogue/kunai).
-- Auto screen-rotation (if the Framework has the sensor): [iio-niri](https://github.com/Zhaith-Izaliel/iio-niri).
+- Scratchpad: [niri-scratchpad](https://github.com/gvolpe/niri-scratchpad).
+- Session save/restore: [nirinit](https://github.com/amaanq/nirinit).
+- Per-keyboard layout: [kunai](https://github.com/mikkurogue/kunai).
