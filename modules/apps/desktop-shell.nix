@@ -1,24 +1,6 @@
 { pkgs, lib, ... }:
 let
   swaylockPackage = pkgs.swaylock-effects;
-  tomlFormat = pkgs.formats.toml { };
-
-  # elephant reads one TOML file per provider (~/.config/elephant/<provider>.toml),
-  # not a single config.toml — so these are written directly via xdg.configFile
-  # rather than through services.elephant.settings (which targets config.toml and
-  # is inert for this elephant version).
-  elephantProviderConfig = {
-    desktopapplications = {
-      # Focus an already-open window instead of spawning a new instance.
-      window_integration = true;
-      # Disable most-used (frecency) sorting entirely.
-      history = false;
-    };
-    # Providers reachable via their own keybind are hidden from the Super+D list.
-    clipboard.hide_from_providerlist = true;
-    windows.hide_from_providerlist = true;
-    symbols.hide_from_providerlist = true;
-  };
 in
 {
   home.packages = with pkgs; [
@@ -50,7 +32,9 @@ in
   services = {
     walker = {
       enable = true;
+      package = pkgs.mollusca.walker;
       systemd.enable = true;
+      enableElephantIntegration = true;
       settings.providers = {
         default = [
           "desktopapplications"
@@ -73,11 +57,6 @@ in
         ];
       };
     };
-    elephant = {
-      enable = true;
-      package = pkgs.mollusca.elephant;
-    };
-
     swayosd = {
       enable = true;
       topMargin = 0.75;
@@ -186,21 +165,17 @@ in
   };
 
   systemd.user.services.elephant = {
-    # By default elephant tries to start before graphics and dies.
-    # TODO: suggest upstream?
     Unit = {
+      Description = "Elephant - Data provider for application launchers";
+      # By default elephant tries to start before graphics and dies.
+      # TODO: suggest upstream?
       After = [ "graphical-session.target" ];
       PartOf = [ "graphical-session.target" ];
     };
-    # do not persist clipboard history
-    Service.Environment = [ "XDG_CACHE_HOME=%t/elephant-cache" ];
+    Install.WantedBy = [ "graphical-session.target" ];
+    Service = {
+      ExecStart = lib.getExe pkgs.mollusca.elephant;
+      Restart = "on-failure";
+    };
   };
-
-  # elephant reads one TOML file per provider; write the ones we override.
-  xdg.configFile = lib.mapAttrs' (
-    provider: settings:
-    lib.nameValuePair "elephant/${provider}.toml" {
-      source = tomlFormat.generate "elephant-${provider}.toml" settings;
-    }
-  ) elephantProviderConfig;
 }
