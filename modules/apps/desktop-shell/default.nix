@@ -219,8 +219,9 @@ in
   systemd.user.services.elephant = {
     Unit = {
       Description = "Elephant - Data provider for application launchers";
-      # By default elephant tries to start before graphics and dies.
+      # By default elephant tries to start before niri and dies due to no Wayland socket.
       # TODO: suggest upstream?
+      After = [ "niri.service" ];
       PartOf = [ "graphical-session.target" ];
     };
     Install.WantedBy = [ "graphical-session.target" ];
