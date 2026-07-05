@@ -60,29 +60,39 @@ trap). Idle inhibition already works (don't re-solve it).
 - [ ] Keep the AC-vs-battery distinction (don't suspend on AC) but express it
       cleanly.
 
-## 3. Theming
+## 3. Theming — DONE
 
 **Decision:** adopt declarative, system-wide theming; use Flexoki-light.
-- [ ] Start with theming the core apps that are in active use every day:
+- [x] Start with theming the core apps that are in active use every day:
       Niri, Kitty, Kakoune, Walker, Waybar, Swaylock, Firefox, and GTK+Qt apps.
-- [ ] Where possible, use popular first- or third-party implementations of
+- [x] Where possible, use popular first- or third-party implementations of
       the theme (as-is or as a base), as opposed to hand-rolling the theming completely.
-- [ ] Replace pre-existing hardcoded colors with ones derived from the theme.
+- [x] Replace pre-existing hardcoded colors with ones derived from the theme.
 
 **Requirement:** avoid Stylix and base16 in general! base16's theme handling is lossy,
 and Stylix generally suffers from the "does everything, poorly" problem.
 
-## 4. Wallpaper
-- [ ] Set a static wallpaper — no video/parallax needed, rarely changed. Currently
-      there's **no wallpaper at all** — blank background.
+## 4. Wallpaper — DONE
+- [x] Set a static wallpaper — no video/parallax needed, rarely changed. Currently
+      there's **no wallpaper at all** — blank background. Painted with swaybg
+      (`-m fill`) from `users/akiiino/wallpaper.png`, spawned at niri startup.
 
-## 5. Cursor theme/size
-- [ ] No problems noticed, but set a proper cursor theme + size while we're here
-      (HiDPI 1.75× panel).
+## 5. Cursor theme/size — DONE
+- [x] No problems noticed, but set a proper cursor theme + size while we're here
+      (HiDPI 1.75× panel). phinger-cursors (dark variant), size 24 — set via
+      `home.pointerCursor` for GTK/XWayland and niri's own `cursor` block.
 
-## 6. Fonts
+## 6. Fonts — DONE
 
-Set Nokia Sans as a system-wide font; keep Iosevka as the monospaced font.
+~~Set Nokia Sans as a system-wide font~~; keep Iosevka as the monospaced font.
+
+**Requirement changed:** Nokia Sans is owned by Nokia, was never released publicly,
+and is not in nixpkgs — only dubious third-party sites host it. mollusca is a public
+repo, so shipping an unlicensed font is a non-starter. **Using Inter instead** (SIL OFL,
+`pkgs.inter`, well-regarded system UI font). Iosevka stays as monospace.
+
+- [x] Inter as the UI/sans font (`gtk.font` + a user fontconfig `sans-serif` alias);
+      `monospace` aliased to Iosevka. kitty already names Iosevka directly.
 
 ## 7. Night light — nice-to-have, manually toggleable
 
@@ -94,7 +104,7 @@ Requirement: **must be manually toggleable in addition to a timer**
 - [ ] Add a manual toggle — a Waybar module or a tray icon (click to toggle on/off /
       cycle) is the natural home, ties into item 1.
 
-## 8. Battery status notifications
+## 8. Battery status notifications — DONE
 
 **Problem:** poweralertd works, but produces multiple notifications on every event
 (AC power enabled, battery power disabled, battery charging), as well as spams
@@ -104,6 +114,11 @@ stopped charging).
 **Decision:** configure properly or replace with a less chatty alternative; the only
 notifications that should happen are "battery low", "battery very low", "battery charging",
 "battery stopped charging", **without** oscillating between the last two at 100%.
+
+- [x] Replaced poweralertd with **batsignal** (`services.batsignal`). It's
+      state-transition based: charging/discharging messages fire only on a plug/unplug
+      transition (no 100% flap), and low/very-low fire once each at 15%/5%. Battery
+      device auto-discovered (BAT1). Args: `-w 15 -c 5 -p -P Charging -U "On battery" -e`.
 
 ---
 

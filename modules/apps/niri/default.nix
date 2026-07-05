@@ -1,4 +1,5 @@
 {
+  self,
   pkgs,
   lib,
   theme,
@@ -6,6 +7,20 @@
 }:
 let
   l = theme.light;
+
+  # Wallpaper: a neutral, full-range grayscale illustration (wallpaper-base.png)
+  # recoloured into a Flexoki duotone at build time — `ink` paints the figure and
+  # grid (the black point), `bg` the flat backdrop (the white point). Both pull
+  # from the shared palette, so retuning is a one-line shade swap (e.g. "850" →
+  # "900" for a darker ink) and switching `theme` entirely re-tints the wallpaper.
+  wallpaper =
+    let
+      ink = theme.base."850";
+      bg = theme.base."150";
+    in
+    pkgs.runCommandLocal "flexoki-wallpaper.png" { nativeBuildInputs = [ pkgs.imagemagick ]; } ''
+      magick ${self}/users/akiiino/wallpaper-base.png +level-colors '${ink}','${bg}' PNG:"$out"
+    '';
 in
 {
   imports = [ ./binds.nix ];
@@ -13,6 +28,13 @@ in
   programs.niri.settings = {
     # TODO: remove tons of default config boilerplate
     prefer-no-csd = true;
+
+    # niri draws its own compositor cursor (it doesn't read home.pointerCursor),
+    # so mirror the phinger-cursors dark theme here.
+    cursor = {
+      theme = "phinger-cursors-dark";
+      size = 24;
+    };
     input = {
       focus-follows-mouse = {
         enable = true;
@@ -45,6 +67,16 @@ in
         command = [
           "${pkgs.networkmanagerapplet}/bin/nm-applet"
           "--indicator"
+        ];
+      }
+      {
+        # niri doesn't draw wallpaper itself; swaybg paints the recoloured PNG.
+        command = [
+          (lib.getExe pkgs.swaybg)
+          "-m"
+          "fill"
+          "-i"
+          "${wallpaper}"
         ];
       }
     ];

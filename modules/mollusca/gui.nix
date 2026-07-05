@@ -34,6 +34,7 @@ in
         };
         networking.networkmanager.enable = true;
         fonts.packages = [
+          pkgs.inter
           pkgs.fira-code
           pkgs.nerd-fonts.hack
           pkgs.iosevka

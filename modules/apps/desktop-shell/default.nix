@@ -115,12 +115,19 @@ in
     };
     blueman-applet.enable = true;
     swaync.enable = true;
-    poweralertd = {
+    batsignal = {
       enable = true;
       extraArgs = [
-        "-s"
-        "-i"
-        "line-power"
+        "-w"
+        "15" # "battery low"
+        "-c"
+        "10" # "battery very low"
+        "-p" # emit charging/discharging on plug/unplug (transition-only)
+        "-P"
+        "Charging"
+        "-U"
+        "On battery"
+        "-e" # let transient charge messages expire in swaync
       ];
     };
     playerctld.enable = true;
