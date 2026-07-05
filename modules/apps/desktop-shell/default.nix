@@ -1,6 +1,15 @@
-{ pkgs, lib, ... }:
+{
+  pkgs,
+  lib,
+  theme,
+  ...
+}:
 let
+  l = theme.light;
   swaylockPackage = pkgs.swaylock-effects;
+
+  # swaylock wants bare RRGGBB(AA) with no leading '#'.
+  swayColor = lib.removePrefix "#";
 in
 {
   home.packages = with pkgs; [
@@ -24,6 +33,33 @@ in
         ignore-empty-password = true;
         show-failed-attempts = true;
         effect-blur = "10x6";
+
+        # Flexoki (light) — derived from lib/flexoki.nix.
+        inside-color = swayColor l.bg2;
+        ring-color = swayColor l.ui3;
+        text-color = swayColor l.tx;
+        line-color = swayColor l.bg;
+        separator-color = swayColor l.bg2;
+        key-hl-color = swayColor l.blue.base;
+        bs-hl-color = swayColor l.red.base;
+
+        inside-ver-color = swayColor l.bg2;
+        ring-ver-color = swayColor l.cyan.base;
+        text-ver-color = swayColor l.tx;
+
+        inside-clear-color = swayColor l.bg2;
+        ring-clear-color = swayColor l.yellow.base;
+        text-clear-color = swayColor l.tx;
+
+        inside-wrong-color = swayColor l.bg2;
+        ring-wrong-color = swayColor l.red.base;
+        text-wrong-color = swayColor l.tx;
+
+        inside-caps-lock-color = swayColor l.bg2;
+        ring-caps-lock-color = swayColor l.orange.base;
+        text-caps-lock-color = swayColor l.tx;
+        caps-lock-key-hl-color = swayColor l.blue.base;
+        caps-lock-bs-hl-color = swayColor l.red.base;
       };
     };
   };
@@ -34,6 +70,23 @@ in
       package = pkgs.mollusca.walker;
       systemd.enable = true;
       enableElephantIntegration = true;
+      theme = {
+        name = "flexoki";
+        # Walker has no upstream Flexoki port, so the stylesheet is custom:
+        # derived @define-colors, then the structural CSS from ./walker-style.css.
+        # Walker loads style.css wholesale, so this must be a complete stylesheet.
+        style = ''
+          @define-color window_bg_color ${l.bg};
+          @define-color surface_bg_color ${l.bg2};
+          @define-color accent_bg_color ${l.blue.base};
+          @define-color theme_fg_color ${l.tx};
+          @define-color subtle_fg_color ${l.tx2};
+          @define-color border_color ${l.ui3};
+          @define-color error_bg_color ${l.red.base};
+          @define-color error_fg_color ${l.bg};
+        ''
+        + builtins.readFile ./walker-style.css;
+      };
       settings.providers = {
         default = [
           "desktopapplications"

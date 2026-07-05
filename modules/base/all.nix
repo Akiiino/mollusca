@@ -37,6 +37,7 @@
         inputs'
         minor-secrets
         ;
+      theme = import "${self}/lib/flexoki.nix" { inherit inputs lib; };
     };
     backupFileExtension = "backup";
   };

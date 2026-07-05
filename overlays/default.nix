@@ -1,6 +1,7 @@
 { inputs }:
 [
   (import ./gamescope.nix)
+  (import ./flexoki-gtk.nix { inherit inputs; })
   (import ./swaylock-effects.nix)
   (import ./yafc-ce)
   (import ./XDG_fixes.nix)

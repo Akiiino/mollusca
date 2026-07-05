@@ -206,6 +206,22 @@
         "type": "github"
       }
     },
+    "flexoki": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772915256,
+        "narHash": "sha256-IxnvoZ9hGEvwq/PBbHTL5L2a2kxMSXSINIfd5Dg9ttA=",
+        "owner": "kepano",
+        "repo": "flexoki",
+        "rev": "8d723bac4a9ac46adfdf99d42155286977aac72a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kepano",
+        "repo": "flexoki",
+        "type": "github"
+      }
+    },
     "gitsh": {
       "inputs": {
         "gitsh-release": "gitsh-release",
@@ -667,6 +683,7 @@
         "filewatcher123d": "filewatcher123d",
         "firefox-addons": "firefox-addons",
         "flake-parts": "flake-parts",
+        "flexoki": "flexoki",
         "gitsh": "gitsh",
         "home-manager": "home-manager",
         "horai": "horai",

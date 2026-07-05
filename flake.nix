@@ -44,6 +44,10 @@
       url = "github:StevenBlack/hosts";
       flake = false;
     };
+    flexoki = {
+      url = "github:kepano/flexoki";
+      flake = false;
+    };
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -1,4 +1,5 @@
-colorscheme gruvbox-light
+source "%val{config}/flexoki-palette.kak"
+colorscheme flexoki-light
 add-highlighter global/ show-matching
 add-highlighter global/ number-lines -hlcursor
 add-highlighter global/ wrap -word -indent
@@ -46,6 +47,24 @@ define-command undefine-command -params 1 -docstring "Undefine a command by repl
 
 # LSP
 eval %sh{kak-lsp}
+
+# kak-lsp resets its faces to named-colour defaults on init (above), so the
+# Flexoki overrides must come after it. Colours reuse the flx_* palette options
+# sourced at the top. Faces left as kak-lsp defaults already resolve to themed
+# faces: DiagnosticTag* (attribute-only), InlayDiagnostic* (link to Diagnostic*),
+# and Reference{,Bind} (link to the themed MatchingChar).
+face global DiagnosticError   "%opt{flx_red}"
+face global DiagnosticWarning "%opt{flx_yellow}"
+face global DiagnosticInfo    "%opt{flx_blue}"
+face global DiagnosticHint    "%opt{flx_cyan}"
+face global LineFlagError     "%opt{flx_red}"
+face global LineFlagWarning   "%opt{flx_yellow}"
+face global LineFlagInfo      "%opt{flx_blue}"
+face global LineFlagHint      "%opt{flx_cyan}"
+face global InlayHint         "%opt{flx_tx3}+d"
+face global InlayCodeLens     "%opt{flx_tx3}+d"
+face global SnippetsNextPlaceholders  "%opt{flx_bg},%opt{flx_green}+F"
+face global SnippetsOtherPlaceholders "%opt{flx_bg},%opt{flx_yellow}+F"
 
 set-option global modelinefmt "%opt{lsp_modeline} %opt{modelinefmt}"
 

@@ -1,12 +1,18 @@
 {
   pkgs,
   lib,
+  theme,
+  inputs,
   ...
 }:
+let
+  l = theme.light;
+in
 {
   programs.kitty = {
     enable = true;
-    themeFile = "gruvbox-light";
+    # Colours: include the upstream Flexoki (light) port verbatim.
+    extraConfig = "include ${inputs.flexoki}/kitty/flexoki_light.conf";
     font = {
       package = pkgs.iosevka;
       name = "Iosevka Medium Extended";
@@ -53,16 +59,13 @@
 
       tab_title_template = "[{index}] {title}";
 
-      active_tab_foreground = "#fbf1c7";
-      active_tab_background = "#3c3836";
+      # Tab-bar font styles (non-colour) plus the tab-bar and bell colours the
+      # upstream Flexoki kitty port doesn't set; the rest of the palette comes
+      # from the `include` above.
       active_tab_font_style = "bold";
-      inactive_tab_foreground = "#282828";
-      inactive_tab_background = "#a89984";
       inactive_tab_font_style = "normal";
-      tab_bar_background = "#d5c4a1";
-      active_border_color = "#3c3836";
-      inactive_border_color = "#7c6f64";
-      bell_border_color = "#fb4934";
+      tab_bar_background = l.bg2;
+      bell_border_color = l.red.base;
 
       window_border_width = "5pt";
 

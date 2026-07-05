@@ -1,4 +1,12 @@
-{ pkgs, lib, ... }:
+{
+  pkgs,
+  lib,
+  theme,
+  ...
+}:
+let
+  l = theme.light;
+in
 {
   imports = [ ./binds.nix ];
 
@@ -57,18 +65,18 @@
       focus-ring = {
         enable = true;
         width = 4;
-        active.color = "#7fc8ff";
-        inactive.color = "#505050";
+        active.color = l.blue.base;
+        inactive.color = l.ui3;
       };
 
       border = {
         enable = false;
 
         width = 4;
-        active.color = "#ffc87f";
-        inactive.color = "#505050";
+        active.color = l.orange.base;
+        inactive.color = l.ui3;
 
-        urgent.color = "#9b0000";
+        urgent.color = l.red.base;
       };
 
       preset-column-widths = [
