@@ -2,6 +2,7 @@
   pkgs,
   lib,
   theme,
+  inputs,
   ...
 }:
 let
@@ -10,6 +11,22 @@ let
 
   # swaylock wants bare RRGGBB(AA) with no leading '#'.
   swayColor = lib.removePrefix "#";
+
+  # Idle *timeouts only* (dim -> lock, monitors-off, AC-guarded suspend). Lock,
+  # unlock, and lock-before-sleep are owned by systemd-lock-handler + the
+  # swaylock.service below; this script only decides WHEN to act on inactivity.
+  # shellcheck runs on idle.sh at build via writeShellApplication.
+  idle = pkgs.writeShellApplication {
+    name = "idle-session";
+    runtimeInputs = with pkgs; [
+      swayidle
+      chayang
+      niri
+      systemd
+      coreutils
+    ];
+    text = builtins.readFile ./idle.sh;
+  };
 in
 {
   home.packages = with pkgs; [
@@ -19,6 +36,136 @@ in
   ];
 
   programs = {
+    waybar = {
+      enable = true;
+      # Replaces the niri `spawn`; binds the bar to graphical-session.target.
+      systemd.enable = true;
+      settings.mainBar = {
+        layer = "top";
+        position = "top";
+        height = 32;
+        spacing = 6;
+
+        modules-left = [
+          "niri/workspaces"
+          "niri/window"
+        ];
+        modules-center = [ ];
+        modules-right = [
+          "idle_inhibitor"
+          "cpu"
+          "memory"
+          "temperature"
+          "backlight"
+          "pulseaudio"
+          "network"
+          "power-profiles-daemon"
+          "battery"
+          "tray"
+          "clock"
+        ];
+
+        "niri/workspaces".format = "{index}";
+        "niri/window".max-length = 60;
+        idle_inhibitor = {
+          format = "{icon}";
+          format-icons = {
+            activated = "󰅶";
+            deactivated = "󰾪";
+          };
+        };
+        cpu = {
+          format = "󰻠  {usage}%";
+          interval = 5;
+        };
+        memory.format = "󰍛  {percentage}%";
+        temperature = {
+          critical-threshold = 82;
+          format = "{icon} {temperatureC}°C";
+          format-icons = [
+            "󱃃"
+            "󰔏"
+            "󱃂"
+          ];
+        };
+        backlight = {
+          format = "{icon}  {percent}%";
+          format-icons = [
+            "󰃞"
+            "󰃟"
+            "󰃠"
+          ];
+        };
+        pulseaudio = {
+          format = "{icon}  {volume}%";
+          format-muted = "󰝟  muted";
+          format-icons.default = [
+            "󰕿"
+            "󰖀"
+            "󰕾"
+          ];
+          on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
+        };
+        network = {
+          format-wifi = "󰖩  {essid}";
+          format-ethernet = "󰈀  wired";
+          format-disconnected = "󰤭  off";
+          tooltip-format = "{ifname}: {ipaddr}";
+          on-click = "${pkgs.networkmanagerapplet}/bin/nm-connection-editor";
+        };
+        "power-profiles-daemon" = {
+          format = "{icon}";
+          format-icons = {
+            default = "󰗑";
+            performance = "󰓅";
+            balanced = "󰗑";
+            "power-saver" = "󰌪";
+          };
+        };
+        battery = {
+          states = {
+            warning = 20;
+            critical = 10;
+          };
+          format = "{icon} {capacity}%";
+          format-charging = "󰂄 {capacity}%";
+          format-icons = [
+            "󰁺"
+            "󰁻"
+            "󰁼"
+            "󰁽"
+            "󰁾"
+            "󰁿"
+            "󰂀"
+            "󰂁"
+            "󰂂"
+            "󰁹"
+          ];
+        };
+        clock = {
+          interval = 1;
+          # Left-pin the label so the fixed-width pill (min-width in CSS) doesn't
+          # let the ticking seconds shift the date/time. Keeps proportional Inter
+          # figures — no tabular/monospaced look.
+          align = 0;
+          format = "{:%a %Y-%m-%d %H:%M:%S}";
+          tooltip-format = "<tt><small>{calendar}</small></tt>";
+        };
+        # SNI host for gammastep-indicator + nm-applet.
+        tray = {
+          spacing = 8;
+          icon-size = 18;
+        };
+      };
+
+      # Flexoki ships an upstream Waybar port (matches the qt6ct precedent), so
+      # reference it directly rather than re-deriving @define-color from `theme`.
+      # To make it theme-driven later, swap the readFile for an inline
+      # @define-color block from `l.*` — a one-line change.
+      style =
+        builtins.readFile "${inputs.flexoki}/waybar/flexoki-light.css"
+        + builtins.readFile ./waybar-style.css;
+    };
     swaylock = {
       enable = true;
       package = swaylockPackage;
@@ -132,86 +279,26 @@ in
     };
     playerctld.enable = true;
 
+    # Night light. `tray = true` runs gammastep-indicator in the Waybar tray,
+    # which provides the manual toggle (enable/disable + "suspend for 30m/1h/2h")
+    # on top of the schedule. `provider = "manual"` avoids the geoclue dependency.
+    gammastep = {
+      enable = true;
+      provider = "manual";
+      latitude = 52.52;
+      longitude = 13.405;
+      tray = true;
+      temperature = {
+        day = 6500;
+        night = 4000;
+      };
+    };
+
     # USB automount
     udiskie = {
       enable = true;
       tray = "auto";
     };
-
-    # TODO: this works, but maybe it should use proper types instead of the
-    # ad-hoc schedule below. Maybe someone already made a module I can add to my
-    # flake?
-    swayidle =
-      let
-        onBattery = pkgs.writeShellScript "on-battery" ''
-          for f in /sys/class/power_supply/A*/online; do
-            [ -r "$f" ] && [ "$(cat "$f")" = "0" ] && exit 0
-          done
-          exit 1
-        '';
-
-        actions = {
-          lock.run = "${pkgs.systemd}/bin/loginctl lock-session";
-          displayOff.run = "${pkgs.niri}/bin/niri msg action power-off-monitors";
-          suspend.run = "${pkgs.systemd}/bin/systemctl suspend";
-        };
-
-        schedule = [
-          {
-            minutes = 10;
-            battery = "lock";
-            ac = "lock";
-          }
-          {
-            minutes = 11;
-            battery = "displayOff";
-            ac = null;
-          }
-          {
-            minutes = 15;
-            battery = "suspend";
-            ac = "displayOff";
-          }
-        ];
-
-        mkTimeout =
-          {
-            minutes,
-            battery,
-            ac,
-          }:
-          let
-            b = if battery == null then null else actions.${battery};
-            a = if ac == null then null else actions.${ac};
-            command =
-              if b != null && a != null then
-                (if b.run == a.run then b.run else "if ${onBattery}; then ${b.run}; else ${a.run}; fi")
-              else if b != null then
-                "if ${onBattery}; then ${b.run}; fi"
-              else
-                "if ! ${onBattery}; then ${a.run}; fi";
-            resume =
-              if b != null && b ? resume then
-                b.resume
-              else if a != null && a ? resume then
-                a.resume
-              else
-                null;
-          in
-          {
-            timeout = minutes * 60;
-            inherit command;
-          }
-          // (if resume == null then { } else { resumeCommand = resume; });
-      in
-      {
-        enable = true;
-        events = {
-          "before-sleep" = "${swaylockPackage}/bin/swaylock -f";
-          "lock" = "${swaylockPackage}/bin/swaylock -f; ${pkgs.niri}/bin/niri msg action power-off-monitors";
-        };
-        timeouts = map mkTimeout schedule;
-      };
 
     wl-clip-persist = {
       enable = true;
@@ -223,18 +310,56 @@ in
     };
   };
 
-  systemd.user.services.elephant = {
-    Unit = {
-      Description = "Elephant - Data provider for application launchers";
-      # By default elephant tries to start before niri and dies due to no Wayland socket.
-      # TODO: suggest upstream?
-      After = [ "niri.service" ];
-      PartOf = [ "graphical-session.target" ];
+  systemd.user.services = {
+    elephant = {
+      Unit = {
+        Description = "Elephant - Data provider for application launchers";
+        # By default elephant tries to start before niri and dies due to no Wayland socket.
+        # TODO: suggest upstream?
+        After = [ "niri.service" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+      Install.WantedBy = [ "graphical-session.target" ];
+      Service = {
+        ExecStart = lib.getExe pkgs.mollusca.elephant;
+        Restart = "on-failure";
+      };
     };
-    Install.WantedBy = [ "graphical-session.target" ];
-    Service = {
-      ExecStart = lib.getExe pkgs.mollusca.elephant;
-      Restart = "on-failure";
+
+    # swaylock bound to lock.target (systemd-lock-handler). This is the single
+    # lock path for manual, idle, lid, and pre-sleep locking; sleep.target is
+    # ordered after lock.target, so the machine is provably locked before it
+    # sleeps. Canonical unit from the nixpkgs systemd-lock-handler module docs.
+    swaylock = {
+      Unit = {
+        Description = "Screen locker for Wayland";
+        Documentation = [ "man:swaylock(1)" ];
+        PartOf = [ "lock.target" ]; # stop when lock.target stops
+        Before = [ "lock.target" ]; # delay lock.target until locked
+        OnSuccess = [ "unlock.target" ]; # clean exit (unlock) -> unlock.target
+      };
+      Install.WantedBy = [ "lock.target" ];
+      Service = {
+        Type = "forking"; # swaylock -f forks only after locking
+        ExecStart = "${lib.getExe swaylockPackage} -f";
+        Restart = "on-failure";
+        RestartSec = 0;
+      };
+    };
+
+    # Idle timeouts only (dim -> lock, monitors-off, AC-guarded suspend). Policy
+    # lives in ./idle.sh; lock/unlock/lock-before-sleep are handled by the targets.
+    swayidle = {
+      Unit = {
+        Description = "Idle timeouts (dim, blank, suspend-then-hibernate)";
+        PartOf = [ "graphical-session.target" ];
+        After = [ "graphical-session.target" ];
+      };
+      Install.WantedBy = [ "graphical-session.target" ];
+      Service = {
+        ExecStart = lib.getExe idle;
+        Restart = "on-failure";
+      };
     };
   };
 }

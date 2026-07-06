@@ -1,0 +1,213 @@
+/*
+ * Structural Waybar stylesheet over the Flexoki (light) palette. Colors come
+ * from the upstream flexoki `@`-names (bg/ui/tx + accents), prepended at build
+ * time, so swapping the `flexoki` input reskins the bar. Keep this file about
+ * layout + which color goes where, not the hex values themselves.
+ *
+ * Look: "muted pills" — every module is a rounded chip with a faint
+ * accent-tinted background (alpha(@accent, x)) and accent-colored icon+value.
+ * Pill fills use alpha() rather than hardcoded tints so the theme stays
+ * swappable. Bar stays flush full-width (no floating margins).
+ */
+
+* {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  min-height: 0;
+}
+
+window#waybar {
+  background: @bg;
+  color: @tx;
+  border-bottom: 1px solid @ui;
+}
+
+.modules-left {
+  margin-left: 6px;
+}
+
+.modules-right {
+  margin-right: 6px;
+}
+
+/*
+ * Shared pill base: every right-side module + the clock is a rounded,
+ * vertically-inset chip. spacing=6 in the config handles horizontal gaps.
+ */
+#idle_inhibitor,
+#cpu,
+#memory,
+#temperature,
+#backlight,
+#pulseaudio,
+#network,
+#power-profiles-daemon,
+#battery,
+#tray,
+#clock {
+  margin: 4px 0;
+  padding: 0 4px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+  min-width: 20px;
+}
+
+/* Per-module accent map (bg = alpha tint, fg = accent-600). */
+#cpu {
+  background: alpha(@bl, 0.12);
+  color: @bl;
+}
+
+#memory {
+  background: alpha(@gr, 0.12);
+  color: @gr;
+}
+
+#temperature {
+  background: alpha(@or, 0.12);
+  color: @or;
+}
+
+#backlight {
+  background: alpha(@ye, 0.16);
+  color: @ye;
+}
+
+#pulseaudio {
+  background: alpha(@pu, 0.12);
+  color: @pu;
+}
+
+#network {
+  background: alpha(@cy, 0.12);
+  color: @cy;
+}
+
+#power-profiles-daemon {
+  background: alpha(@ma, 0.12);
+  color: @ma;
+}
+
+/* idle_inhibitor: neutral chip, blue when actively inhibiting. */
+#idle_inhibitor {
+  background: alpha(@tx, 0.06);
+  color: @tx-2;
+}
+
+#idle_inhibitor.activated {
+  background: alpha(@bl, 0.14);
+  color: @bl;
+}
+
+/* clock: primary anchor — strong neutral chip, dark text. */
+#clock {
+  background: alpha(@tx, 0.08);
+  color: @tx;
+}
+
+/* battery: neutral by default, tint shifts with state. */
+#battery {
+  background: alpha(@tx, 0.06);
+  color: @tx;
+}
+
+#battery.charging {
+  background: alpha(@gr, 0.14);
+  color: @gr;
+}
+
+#battery.warning {
+  background: alpha(@ye, 0.16);
+  color: @ye;
+}
+
+#battery.critical {
+  background: alpha(@re, 0.16);
+  color: @re;
+  animation: blink 1s steps(2) infinite;
+}
+
+/* State overrides. */
+#temperature.critical {
+  background: alpha(@re, 0.16);
+  color: @re;
+}
+
+#pulseaudio.muted,
+#network.disconnected {
+  background: alpha(@tx, 0.06);
+  color: @tx-3;
+}
+
+/* Window title: no pill (avoids an empty-chip nub when unfocused). */
+#window {
+  color: @tx;
+}
+
+/* Tray: no tint (icons are colored SVGs). */
+#tray {
+  background: alpha(@tx, 0.06);
+}
+
+#tray > .needs-attention {
+  color: @re;
+}
+
+/* Workspaces as pills. */
+#workspaces button {
+  margin: 3px 1px;
+  padding: 0 7px;
+  border-radius: 6px;
+  color: @tx-2;
+  background: transparent;
+  transition: background 0.2s ease;
+}
+
+#workspaces button.active {
+  background: alpha(@bl, 0.15);
+  color: @bl;
+}
+
+#workspaces button:hover {
+  background: alpha(@tx, 0.06);
+  color: @tx;
+}
+
+#workspaces button.urgent {
+  background: @re;
+  color: @bg;
+}
+
+/* Hover feedback on the clickable chips. */
+#pulseaudio:hover,
+#network:hover,
+#power-profiles-daemon:hover,
+#idle_inhibitor:hover,
+#clock:hover {
+  background: alpha(@tx, 0.10);
+}
+
+/* Gentle critical-battery pulse (steps() keeps CPU low). */
+@keyframes blink {
+  to {
+    opacity: 0.55;
+  }
+}
+
+/* Stop width jitter as fast-changing numbers grow/shrink. */
+#cpu,
+#memory {
+  min-width: 3.2em;
+}
+
+/*
+ * Clock ticks every second; proportional Inter digits would re-width the label
+ * and jitter the whole right cluster. Pin the pill width so it never resizes
+ * (paired with align=0 in the config, which left-anchors the label — the date
+ * stays put and only the trailing seconds breathe into the right-side slack).
+ * Tune this if a gap shows on the right (too wide) or the cluster still shifts
+ * (too narrow — content is spilling past min-width).
+ */
+#clock {
+  min-width: 13em;
+}

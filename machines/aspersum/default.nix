@@ -27,7 +27,7 @@
     kernelParams = [
       "resume_offset=533760" # sudo btrfs inspect-internal map-swapfile -r /.swapvol/swapfile
 
-      "rtc_cmos.use_acpi_alarm=1" # TODO: why is this here? Figure out if this fix is sill needed.
+      "rtc_cmos.use_acpi_alarm=1" # RTC wake alarm that fires to move suspend -> hibernate (suspend-then-hibernate).
 
       "amdgpu.cwsr_enable=0" # possibly helps with unhibernation; if doesn't, add next line
       "amdgpu.sg_display=0" # eeh... Maybe will also help? I hate AMD.
@@ -38,6 +38,11 @@
   };
 
   powerManagement.enable = true;
+
+  # Bound the s2idle window before suspend-then-hibernate drops to hibernate.
+  # Idle-suspend on battery goes through `systemctl suspend-then-hibernate`
+  # (see modules/apps/desktop-shell/idle.sh); the RTC wake alarm above fires it.
+  systemd.sleep.settings.Sleep.HibernateDelaySec = "30min";
 
   services.logind.settings.Login = {
     HandleLidSwitch = "suspend";

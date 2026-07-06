@@ -13,7 +13,7 @@ tools gathered during the survey.
 
 ---
 
-## 1. Waybar — configure it properly
+## 1. Waybar — configure it properly — DONE
 
 **Problem:** the bar currently runs Waybar's *stock default config* (niri just
 `spawn`s `waybar` with no config/style files — see `modules/apps/niri/default.nix`
@@ -24,41 +24,58 @@ modules, and the default workspace module isn't even niri-aware.
 **Goal:** a functional, thought-out, *legible* config that's also a good base to
 tinker with. Nothing fancy.
 
-- [ ] Replace the default with an explicit `programs.waybar` config (settings +
+- [x] Replace the default with an explicit `programs.waybar` config (settings +
       style) in home-manager. Set `systemd.enable = true` and `layer = "top"`.
-- [ ] Use niri-native modules (`niri/workspaces`, `niri/window`) instead of the
+- [x] Use niri-native modules (`niri/workspaces`, `niri/window`) instead of the
       sway/hyprland defaults. Optional niri extras: niri-taskbar,
       waybar-niri-windows, niri_window_buttons (see refs).
-- [ ] Otherwise preserve the default module set; list them explicitly.
-- [ ] Style it: nicer colors + spacing. **Depends on item 4** — Waybar
-      colors come from Flexoki-light.
-- [ ] Drop the `waybar` spawn-at-startup entry in favor of the
-      systemd user service.
+- [x] Otherwise preserve the default module set; list them explicitly.
+- [x] Style it: nicer colors + spacing. Waybar colors come from Flexoki-light
+      via the upstream port shipped by `inputs.flexoki`
+      (`waybar/flexoki-light.css`, same precedent as the qt6ct module), with a
+      small structural `waybar-style.css` layered on top.
+- [x] Drop the `waybar` spawn-at-startup entry in favor of the
+      systemd user service (`programs.waybar.systemd.enable`).
 
-## 2. Sleep / idle — keep swayidle, but configure it *well*
+## 2. Sleep / idle — keep swayidle, but configure it *well* — DONE
 
 **Decision:** stay on **swayidle** (it's the right choice on niri — hypridle
 misbehaves because niri doesn't implement `hyprland-lock-notify-v1`). Hand-rolling
 sleep logic as a *script* is fine; stitching shell fragments through Nix as if
-it's a general-purpose language is not (the current `mkTimeout` machinery in
-`modules/apps/desktop-shell.nix` is exactly the "ossified, afraid to touch it"
-trap). Idle inhibition already works (don't re-solve it).
+it's a general-purpose language is not (the old `mkTimeout` machinery in
+`modules/apps/desktop-shell/default.nix` was exactly the "ossified, afraid to
+touch it" trap). Idle inhibition already works (don't re-solve it).
 
-- [ ] Rework the swayidle config to be legible and maintainable. Prefer a
-      readable standalone script (well-commented, one place) over Nix-generated
-      shell. Look at how others structure swayidle-for-niri (see refs — the
-      Andrew McCall niri+swayidle writeup).
-- [ ] Add **suspend-then-hibernate**: currently plain `systemctl suspend`. We
-      already have hibernate wired (resumeDevice + resume_offset in
-      `machines/aspersum/default.nix`), so switch idle-suspend to
-      `systemctl suspend-then-hibernate` and tune `systemd` sleep.conf
-      (`HibernateDelaySec`). This is the biggest "feels like a real laptop" win,
-      esp. on Framework s2idle drain.
-- [ ] Add **dim-before-lock**: a pre-lock timeout that lowers brightness as a
-      warning, restored on resume. Mind the known gotcha where the locker's own
-      resume event fights brightness scripts (see refs).
-- [ ] Keep the AC-vs-battery distinction (don't suspend on AC) but express it
-      cleanly.
+**What landed:** the idle/lock/sleep stack now uses community-standard
+primitives instead of hand-rolled shell:
+- **`chayang`** for dim-before-lock — a gradual-dim grace-period overlay that
+  aborts on input and restores instantly. It never touches the backlight, so the
+  "locker resume event fights brightness scripts" gotcha simply doesn't exist
+  (no `brightnessctl`, no `video` group, no udev rules). The dim is a *visual
+  warning* overlay, which is how item 2 framed it.
+- **`systemd-lock-handler`** (`services.systemd-lock-handler.enable` in
+  `users/akiiino/desktop.nix`) bridges logind lock/sleep to user systemd targets,
+  with **`swaylock` run as a `lock.target`-bound service**. `sleep.target` is
+  ordered after `lock.target`, so the machine is provably locked before it
+  sleeps — one lock path for manual/idle/lid/sleep.
+- **`swayidle`** shrank to *idle timeouts only*, in one legible script
+  (`modules/apps/desktop-shell/idle.sh`).
+- Latent bug fixed: added `security.pam.services.swaylock` (was absent — the
+  classic "swaylock won't accept my password" trap).
+
+- [x] Rework the swayidle config to be legible and maintainable — a readable
+      standalone `idle.sh` (timeouts only) plus systemd-lock-handler for the
+      lock/unlock/sleep event wiring.
+- [x] Add **suspend-then-hibernate**: idle-suspend on battery now calls
+      `systemctl suspend-then-hibernate`, with `systemd.sleep.extraConfig`
+      `HibernateDelaySec=30min` in `machines/aspersum/default.nix`. The existing
+      `rtc_cmos.use_acpi_alarm=1` kernelParam is the RTC wake that fires it
+      (mystery resolved; comment updated).
+- [x] Add **dim-before-lock** via `chayang` (`chayang -d 10 && loginctl
+      lock-session`) — no brightness scripting, so the resume-vs-brightness
+      gotcha is sidestepped entirely.
+- [x] Keep the AC-vs-battery distinction (don't suspend on AC), expressed
+      cleanly in `idle.sh`'s `on_ac` check.
 
 ## 3. Theming — DONE
 
@@ -94,15 +111,20 @@ repo, so shipping an unlicensed font is a non-starter. **Using Inter instead** (
 - [x] Inter as the UI/sans font (`gtk.font` + a user fontconfig `sans-serif` alias);
       `monospace` aliased to Iosevka. kitty already names Iosevka directly.
 
-## 7. Night light — nice-to-have, manually toggleable
+## 7. Night light — nice-to-have, manually toggleable — DONE
 
 Requirement: **must be manually toggleable in addition to a timer**
 (tray icon or a Waybar module), not just a schedule.
 
-- [ ] Add `wlsunset` (schedule/geo-based) or `gammastep`. wlsunset is the simpler
-      pick if we just want warm-at-night.
-- [ ] Add a manual toggle — a Waybar module or a tray icon (click to toggle on/off /
-      cycle) is the natural home, ties into item 1.
+**Decision:** `services.gammastep` with `provider = "manual"` (no geoclue) and
+`tray = true`, so `gammastep-indicator` lands in the Waybar `tray` module from
+item 1 with a native enable/disable/suspend menu — manual toggle + schedule, no
+custom scripting. Coords (Berlin, matching `time.timeZone`) and temperatures
+(6500K day / 4000K night) are plain data to tune later.
+
+- [x] Add `gammastep` (chose it over `wlsunset` for the built-in tray applet).
+- [x] Manual toggle via the `gammastep-indicator` tray icon in Waybar (ties into
+      item 1's `tray` module).
 
 ## 8. Battery status notifications — DONE
 

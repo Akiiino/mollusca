@@ -58,11 +58,8 @@ in
     clipboard.disable-primary = true;
 
     spawn-at-startup = [
-      {
-        command = [
-          (lib.getExe pkgs.waybar)
-        ];
-      }
+      # waybar is started by its systemd user service (programs.waybar.systemd),
+      # bound to graphical-session.target — no spawn-at-startup entry needed.
       {
         command = [
           "${pkgs.networkmanagerapplet}/bin/nm-applet"

@@ -8,6 +8,15 @@
     enable = true;
     plugins = [ pkgs.thunar-archive-plugin ];
   };
+
+  # Bridge logind lock/sleep D-Bus events to user systemd targets (lock.target /
+  # unlock.target / sleep.target), which drive the swaylock.service in the
+  # desktop-shell HM module. See modules/apps/desktop-shell/default.nix.
+  services.systemd-lock-handler.enable = true;
+
+  # Let `swaylock -f` authenticate on unlock — without a PAM service entry
+  # swaylock rejects every password (the classic "swaylock won't unlock" trap).
+  security.pam.services.swaylock = { };
   home-manager.users.akiiino =
     { config, ... }: # TODO: this feels ugly
     {
