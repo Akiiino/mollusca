@@ -53,7 +53,6 @@
     hostName = "aspersum";
     firewall = {
       allowedTCPPorts = [
-        # 5000  # can't remember what it is, scream testing. #TODO: remove on 2026-08-01
         53317 # Localsend
         22000 # Syncthing
       ];

@@ -67,8 +67,8 @@
   networking = {
     hostName = "nautilus";
     firewall = {
-      allowedTCPPorts = [ 11111 ]; # TODO: what are the ports for?
-      allowedUDPPorts = [ 11111 ];
+      allowedTCPPorts = [ ];
+      allowedUDPPorts = [ ];
     };
   };
 
