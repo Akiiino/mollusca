@@ -10,7 +10,7 @@
     { config, ... }: # TODO: this feels ugly
     {
       imports = [
-        "${self}/modules/apps/syncthing"
+        "${self}/modules/home/syncthing.nix"
       ];
 
       home.packages = with pkgs; [

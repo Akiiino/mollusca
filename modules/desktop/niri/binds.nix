@@ -11,10 +11,11 @@ let
       pkgs.swaylock-effects
       pkgs.systemd
       pkgs.niri
+      pkgs.fuzzel
     ];
     text = ''
       choice=$(printf '%s\n' Lock Logout Suspend Hibernate Reboot Shutdown \
-        | ${lib.getExe pkgs.fuzzel} --dmenu --prompt 'Power: ')
+        | fuzzel --dmenu --prompt 'Power: ')
       case "$choice" in
         Lock)      loginctl lock-session ;;
         Logout)    niri msg action quit ;;

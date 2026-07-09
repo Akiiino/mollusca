@@ -20,11 +20,11 @@
     { config, ... }: # TODO: this feels ugly
     {
       imports = [
-        "${self}/modules/apps/direnv.nix"
-        "${self}/modules/apps/git.nix"
-        "${self}/modules/apps/kakoune"
-        "${self}/modules/apps/starship.nix"
-        "${self}/modules/apps/zsh.nix"
+        "${self}/modules/home/direnv.nix"
+        "${self}/modules/home/git.nix"
+        "${self}/modules/home/kakoune"
+        "${self}/modules/home/starship.nix"
+        "${self}/modules/home/zsh.nix"
       ];
 
       home = {

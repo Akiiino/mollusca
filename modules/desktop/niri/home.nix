@@ -19,7 +19,7 @@ let
       bg = theme.base."150";
     in
     pkgs.runCommandLocal "flexoki-wallpaper.png" { nativeBuildInputs = [ pkgs.imagemagick ]; } ''
-      magick ${self}/users/akiiino/wallpaper-base.png +level-colors '${ink}','${bg}' PNG:"$out"
+      magick ${self}/modules/desktop/niri/wallpaper-base.png +level-colors '${ink}','${bg}' PNG:"$out"
     '';
 in
 {

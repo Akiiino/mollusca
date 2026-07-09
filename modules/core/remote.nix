@@ -31,6 +31,13 @@
     };
   };
   config = lib.mkMerge [
+    {
+      services.openssh.settings = {
+        PasswordAuthentication = lib.mkForce false;
+        PermitRootLogin = lib.mkForce "no";
+      };
+    }
+
     (lib.mkIf config.mollusca.isRemote {
       services.openssh.enable = true;
 

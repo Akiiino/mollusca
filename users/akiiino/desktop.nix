@@ -21,12 +21,12 @@
     { config, ... }: # TODO: this feels ugly
     {
       imports = [
-        "${self}/modules/apps/desktop-shell"
-        "${self}/modules/apps/firefox"
-        "${self}/modules/apps/kitty.nix"
-        "${self}/modules/apps/mpv.nix"
-        "${self}/modules/apps/niri"
-        "${self}/modules/apps/theming"
+        "${self}/modules/desktop/shell/home.nix"
+        "${self}/modules/home/firefox.nix"
+        "${self}/modules/home/kitty.nix"
+        "${self}/modules/home/mpv.nix"
+        "${self}/modules/desktop/niri/home.nix"
+        "${self}/modules/desktop/theming/home.nix"
       ];
 
       programs.kitty.settings.kitty_mod = "ctrl+shift";

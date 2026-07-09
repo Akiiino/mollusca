@@ -1,7 +1,6 @@
 {
   self,
   lib,
-  config,
   ...
 }:
 {
@@ -12,7 +11,10 @@
     self.inputs.niri.nixosModules.niri
     self.inputs.horai.nixosModules.eunomia
 
-    "${self}/modules/mollusca"
+    "${self}/modules"
+    ./nix.nix
+    ./home-manager.nix
+    ./remote.nix
   ];
 
   niri-flake.cache.enable = false;
@@ -42,31 +44,10 @@
     stateVersion = "23.11";
   };
 
-  systemd.services.gc-generations = {
-    description = "Delete old NixOS generations, keeping the last 5";
-    serviceConfig.Type = "oneshot";
-    path = [ config.nix.package ];
-    script = ''
-      nix-env --profile /nix/var/nix/profiles/system --delete-generations +5
-      nix-collect-garbage
-    '';
-  };
-
-  systemd.timers.gc-generations = {
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "weekly";
-      Persistent = true;
-    };
-  };
-
   programs = {
     nix-ld.enable = true;
+    zsh.enable = true;
   };
-  services.openssh = {
-    settings = {
-      PasswordAuthentication = lib.mkForce false;
-      PermitRootLogin = lib.mkForce "no";
-    };
-  };
+
+  time.timeZone = lib.mkDefault "Europe/Berlin";
 }
