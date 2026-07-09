@@ -43,6 +43,10 @@
 
       # Case-insensitive completion
       zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*'
+      KEYTIMEOUT=1
+      function _noop { }
+      zle -N _noop
+      bindkey '\e' _noop
     '';
   };
 }
