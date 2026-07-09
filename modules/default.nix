@@ -8,9 +8,5 @@
     ./services/lan-services.nix
     ./services/nas-mounts.nix
     ./services/tv-filter.nix
-
-    ./desktop/gui.nix
-    ./desktop/plasma.nix
-    ./desktop/niri/nixos.nix
   ];
 }

@@ -9,6 +9,7 @@
 }:
 {
   imports = [
+    "${self}/profiles/headless.nix"
     ./hardware-configuration.nix
     ./disko.nix
     "${modulesPath}/profiles/perlless.nix"
@@ -18,8 +19,6 @@
   ];
 
   mollusca = {
-    isRemote = true;
-    useTailscale = true;
     isExitNode = true;
   };
   services.eunomia = {

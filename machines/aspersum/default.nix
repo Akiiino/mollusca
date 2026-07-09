@@ -8,6 +8,7 @@
 }:
 {
   imports = [
+    "${self}/profiles/desktop-niri.nix"
     inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series
     ./hardware-configuration.nix
     ./disko.nix
@@ -67,14 +68,6 @@
   };
 
   mollusca = {
-    gui = {
-      enable = true;
-      desktopEnvironment = "niri";
-    };
-    isRemote = true;
-    logitech.wireless.enable = true;
-    eightbitdo.enable = true;
-    bluetooth.enable = true;
     useTailscale = true;
     tailscaleRoutingFeatures = "client";
   };

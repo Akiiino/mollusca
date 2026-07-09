@@ -18,7 +18,10 @@ let
     '';
 in
 {
-  imports = [ ./binds.nix ];
+  imports = [
+    ./binds.nix
+    ./shell.nix
+  ];
 
   programs.niri.settings = {
     # TODO: remove tons of default config boilerplate

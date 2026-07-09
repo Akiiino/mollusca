@@ -8,6 +8,7 @@
   imports = [
     ./hardware-configuration.nix
     ./disko.nix
+    "${self}/profiles/desktop-plasma.nix"
     self.inputs.nixos-hardware.nixosModules.common-cpu-amd
     self.inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
     self.inputs.nixos-hardware.nixosModules.common-cpu-amd-raphael-igpu
@@ -25,17 +26,6 @@
   };
 
   powerManagement.cpuFreqGovernor = "performance";
-
-  mollusca = {
-    isRemote = true;
-    gui = {
-      enable = true;
-      desktopEnvironment = "plasma";
-    };
-    logitech.wireless.enable = true;
-    eightbitdo.enable = true;
-    bluetooth.enable = true;
-  };
 
   users.users = {
     nautilus = {

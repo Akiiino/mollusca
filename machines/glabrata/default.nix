@@ -142,15 +142,11 @@ let
 in
 {
   imports = [
+    "${self}/profiles/headless.nix"
     ./hardware-configuration.nix
     ./disko.nix
     self.inputs.impermanence.nixosModules.impermanence
   ];
-
-  mollusca = {
-    isRemote = true;
-    useTailscale = true;
-  };
 
   system.tools = {
     nixos-rebuild.enable = false;

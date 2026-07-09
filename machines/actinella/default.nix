@@ -8,6 +8,7 @@
 }:
 {
   imports = [
+    "${self}/profiles/headless.nix"
     inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
     inputs.WG-jail.nixosModules.default
     ./transmission.nix
@@ -20,8 +21,6 @@
   ];
 
   mollusca = {
-    isRemote = true;
-    useTailscale = true;
     isExitNode = true;
     bluetooth.enable = true;
     advertiseRoutes = [ "192.168.1.101/32" ];
