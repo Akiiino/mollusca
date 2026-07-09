@@ -12,7 +12,7 @@ let
   # swaylock wants RRGGBB(AA) with no leading '#'
   swayColor = lib.removePrefix "#";
 
-  # Idle *timeouts only* (dim -> lock, monitors-off, AC-guarded suspend). Lock,
+  # Idle *timeouts only* (warn -> lock, monitors-off, AC-guarded suspend). Lock,
   # unlock, and lock-before-sleep are owned by systemd-lock-handler + the
   # swaylock.service below; this script only decides WHEN to act on inactivity.
   # shellcheck runs on idle.sh at build via writeShellApplication
@@ -20,10 +20,10 @@ let
     name = "idle-session";
     runtimeInputs = with pkgs; [
       swayidle
-      chayang
       niri
       systemd
       coreutils
+      libnotify
     ];
     text = builtins.readFile ./idle.sh;
   };
@@ -338,11 +338,11 @@ in
       };
     };
 
-    # Idle timeouts only (dim -> lock, monitors-off, AC-guarded suspend). Policy
+    # Idle timeouts only (warn -> lock, monitors-off, AC-guarded suspend). Policy
     # lives in ./idle.sh; lock/unlock/lock-before-sleep are handled by the targets.
     swayidle = {
       Unit = {
-        Description = "Idle timeouts (dim, blank, suspend-then-hibernate)";
+        Description = "Idle timeouts (warn, blank, suspend-then-hibernate)";
         PartOf = [ "graphical-session.target" ];
         After = [ "graphical-session.target" ];
       };

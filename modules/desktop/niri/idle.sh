@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # aspersum idle timeouts. Lock/unlock/lock-before-sleep are handled by
 # systemd-lock-handler + swaylock.service (systemd targets); this only decides
-# WHEN to dim, blank, and suspend on inactivity.
+# WHEN to warn, blank, and suspend on inactivity.
 set -euo pipefail
 
 on_ac() {
@@ -24,7 +24,8 @@ case "${1:-run}" in
     # "$0 suspend" re-invokes this script by absolute path (systemd starts it via
     # its store path) so the suspend branch resolves without needing it on PATH.
     exec swayidle -w \
-      timeout 590 'chayang -d 10 && loginctl lock-session' \
+      timeout 580 'notify-send --app-name screen-lock-warning -t 20000 "Screen is locking in 20 seconds"' \
+      timeout 600 'loginctl lock-session' \
       timeout 660 'niri msg action power-off-monitors' \
       timeout 900 "$0 suspend"
     ;;

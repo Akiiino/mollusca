@@ -30,8 +30,11 @@
 
       "rtc_cmos.use_acpi_alarm=1" # RTC wake alarm that fires to move suspend -> hibernate (suspend-then-hibernate).
 
-      "amdgpu.cwsr_enable=0" # possibly helps with unhibernation; if doesn't, add next line
-      "amdgpu.sg_display=0" # eeh... Maybe will also help? I hate AMD.
+      # These may or may not improve the chances of AMD's GPU unhibernating succesfully.
+      # 50% chance of successful unhibernation sure beats losing your data 100% of the time,
+      # but it is very annoying. Don't buy AMD Ryzen AI 300.
+      "amdgpu.cwsr_enable=0"
+      "amdgpu.sg_display=0"
     ];
 
     initrd.systemd.enable = true; # TODO: is it reasonable to enable for all machines? Investigate.
