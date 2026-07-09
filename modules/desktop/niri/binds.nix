@@ -79,18 +79,16 @@ in
     };
     "Mod+Shift+E" = {
       hotkey-overlay.title = "Power Menu";
-      action.spawn = "${powerMenu}/bin/power-menu";
+      action.spawn = lib.getExe powerMenu;
     };
     "Mod+N" = {
       hotkey-overlay.title = "Notification Menu";
       action.spawn = [
-        "${pkgs.swaynotificationcenter}/bin/swaync-client"
+        (lib.getExe' pkgs.swaynotificationcenter "swaync-client")
         "--toggle-panel"
       ];
     };
 
-    # Example volume keys mappings for PipeWire & WirePlumber.
-    # The allow-when-locked = true property makes them work even when the session is locked.
     "XF86AudioRaiseVolume" = {
       allow-when-locked = true;
       action.spawn = [
@@ -208,9 +206,6 @@ in
       ];
     };
 
-    # Open/close the Overview: a zoomed-out view of workspaces and windows.
-    # You can also move the mouse into the top-left hot corner,
-    # or do a four-finger swipe up on a touchpad.
     "Mod+O" = {
       repeat = false;
       action = toggle-overview;
@@ -226,8 +221,6 @@ in
     "Mod+Up".action = focus-window-up;
     "Mod+Right".action = focus-column-right;
     "Mod+H".action = focus-column-left;
-    # "Mod+J".action = focus-window-down;
-    # "Mod+K".action = focus-window-up;
     "Mod+J".action = focus-window-or-workspace-down;
     "Mod+K".action = focus-window-or-workspace-up;
     "Mod+L".action = focus-column-right;
@@ -237,8 +230,6 @@ in
     "Mod+Ctrl+Up".action = move-window-up;
     "Mod+Ctrl+Right".action = move-column-right;
     "Mod+Ctrl+H".action = move-column-left;
-    # "Mod+Ctrl+J".action = move-window-down;
-    # "Mod+Ctrl+K".action = move-window-up;
     "Mod+Ctrl+J".action = move-window-down-or-to-workspace-down;
     "Mod+Ctrl+K".action = move-window-up-or-to-workspace-up;
     "Mod+Ctrl+L".action = move-column-right;
@@ -266,18 +257,8 @@ in
     "Mod+Shift+Ctrl+K".action = move-column-to-monitor-up;
     "Mod+Shift+Ctrl+L".action = move-column-to-monitor-right;
 
-    # Alternatively, there are commands to move just a single window:
-    # Mod+Shift+Ctrl+Left  { move-window-to-monitor-left; }
-    # ...
-
-    # And you can also move a whole workspace to another monitor:
-    # Mod+Shift+Ctrl+Left  { move-workspace-to-monitor-left; }
-    # ...
-
     "Mod+Page_Down".action = focus-workspace-down;
     "Mod+Page_Up".action = focus-workspace-up;
-    "Mod+U".action = focus-workspace-down;
-    "Mod+I".action = focus-workspace-up;
     "Mod+Ctrl+Page_Down".action = move-column-to-workspace-down;
     "Mod+Ctrl+Page_Up".action = move-column-to-workspace-up;
     "Mod+Ctrl+U".action = move-column-to-workspace-down;
@@ -359,9 +340,6 @@ in
     "Mod+Ctrl+8".action.move-column-to-workspace = [ 8 ];
     "Mod+Ctrl+9".action.move-column-to-workspace = [ 9 ];
 
-    # Alternatively, there are commands to move just a single window:
-    # Mod+Ctrl+1 { move-window-to-workspace 1; }
-
     # Switches focus between the current and the previous workspace.
     # Mod+Tab { focus-workspace-previous; }
 
@@ -419,7 +397,7 @@ in
 
     # Actions to switch layouts.
     # Note: if you uncomment these, make sure you do NOT have
-    # a matching layout switch hotkey configured in xkb options above.
+    # a matching layout switch hotkey configured in xkb.
     # Having both at once on the same hotkey will break the switching,
     # since it will switch twice upon pressing the hotkey (once by xkb, once by niri).
     "Mod+Space".action.switch-layout = "next";

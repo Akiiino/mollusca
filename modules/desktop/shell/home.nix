@@ -9,13 +9,13 @@ let
   l = theme.light;
   swaylockPackage = pkgs.swaylock-effects;
 
-  # swaylock wants bare RRGGBB(AA) with no leading '#'.
+  # swaylock wants RRGGBB(AA) with no leading '#'
   swayColor = lib.removePrefix "#";
 
   # Idle *timeouts only* (dim -> lock, monitors-off, AC-guarded suspend). Lock,
   # unlock, and lock-before-sleep are owned by systemd-lock-handler + the
   # swaylock.service below; this script only decides WHEN to act on inactivity.
-  # shellcheck runs on idle.sh at build via writeShellApplication.
+  # shellcheck runs on idle.sh at build via writeShellApplication
   idle = pkgs.writeShellApplication {
     name = "idle-session";
     runtimeInputs = with pkgs; [
@@ -38,7 +38,6 @@ in
   programs = {
     waybar = {
       enable = true;
-      # Replaces the niri `spawn`; binds the bar to graphical-session.target.
       systemd.enable = true;
       settings.mainBar = {
         layer = "top";
@@ -144,24 +143,16 @@ in
         };
         clock = {
           interval = 1;
-          # Left-pin the label so the fixed-width pill (min-width in CSS) doesn't
-          # let the ticking seconds shift the date/time. Keeps proportional Inter
-          # figures — no tabular/monospaced look.
           align = 0;
           format = "{:%a %Y-%m-%d %H:%M:%S}";
           tooltip-format = "<tt><small>{calendar}</small></tt>";
         };
-        # SNI host for gammastep-indicator + nm-applet.
         tray = {
           spacing = 8;
           icon-size = 18;
         };
       };
 
-      # Flexoki ships an upstream Waybar port (matches the qt6ct precedent), so
-      # reference it directly rather than re-deriving @define-color from `theme`.
-      # To make it theme-driven later, swap the readFile for an inline
-      # @define-color block from `l.*` — a one-line change.
       style =
         builtins.readFile "${inputs.flexoki}/waybar/flexoki-light.css"
         + builtins.readFile ./waybar-style.css;

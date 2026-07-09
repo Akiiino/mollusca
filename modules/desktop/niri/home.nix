@@ -8,11 +8,6 @@
 let
   l = theme.light;
 
-  # Wallpaper: a neutral, full-range grayscale illustration (wallpaper-base.png)
-  # recoloured into a Flexoki duotone at build time — `ink` paints the figure and
-  # grid (the black point), `bg` the flat backdrop (the white point). Both pull
-  # from the shared palette, so retuning is a one-line shade swap (e.g. "850" →
-  # "900" for a darker ink) and switching `theme` entirely re-tints the wallpaper.
   wallpaper =
     let
       ink = theme.base."850";
@@ -31,6 +26,7 @@ in
 
     # niri draws its own compositor cursor (it doesn't read home.pointerCursor),
     # so mirror the phinger-cursors dark theme here.
+    # TODO: any way to consolidate?
     cursor = {
       theme = "phinger-cursors-dark";
       size = 24;
@@ -43,14 +39,13 @@ in
       keyboard.xkb = {
         layout = "eu,ru";
         variant = ",mac";
-        # options = "grp:win_space_toggle";
-        # options = "ctrl:nocaps";
+        options = "caps:escape";
       };
 
       touchpad = {
         tap = true;
         natural-scroll = true;
-        dwt = false;
+        dwt = false; # disable when typing
         click-method = "clickfinger";
       };
     };
@@ -58,8 +53,7 @@ in
     clipboard.disable-primary = true;
 
     spawn-at-startup = [
-      # waybar is started by its systemd user service (programs.waybar.systemd),
-      # bound to graphical-session.target — no spawn-at-startup entry needed.
+      # TODO: make these into proper services
       {
         command = [
           "${pkgs.networkmanagerapplet}/bin/nm-applet"
@@ -67,7 +61,6 @@ in
         ];
       }
       {
-        # niri doesn't draw wallpaper itself; swaybg paints the recoloured PNG.
         command = [
           (lib.getExe pkgs.swaybg)
           "-m"
@@ -78,7 +71,6 @@ in
       }
     ];
 
-    # Output (monitor) configuration
     outputs."eDP-1" = {
       scale = 1.75;
       mode = {
@@ -117,6 +109,8 @@ in
       default-column-width.proportion = 0.5;
 
       center-focused-column = "never";
+      always-center-single-column = true;
+      empty-workspace-above-first = true;
     };
 
     environment = {
@@ -134,10 +128,6 @@ in
         open-floating = true;
       }
       {
-        matches = [ { app-id = "^steam$"; } ];
-        default-column-width = { }; # TODO: maybe unnecessary? What does it do?
-      }
-      {
         matches = [
           {
             app-id = "^steam$";
@@ -145,8 +135,8 @@ in
           }
         ];
         default-floating-position = {
-          x = 10;
-          y = 10;
+          x = 3;
+          y = 3;
           relative-to = "bottom-right";
         };
       }
