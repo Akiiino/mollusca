@@ -7,6 +7,7 @@
     enable = true;
     enableZshIntegration = true;
     nix-direnv.enable = true;
+    # Relocate .direnv layout dirs out of project trees into XDG cache.
     stdlib = ''
       declare -A direnv_layout_dirs
       direnv_layout_dir() {

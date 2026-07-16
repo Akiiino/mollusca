@@ -26,7 +26,7 @@ let
   kakoune-with-plugins = pkgs.wrapKakoune kakoune-unwrapped { inherit plugins; };
 
   # Flexoki palette exposed to kakoune as `flx_*` string options, derived from
-  # the shared attrset (lib/flexoki.nix). The static rc/ files reference these
+  # the shared attrset (modules/desktop/theming/flexoki.nix). The static rc/ files reference these
   # via %opt{flx_*}, so this generated file is the only place colours enter.
   l = theme.light;
   # kakoune wants colours as `rgb:rrggbb` (no leading '#').
@@ -58,7 +58,7 @@ let
     flx_magenta2 = l.magenta.alt;
   };
   paletteKak = pkgs.writeText "flexoki-palette.kak" (
-    "# Generated from lib/flexoki.nix — do not edit by hand.\n"
+    "# Generated from modules/desktop/theming/flexoki.nix\n"
     + lib.concatStrings (
       lib.mapAttrsToList (n: v: ''declare-option -hidden str ${n} "${kak v}"'' + "\n") paletteOptions
     )

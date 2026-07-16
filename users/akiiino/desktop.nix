@@ -1,11 +1,12 @@
 {
   self,
   pkgs,
+  inputs',
   ...
 }:
 {
   home-manager.users.akiiino =
-    { config, ... }: # TODO: this feels ugly
+    { config, ... }:
     {
       imports = [
         "${self}/modules/home/firefox.nix"
@@ -17,17 +18,17 @@
 
       programs.kitty.settings.kitty_mod = "ctrl+shift";
 
-      home.packages = with pkgs; [
-        gimp
-        dolphin-emu
-        vlc
-        shotwell
-        localsend
-        openscad-unstable
-        prusa-slicer
-        nomacs
-        koreader
-        gyre-fonts
+      home.packages = [
+        pkgs.gimp
+        pkgs.dolphin-emu
+        pkgs.vlc
+        pkgs.shotwell
+        pkgs.localsend
+        pkgs.openscad-unstable
+        pkgs.prusa-slicer
+        pkgs.nomacs
+        pkgs.koreader
+        pkgs.gyre-fonts
         pkgs.trayscale
         pkgs.cheese
         pkgs.usbutils
@@ -35,6 +36,12 @@
         pkgs.kdePackages.partitionmanager
         pkgs.kdePackages.skanlite
         pkgs.evince
+        pkgs.android-tools-xdg
+        pkgs.yubikey-manager
+        pkgs.yubico-piv-tool
+        pkgs.obsidian
+        inputs'.filewatcher123d.packages.filewatcher123d
+
         (pkgs.kdePackages.skanpage.override {
           tesseractLanguages = [
             "eng"
@@ -42,9 +49,6 @@
             "rus"
           ];
         })
-        pkgs.android-tools-xdg
-        pkgs.yubikey-manager
-        pkgs.yubico-piv-tool
       ];
 
       xdg = {
@@ -118,6 +122,25 @@
               "application/x-rar" = archive;
             };
         };
+
+        # Keep config/data/state in visible, plainly-named dirs instead of
+        # hidden dotdirs.
+        configHome = config.home.homeDirectory + "/Configuration";
+        dataHome = config.home.homeDirectory + "/Data";
+        stateHome = config.home.homeDirectory + "/State";
+      };
+
+      # Back-compat for apps that hardcode the default XDG paths: symlink them
+      # to the relocated dirs; the .keep files force the targets to exist.
+      home.file = {
+        ".local/share".source = config.lib.file.mkOutOfStoreSymlink config.xdg.dataHome;
+        "${config.xdg.dataHome}/.keep".text = "";
+
+        ".config".source = config.lib.file.mkOutOfStoreSymlink config.xdg.configHome;
+        "${config.xdg.configHome}/.keep".text = "";
+
+        ".local/state".source = config.lib.file.mkOutOfStoreSymlink config.xdg.stateHome;
+        "${config.xdg.stateHome}/.keep".text = "";
       };
     };
 }

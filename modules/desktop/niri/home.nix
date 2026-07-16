@@ -14,7 +14,7 @@ let
       bg = theme.base."150";
     in
     pkgs.runCommandLocal "flexoki-wallpaper.png" { nativeBuildInputs = [ pkgs.imagemagick ]; } ''
-      magick ${self}/modules/desktop/niri/wallpaper-base.png +level-colors '${ink}','${bg}' PNG:"$out"
+      magick ${./wallpaper-base.png} +level-colors '${ink}','${bg}' PNG:"$out"
     '';
 in
 {
@@ -24,7 +24,6 @@ in
   ];
 
   programs.niri.settings = {
-    # TODO: remove tons of default config boilerplate
     prefer-no-csd = true;
 
     # niri draws its own compositor cursor (it doesn't read home.pointerCursor),

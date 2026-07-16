@@ -1,27 +1,14 @@
-# nixpkgs ships yafc-ce v2.18.1, which predates Factorio 2.1 support. Upstream
-# added 2.1 support in commit 87f5c5b7 ("Add support for Factorio 2.1", #657),
-# but that commit also bumped the target framework from net8.0 to net10.0 and is
-# not yet in a tagged release. Because buildDotnetModule consumes `dotnet-sdk`
-# and `nugetDeps` before the derivation is produced, neither can be changed with
-# `overrideAttrs`; switching SDKs and regenerating the NuGet lock requires
-# rebuilding the package rather than overriding the nixpkgs one. So this overlay
-# replaces yafc-ce with a fresh buildDotnetModule pinned at that commit.
+# nixpkgs' yafc-ce is 2.18.1, which is too old for Factorio 2.1. Upstream's 2.1
+# support (pinned commit) also moved from net8.0 to net10.0, and buildDotnetModule
+# fixes dotnet-sdk/nugetDeps before `overrideAttrs` can act — so we rebuild the
+# whole package instead of overriding nixpkgs'. When bumping the commit, regenerate
+# deps.json:
+#   nix build .#nixosConfigurations.aspersum.pkgs.yafc-ce.fetch-deps && ./result deps.json
 #
-# `deps.json` was generated against this exact source with the package's
-# `passthru.fetch-deps` script. Regenerate it (and bump rev/hash/version) when
-# moving to a newer commit:
-#   nix-build -E 'with import <nixpkgs> {}; (callPackage ./yafc-ce.nix {}).fetch-deps' && ./result deps.json
-#
-# `quality-fix.patch` is *not* upstreamed: upstream's 2.1 support still computes
-# the quality-roll distribution with each tier's `next_probability`, but 2.1 set
-# every `next_probability` to 1 and moved the per-jump chance to the new
-# `chain_probability` field. The unpatched calculation therefore collapses all
-# intermediate qualities to 0% and dumps the whole upgrade chance onto the top
-# accessible tier (e.g. "Concrete from molten iron" showing only normal +
-# legendary at an absurd ratio). The patch reads `chain_probability` (defaulting
-# to `next_probability` for pre-2.1 data) and uses next_probability for the first
-# jump, then chain_probability for each subsequent jump, matching the game's own
-# quality roll. Drop the patch once an equivalent fix lands upstream.
+# quality-fix.patch: Factorio 2.1 split quality chance into two multipliers,
+# next_probability and chain_probability; YAFC still parses them as 2.0 did,
+# giving results ~10x too high. The patch uses chain_probability for every
+# quality step after the first, as Factorio 2.1 does. Drop once fixed upstream.
 _final: prev:
 let
   dotnet = prev.dotnetCorePackages.dotnet_10;

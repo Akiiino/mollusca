@@ -47,7 +47,7 @@ in
 
       palette = "flexoki";
 
-      # Flexoki (light) — derived from lib/flexoki.nix. Segments keep light
+      # Flexoki (light) — derived from modules/desktop/theming/flexoki.nix. Segments keep light
       # (paper) text on accent/grey backgrounds; color_fg0 is the paper tone.
       palettes.flexoki = {
         color_fg0 = l.bg;

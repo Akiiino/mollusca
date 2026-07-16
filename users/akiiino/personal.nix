@@ -1,38 +1,31 @@
 {
   self,
   pkgs,
-  inputs',
   lib,
   ...
 }:
 {
   home-manager.users.akiiino =
-    { config, ... }: # TODO: this feels ugly
+    { config, ... }:
     {
       imports = [
         "${self}/modules/home/syncthing.nix"
       ];
 
-      home.packages = with pkgs; [
-        telegram-desktop
-        signal-desktop
-        spotify
-        keepassxc
-        discord
-        proton-vpn
-        obsidian
-        tremotesf
-        inputs'.filewatcher123d.packages.filewatcher123d
-        yafc-ce
+      home.packages = [
+        pkgs.telegram-desktop
+        pkgs.signal-desktop
+        pkgs.spotify
+        pkgs.keepassxc
+        pkgs.discord
+        pkgs.proton-vpn
+        pkgs.tremotesf
+        pkgs.yafc-ce
       ];
 
       programs.thunderbird.enable = true;
 
       xdg = {
-        configHome = config.home.homeDirectory + "/Configuration";
-        dataHome = config.home.homeDirectory + "/Data";
-        stateHome = config.home.homeDirectory + "/State";
-
         dataFile."icons/hicolor/64x64/apps/yafc.png".source =
           pkgs.runCommand "yafc-icon.png" { nativeBuildInputs = [ pkgs.imagemagick ]; }
             ''
@@ -46,17 +39,6 @@
           categories = [ "Utility" ];
         };
 
-      };
-
-      home.file = {
-        ".local/share".source = config.lib.file.mkOutOfStoreSymlink config.xdg.dataHome;
-        "${config.xdg.dataHome}/.keep".text = "";
-
-        ".config".source = config.lib.file.mkOutOfStoreSymlink config.xdg.configHome;
-        "${config.xdg.configHome}/.keep".text = "";
-
-        ".local/state".source = config.lib.file.mkOutOfStoreSymlink config.xdg.stateHome;
-        "${config.xdg.stateHome}/.keep".text = "";
       };
     };
 }

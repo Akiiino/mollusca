@@ -11,6 +11,7 @@
         _: userConfig:
         (userConfig.password == null)
         && (userConfig.hashedPassword == null)
+        && (userConfig.hashedPasswordFile == null)
         && (userConfig.passwordFile == null)
       ) config.users.users
     );

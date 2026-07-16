@@ -7,6 +7,5 @@
     ./services/acme.nix
     ./services/lan-services.nix
     ./services/nas-mounts.nix
-    ./services/tv-filter.nix
   ];
 }

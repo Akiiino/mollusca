@@ -1,9 +1,5 @@
 {
   inputs = {
-    WG-jail = {
-      url = "github:Akiiino/WG-Jail";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     # Nix
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -22,6 +18,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    WG-jail = {
+      url = "github:Akiiino/WG-Jail";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Secrets
     agenix = {
@@ -152,7 +152,6 @@
                 ;
             };
             packages = {
-
               zsh-jcd = pkgs.callPackage ./packages/zsh-jcd { };
             };
             checks = {

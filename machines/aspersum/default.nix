@@ -45,7 +45,7 @@
 
   # Bound the s2idle window before suspend-then-hibernate drops to hibernate.
   # Idle-suspend on battery goes through `systemctl suspend-then-hibernate`
-  # (see modules/apps/desktop-shell/idle.sh); the RTC wake alarm above fires it.
+  # (see modules/desktop/niri/idle.sh); the RTC wake alarm above fires it.
   systemd.sleep.settings.Sleep.HibernateDelaySec = "30min";
 
   services.logind.settings.Login = {

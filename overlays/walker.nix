@@ -1,3 +1,4 @@
+# walker spawns elephant (its search backend) by name, so we put ours on PATH.
 { inputs }:
 final: prev: {
   mollusca = (prev.mollusca or { }) // {

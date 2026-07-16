@@ -30,10 +30,9 @@ rec {
             inputs'
             ;
 
-          # minor-secrets is age-encrypted (secrets/minor-secrets.age), decrypted
+          # minor-secrets are age-encrypted (secrets/minor-secrets.age), decrypted
           # at eval time via mini-agenix's importAge. On a machine without an age
-          # identity (e.g. the glabrata sandbox) importAge raises an error, so we
-          # fall back to the stub
+          # identity importAge raises an error, so we fall back to the stub
           minor-secrets =
             let
               attempt = builtins.tryEval (

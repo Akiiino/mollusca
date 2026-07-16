@@ -24,6 +24,8 @@ in
       italic_font = "Iosevka Extended Oblique";
       bold_italic_font = "Iosevka Bold Extended Oblique";
       allow_remote_control = true;
+      # Nerd Font glyph ranges from Hack Nerd Font.
+      # TODO: consider switching to nerd-fonts.iosevka
       symbol_map =
         lib.concatStringsSep "," [
           "U+E5FA-U+E62B"

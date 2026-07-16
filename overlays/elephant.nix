@@ -1,3 +1,5 @@
+# elephant is walker's search backend (spawned by walker, see walker.nix).
+# Build it with only the providers we use.
 { inputs }:
 final: prev:
 let

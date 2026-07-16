@@ -57,43 +57,6 @@
     };
   };
 
-  mollusca.tvFilter = {
-    enable = false; # TODO: enable after rewrite
-    tvInterface = "wlp170s0";
-    wanInterface = "enp0s13f0u3u1";
-    upstreamDNS = "127.0.0.1";
-
-    allowedDomains = [
-      # Spotify
-      "spotify.com"
-      "spotify.net"
-      "spotifycdn.com"
-      "scdn.co"
-      "audio-ak-spotify-com.akamaized.net"
-
-      # # YouTube
-      # "youtube.com"
-      # "googlevideo.com"
-      # "ytimg.com"
-      # "ggpht.com"
-      # "googleapis.com"
-      # "gstatic.com"
-      # "google.com"
-
-      # # Google Play
-      # "play-lh.googleusercontent.com"
-
-      # NTP
-      "pool.ntp.org"
-    ];
-
-    allowedIPv4s = [
-      # "8.8.8.8"
-      # "8.8.4.4"
-      "192.168.1.0/24"
-    ];
-  };
-
   age.secrets.actinella-backup.file = "${self}/secrets/actinella-backup.age";
 
   services = {
@@ -174,10 +137,11 @@
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
+      # Jellyfin HW transcode
       intel-media-driver # For Broadwell and newer (ca. 2014+)
       intel-compute-runtime # OpenCL support
       libvdpau-va-gl # VDPAU via VA-API
-      vpl-gpu-rt # something for Jellyfin
+      vpl-gpu-rt # Intel QSV runtime
     ];
   };
 
@@ -200,6 +164,7 @@
     cpuFreqGovernor = "powersave";
   };
 
+  # tuned for quiet operation
   services.tlp = {
     enable = true;
     settings = {

@@ -1,54 +1,23 @@
-# transmission.nix — Transmission confined to ProtonVPN with NAT-PMP port forwarding.
+# Transmission confined to ProtonVPN with NAT-PMP port forwarding.
 #
-# Import this file in your system configuration:
-#   imports = [ ./transmission.nix ];
+# All of Transmission's traffic goes through a WireGuard VPN namespace
+# (WG-jail's vpnNamespaces); if the tunnel drops, traffic is dropped too
+# (kill switch). The WireGuard config must come from a ProtonVPN P2P server
+# with "NAT-PMP (Port Forwarding) = on" — a sidecar service requests the
+# forwarded port and keeps the firewall and Transmission in sync.
 #
-# Prerequisites:
-#   - The WG-Jail module is loaded (inputs.WG-jail.nixosModules.default),
-#     which provides the vpnNamespaces options used below.
-#   - A ProtonVPN WireGuard config file at the path below, from a P2P server
-#     with "NAT-PMP (Port Forwarding) = on"
+# WebUI from the LAN: host:9091 is DNAT'ed to 192.168.15.1:9091, the veth
+# address *inside* the namespace — the only routable non-VPN interface
+# Transmission can see. The port mapping makes this transparent to clients.
 #
-# How it works:
-#   1. A VPN namespace "wg" is created with a WireGuard tunnel to ProtonVPN.
-#   2. Transmission runs inside the namespace — all its traffic goes through
-#      the VPN. If the tunnel goes down, traffic is dropped (kill switch).
-#   3. A sidecar service (also inside the namespace) uses NAT-PMP to request
-#      a forwarded port from ProtonVPN, opens it in the namespace firewall,
-#      and tells Transmission to use it for incoming peer connections.
-#   4. Transmission's WebUI is accessible from the LAN via port mapping.
-#
-# The LAN reaches Transmission's WebUI like this:
-#
-#   LAN client (192.168.1.x)
-#     → your-host:9091               (host's LAN IP)
-#     → DNAT to 192.168.15.1:9091    (namespace veth address)
-#     → Transmission inside namespace
-#
-#   192.168.15.1 is NOT your machine's LAN IP. It's the address of the
-#   virtual interface (veth) inside the VPN namespace. Transmission binds
-#   to it because it's the only routable non-VPN interface it can see.
-#   The DNAT port mapping makes this transparent to LAN clients.
-#
-# Download & hardlink workflow:
-#   Transmission downloads to /mnt/media/Seeding/ (its private directory).
-#   When a torrent completes, a script hardlinks every file into
-#   /mnt/media/Staging/, preserving the directory structure.
-#
-#   You work with /mnt/media/Staging/ — rename, reorganise, delete files
-#   at will. Transmission keeps seeding from /mnt/media/Seeding/ undisturbed.
-#   Since hardlinks share data blocks, there's no extra disk space used.
-#
-#   When you remove a torrent from Transmission (with "delete local data"),
-#   the Seeding copy is removed and the disk blocks are freed only if no
-#   hardlinks remain — i.e. only once you've also cleaned up Staging.
+# Downloads land in /mnt/media/Seeding; on completion every file is hardlinked
+# into /mnt/media/Staging to be reorganised freely while seeding continues.
 
 {
   self,
   pkgs,
   lib,
   config,
-  minor-secrets,
   ...
 }:
 
@@ -58,14 +27,10 @@ let
   nsAddr = "192.168.15.1";
   rpcPort = 9091;
 
-  # Where Transmission downloads and seeds from (don't touch these files).
   seedDir = "/mnt/media/Seeding";
-
-  # Where hardlinks appear for you to organise.
   stagingDir = "/mnt/media/Staging";
 
   # Script that Transmission calls when a torrent finishes downloading.
-  # Transmission sets these environment variables:
   #   TR_TORRENT_DIR  — the directory the torrent was downloaded to
   #   TR_TORRENT_NAME — the name of the torrent (file or top-level dir)
   hardlinkScript = pkgs.writeShellScript "transmission-hardlink" ''
@@ -75,18 +40,18 @@ let
 
   settingsJson = "/var/lib/transmission/.config/transmission-daemon/settings.json";
 
-  # Runs as an ExecStartPre of transmission, ordered *after* the nixpkgs module's
+  # Runs as an ExecStartPre of transmission, ordered _after_ the nixpkgs module's
   # own prestart (which regenerates settings.json from the static config). It
   # primes settings.json with the real NAT-PMP forwarded port before the daemon
   # starts, so the very first tracker announce advertises the correct port
   # instead of the 51413 placeholder.
   #
   # This needs only the VPN namespace (for natpmpc), not Transmission's RPC — so
-  # unlike the sidecar it can run before the daemon. It deliberately does NOT
+  # unlike the sidecar it can run before the daemon. It deliberately does not
   # touch the firewall (that needs CAP_NET_ADMIN); the sidecar opens the port a
   # few seconds later, and inbound peers retry. If NAT-PMP is unavailable it
-  # leaves the placeholder and exits 0, so a slow tunnel never blocks startup —
-  # the sidecar then corrects the port over RPC exactly as before.
+  # leaves the placeholder and exits 0, the sidecar then corrects the port over
+  # RPC as normal anyway.
   peerPortPrestart = pkgs.writeShellScript "transmission-peer-port-prestart" ''
     set -uo pipefail
 
@@ -127,8 +92,6 @@ let
 in
 {
 
-  # ── VPN namespace ───────────────────────────────────────────────────
-
   age.secrets.proton-wireguard.file = "${self}/secrets/proton-wireguard.age";
   vpnNamespaces.wg = {
     enable = true;
@@ -144,8 +107,6 @@ in
       }
     ];
   };
-
-  # ── Transmission ────────────────────────────────────────────────────
 
   services.transmission = {
     enable = true;
@@ -190,7 +151,7 @@ in
       # mkForce the whole BindPaths list. The nixpkgs module derives
       # BindPaths from the configured download-dir, which would bind-mount
       # /mnt/media/Seeding on its own. That separate mount breaks the
-      # Seeding→Staging hardlinks (links can't span mount points), so we
+      # Seeding -> Staging hardlinks (links can't span mount points), so we
       # bind the parent /mnt/media instead and keep Seeding and Staging on
       # one filesystem.
       serviceConfig = {
@@ -202,21 +163,21 @@ in
         ];
         ReadWritePaths = [ "/var/lib/transmission" ];
 
-        # Prime settings.json with the real NAT-PMP port before the daemon
+        # Initialize settings.json with the real NAT-PMP port before the daemon
         # starts. mkAfter so it runs after the module's own prestart, which
         # regenerates settings.json from the static config. No "+" prefix: it
         # must run as the transmission user (owns settings.json) and inside the
         # VPN namespace (for natpmpc).
-        ExecStartPre = lib.mkAfter [ "${peerPortPrestart}" ];
+        ExecStartPre = lib.mkAfter [ peerPortPrestart ];
       };
     };
 
-    # ── NAT-PMP sidecar ────────────────────────────────────────────────
+    # NAT-PMP sidecar
     #
     # Runs inside the same VPN namespace. Every 45 seconds it:
-    #   1. Requests a port mapping from ProtonVPN via NAT-PMP
-    #   2. Opens that port in the namespace's nftables firewall
-    #   3. Tells Transmission to use it for incoming peer connections
+    # - requests a port mapping from ProtonVPN via NAT-PMP
+    # - opens that port in the namespace's nftables firewall
+    # - tells Transmission to use it for incoming peer connections
     transmission-natpmp = {
       description = "ProtonVPN NAT-PMP port forwarding for Transmission";
       after = [ "transmission.service" ];
@@ -282,10 +243,9 @@ in
 
         while true; do
           # Request UDP and TCP port mappings from ProtonVPN.
-          # natpmpc -a 1 0 <proto> 60 -g <gateway>
-          #   -a 1 0: map local port 1 to server-chosen public port
-          #   60: lease lifetime in seconds
-          #   -g: NAT-PMP gateway (ProtonVPN's internal IP)
+          # -a 1 0: map local port 1 to server-chosen public port
+          # 60: lease lifetime in seconds
+          # -g: NAT-PMP gateway (ProtonVPN's internal IP)
           port=$(
             natpmpc -a 1 0 udp 60 -g ${natpmpGateway} 2>/dev/null \
               | awk '/Mapped public port/ { print $4 }'
@@ -300,7 +260,7 @@ in
           # Also request TCP (uses the same port)
           natpmpc -a 1 0 tcp 60 -g ${natpmpGateway} > /dev/null 2>&1
 
-          # Only update if the port changed (avoids unnecessary churn)
+          # Only update if the port changed
           if [[ "$port" != "$current_port" ]]; then
             echo "NAT-PMP: assigned port $port (was: ''${current_port:-none})"
             update_firewall "$port"

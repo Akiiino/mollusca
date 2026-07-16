@@ -172,7 +172,6 @@ in
         show-failed-attempts = true;
         effect-blur = "10x6";
 
-        # Flexoki (light) — derived from lib/flexoki.nix.
         inside-color = swayColor l.bg2;
         ring-color = swayColor l.ui3;
         text-color = swayColor l.tx;

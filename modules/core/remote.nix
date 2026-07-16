@@ -63,6 +63,8 @@
         openFirewall = true;
         useRoutingFeatures = config.mollusca.tailscaleRoutingFeatures;
         authKeyFile = config.age.secrets.tailscaleKey.path;
+        # `tailscale up` doesn't inherit `set` flags; append them so first-time
+        # login and later reconfiguration apply the same settings.
         extraUpFlags = [
           "--hostname=${config.networking.hostName}"
         ]

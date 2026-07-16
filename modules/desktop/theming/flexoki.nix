@@ -2,13 +2,11 @@
 #
 # Single source of truth for the desktop colour palette. The full ramp (`base` +
 # `accents`) is parsed from upstream's CSS custom properties
-# (css/flexoki.css in the flexoki flake input) — Flexoki's public interface, so
-# no hexes are transcribed here. Only the light-mode semantic UI aliases
+# (css/flexoki.css in the flexoki flake input). Only the light-mode semantic UI aliases
 # (`light`) are local: upstream encodes them solely in its TypeScript generator
 # (_generators/src/palette.ts, not Nix-consumable), and the mapping below mirrors
 # that file's lt_* names. Consumed as the `theme` module argument (wired in
-# modules/base/all.nix). Per-app colour formatting (e.g. kakoune's `rgb:` prefix)
-# lives in each consuming module, keeping this file pure data.
+# modules/core/home-manager.nix).
 { inputs, lib }:
 let
   # Flatten `--flexoki-<name>: #RRGGBB;` declarations into { "<name>" = hex; },

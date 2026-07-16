@@ -79,7 +79,6 @@
 
       nvidiaSettings = true;
       powerManagement.enable = true;
-      #package = config.boot.kernelPackages.nvidiaPackages.stable;
       # TODO: remove after https://github.com/ValveSoftware/gamescope/issues/1964 is fixed
       # or >580 is available
       package = config.boot.kernelPackages.nvidiaPackages.mkDriver {

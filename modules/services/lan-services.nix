@@ -1,29 +1,13 @@
-# lan-services.nix — Expose LAN services to LAN + Tailscale peers.
+# Expose LAN services to LAN + Tailscale peers: nginx reverse-proxies by Host
+# header; a CoreDNS instance serves these to everyone on LAN and Tailscale.
 #
-# nginx runs as a reverse proxy on actinella and routes by Host header to
-# the actual backend.  A single CoreDNS instance serves the same answers to
-# everyone (no split-horizon): each service name resolves to actinella's LAN
-# address, with ad-blocking applied for all clients.
+# Every service name resolves to `lanAddress`. LAN clients reach it directly;
+# Tailscale peers reach it because this host advertises it as a subnet route
+# (mollusca.advertiseRoutes) and peers `--accept-routes`.
 #
-# How names resolve (one answer everywhere)
-# ──────────────────────────────────────────
-#   Every service host → `lanAddress` (e.g. 192.168.1.101), for LAN clients
-#   and Tailscale peers alike.  CoreDNS listens on all interfaces, so the
-#   same records are served on the LAN IP and the Tailscale IP without any
-#   runtime IP discovery.
-#
-#   • LAN clients reach `lanAddress` directly.
-#   • Tailscale peers reach `lanAddress` because actinella advertises it as a
-#     subnet route (`mollusca.advertiseRoutes = [ "192.168.1.101/32" ]`), and
-#     peers `--accept-routes`.  RFC1918 ⇒ the address is unroutable from the
-#     internet, so these services are private by construction.
-#
-# Setup (one-time)
-# ────────────────
-#   • Tailscale admin → DNS → Split DNS: one restricted-nameserver entry,
-#       Domain:     <your domain>   Nameserver: <actinella's Tailscale IP>
-#     so remote peers send those queries to this resolver.
-#   • Tailscale admin → approve the advertised subnet route from actinella.
+# One-time Tailscale admin setup:
+#  - Split DNS: <domain> -> this host's Tailscale IP.
+#  - Approve the advertised subnet route.
 
 {
   config,
@@ -36,12 +20,10 @@ let
 
   serviceHosts = builtins.attrNames cfg.services;
 
-  # ── Hosts entries for the CoreDNS block ───────────────────────────
   lanHostsLines = lib.concatMapStringsSep "\n" (
     host: "        ${cfg.lanAddress} ${host}"
   ) serviceHosts;
 
-  # ── Extra static DNS records (non-proxied) ────────────────────────
   extraHostsLines = lib.concatStringsSep "\n" (
     lib.mapAttrsToList (host: ip: "        ${ip} ${host}") cfg.extraDnsRecords
   );
@@ -55,11 +37,6 @@ let
 
   blocklistDirective = if cfg.blocklist != null then "hosts ${cfg.blocklist}" else "hosts";
 
-  # ── CoreDNS Corefile (single view) ────────────────────────────────
-  # No `bind` directive: CoreDNS listens on all interfaces, so the same
-  # answers are served on the LAN IP and the Tailscale IP. The hosts block
-  # serves the blocklist + our internal records; everything else is
-  # forwarded upstream.
   corefile = ''
     .:53 {
       ${blocklistDirective} {
@@ -93,11 +70,6 @@ let
 
 in
 {
-
-  # ═══════════════════════════════════════════════════════════════════
-  # Options
-  # ═══════════════════════════════════════════════════════════════════
-
   options.mollusca.lanServices = {
 
     enable = lib.mkEnableOption "LAN service exposure via nginx + Tailscale DNS";
@@ -170,18 +142,11 @@ in
     };
   };
 
-  # ═══════════════════════════════════════════════════════════════════
-  # Implementation
-  # ═══════════════════════════════════════════════════════════════════
-
   config = lib.mkIf cfg.enable {
-
-    # ── nginx reverse proxy ─────────────────────────────────────────
 
     services.nginx = {
       enable = true;
 
-      # Sane defaults for reverse proxying
       recommendedProxySettings = true;
       recommendedOptimisation = true;
       recommendedGzipSettings = true;
@@ -204,8 +169,6 @@ in
 
     users.users.nginx.extraGroups = lib.optionals (cfg.acmeHost != null) [ "acme" ];
 
-    # ── Firewall ────────────────────────────────────────────────────
-
     networking.firewall = {
       allowedTCPPorts = [
         53
@@ -214,8 +177,6 @@ in
       ];
       allowedUDPPorts = [ 53 ];
     };
-
-    # ── CoreDNS (single view, all interfaces) ───────────────────────
 
     services.coredns = {
       enable = true;

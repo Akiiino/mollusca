@@ -353,7 +353,7 @@ in
 
         ## System overview
 
-        - **OS**: NixOS 25.11 (declarative, immutable system config)
+        - **OS**: NixOS 26.05 (declarative, immutable system config)
         - **User**: `claude` (wheel group, passwordless sudo)
         - **Network**: Tailscale VPN; internet access available
         - **Resources**: ~8 GiB RAM, ~76 GiB disk (mostly free)
@@ -403,8 +403,9 @@ in
         - `disko.nix` — disk partitioning layout
         - `hardware-configuration.nix` — QEMU guest hardware
 
-        Shared modules are in `modules/mollusca/` (remote.nix, gui.nix, etc.)
-        and `modules/base/` (all.nix, nixos.nix).
+        Shared modules live under `modules/` (`core/` is imported by every
+        machine; `desktop/`, `hardware/`, `services/`, `home/` are opt-in) —
+        see the repo README for the full layout.
 
         ## Persistence across reinstalls
 

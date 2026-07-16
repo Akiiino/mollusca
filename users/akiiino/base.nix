@@ -17,7 +17,9 @@
     ];
   };
   home-manager.users.akiiino =
-    { config, ... }: # TODO: this feels ugly
+    # The lambda rebinds `config` to home-manager's own config (for xdg.* paths)
+    # instead of the NixOS one. Same pattern in desktop.nix and personal.nix.
+    { config, ... }:
     {
       imports = [
         "${self}/modules/home/direnv.nix"

@@ -12,7 +12,7 @@
     "${self}/profiles/headless.nix"
     ./hardware-configuration.nix
     ./disko.nix
-    "${modulesPath}/profiles/perlless.nix"
+    "${modulesPath}/profiles/perlless.nix" # not necessary, but it's neat
     ./derper.nix
     ./photos.nix
     ./rustical.nix
