@@ -8,4 +8,5 @@
   (import ./elephant.nix { inherit inputs; })
   (import ./walker.nix { inherit inputs; })
   (import ./kakoune.nix { inherit self inputs; })
+  (import ./tremotesf)
 ]

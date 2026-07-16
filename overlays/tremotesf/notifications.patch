@@ -1,0 +1,80 @@
+diff --git a/src/ui/notificationscontroller.cpp b/src/ui/notificationscontroller.cpp
+index 4fc7312..6753bef 100644
+--- a/src/ui/notificationscontroller.cpp
++++ b/src/ui/notificationscontroller.cpp
+@@ -19,10 +19,11 @@ namespace tremotesf {
+ 
+     NotificationsController::NotificationsController(QSystemTrayIcon* trayIcon, const Rpc* rpc, QObject* parent)
+         : QObject(parent), mTrayIcon(trayIcon) {
+-        QObject::connect(mTrayIcon, &QSystemTrayIcon::messageClicked, this, [this] {
+-            info().log("NotificationsController: notification clicked");
+-            emit notificationClicked({});
+-        });
++        // QSystemTrayIcon::messageClicked is unreliable on Linux: QDBusTrayIcon
++        // emits it for ANY app's notification click (it ignores the id in the
++        // ActionInvoked D-Bus signal), causing focus stealing / urgent hints
++        // under broadcast daemons like swaync. The tray balloon is only a
++        // fallback for when D-Bus Notify() fails, so drop click handling.
+ 
+         QObject::connect(rpc, &Rpc::connectedChanged, this, [rpc, this] {
+             if (rpc->isConnected()) {
+diff --git a/src/ui/notificationscontroller_freedesktop.cpp b/src/ui/notificationscontroller_freedesktop.cpp
+index 6a45d21..9f5958d 100644
+--- a/src/ui/notificationscontroller_freedesktop.cpp
++++ b/src/ui/notificationscontroller_freedesktop.cpp
+@@ -7,6 +7,7 @@
+ #include <QCoreApplication>
+ #include <QDBusConnection>
+ #include <QDBusPendingReply>
++#include <QSet>
+ #include <QUuid>
+ 
+ #include "coroutines/dbus.h"
+@@ -94,16 +95,25 @@ namespace tremotesf {
+                 : NotificationsController(trayIcon, rpc, parent) {
+                 qDBusRegisterMetaType<QPair<QString, QDBusVariant>>();
+                 mLegacyInterface.setTimeout(desktoputils::defaultDbusTimeout);
+-                QObject::connect(&mLegacyInterface, &OrgFreedesktopNotificationsInterface::ActionInvoked, this, [this] {
+-                    info().log("LegacyFreedesktopNotificationsController: notification clicked");
+-                    emit notificationClicked(mActivationToken);
+-                    mActivationToken.reset();
+-                });
++                // ActionInvoked/ActivationToken are broadcast by some daemons (swaync,
++                // GNOME Shell); filter by our own notification ids per the spec.
++                QObject::connect(
++                    &mLegacyInterface,
++                    &OrgFreedesktopNotificationsInterface::ActionInvoked,
++                    this,
++                    [this](uint id) {
++                        if (!mOwnNotificationIds.contains(id)) return;
++                        info().log("LegacyFreedesktopNotificationsController: notification clicked");
++                        emit notificationClicked(mActivationToken);
++                        mActivationToken.reset();
++                    }
++                );
+                 QObject::connect(
+                     &mLegacyInterface,
+                     &OrgFreedesktopNotificationsInterface::ActivationToken,
+                     this,
+-                    [this](uint, const QString& activationToken) {
++                    [this](uint id, const QString& activationToken) {
++                        if (!mOwnNotificationIds.contains(id)) return;
+                         info().log("LegacyFreedesktopNotificationsController: activationToken = {}", activationToken);
+                         mActivationToken = activationToken.toUtf8();
+                     }
+@@ -135,6 +145,7 @@ namespace tremotesf {
+                 );
+                 co_await reply;
+                 if (!reply.isError()) {
++                    mOwnNotificationIds.insert(reply.value());
+                     info().log(
+                         "LegacyFreedesktopNotificationsController: executed "
+                         "org.freedesktop.Notifications.Notify() D-Bus call"
+@@ -154,6 +165,7 @@ namespace tremotesf {
+                 "org.freedesktop.Notifications"_L1, "/org/freedesktop/Notifications"_L1, QDBusConnection::sessionBus()
+             };
+             std::optional<QByteArray> mActivationToken{};
++            QSet<uint> mOwnNotificationIds{};
+             CoroutineScope mCoroutineScope{};
+         };
+     }
