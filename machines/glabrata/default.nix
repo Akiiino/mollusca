@@ -97,7 +97,9 @@ let
 
   # Stop hook: fires when Claude finishes a turn. Auto-formats and validates any
   # flake in the cwd (surfacing failures back to Claude so it fixes them before
-  # finishing), then refreshes ~/claude.patch. `nix` is inherited from the
+  # finishing), then publishes the turn's working tree as the `for-user`
+  # snapshot ref (fetched from aspersum by `git receive`/`claude-do`) and
+  # refreshes the legacy ~/claude.patch. `nix` is inherited from the
   # direnv-activated devshell env (which sets NIX_CONFIG for the agenix plugin).
   claude-stop-hook = pkgs.writeShellApplication {
     name = "claude-stop-hook";
@@ -106,6 +108,7 @@ let
       pkgs.jq
       pkgs.coreutils
       pkgs.nix
+      pkgs.mollusca.git-snapshot
       mkpatch
     ];
     text = ''
@@ -134,6 +137,7 @@ let
       fi
 
       if git rev-parse --git-dir >/dev/null 2>&1; then
+        git-snapshot --ref for-user >/dev/null 2>&1 || true
         mkpatch >/dev/null 2>&1 || true
       fi
       exit 0
@@ -218,33 +222,33 @@ in
   };
 
   environment = {
-    systemPackages =
-      (with pkgs; [
-        claude-code-wrapped
-        mcp-nixos
-        uv
-        tmux
-        git
-        curl
-        jq
-        ripgrep
-        fd
-        tree
-        htop
-        python3
-        file
-        less
-        abduco
-        wget
-        unzip
-        gnumake
-        gcc
-        openssh
-        diffutils
-        patch
-        which
-      ])
-      ++ [ mkpatch ];
+    systemPackages = [
+      claude-code-wrapped
+      pkgs.mcp-nixos
+      pkgs.uv
+      pkgs.tmux
+      pkgs.git
+      pkgs.curl
+      pkgs.jq
+      pkgs.ripgrep
+      pkgs.fd
+      pkgs.tree
+      pkgs.htop
+      pkgs.python3
+      pkgs.file
+      pkgs.less
+      pkgs.abduco
+      pkgs.wget
+      pkgs.unzip
+      pkgs.gnumake
+      pkgs.gcc
+      pkgs.openssh
+      pkgs.diffutils
+      pkgs.patch
+      pkgs.which
+      mkpatch
+      pkgs.mollusca.git-snapshot
+    ];
 
     etc."claude-code/managed-settings.json".text = builtins.toJSON {
       hooks = {
@@ -320,6 +324,9 @@ in
           };
           alias = {
             syncup = "!git fetch && { git log --oneline HEAD..@{u} || true; } && { git diff -R @{u} || true; } && git reset --hard @{u}";
+            # Mirror of syncup against the `from-user` snapshot ref that
+            # the user pushes directly over SSH (no GitHub round-trip).
+            catchup = "!{ git log --oneline HEAD..from-user || true; } && { git diff -R from-user || true; } && git reset --hard from-user";
           };
           init.defaultBranch = "main";
           pull.rebase = true;
@@ -428,37 +435,60 @@ in
         - You can clone repos, create branches, and produce patches
         - You do not currently have push access to any remote repos
         - Remember to pull upstream changes before starting or continuing your work
-        - If you need to look at another repo's contents, clone it into /tmp/ instead of fetching webpages
+        - If you need to look at another repo's contents, clone it into /tmp/ instead
+          of fetching webpages
 
         ## Collaboration workflow
 
-        Use this workflow when making code changes to hand back for review:
+        Working trees travel between ${minor-secrets.shortName}'s machine and glabrata as
+        disposable *snapshot commits* pushed/fetched directly over SSH. Snapshot commits
+        are transport vehicles only: **${minor-secrets.shortName} authors, signs, and
+        pushes all real commits.**
+        Never create real commits on ${minor-secrets.shortName}'s behalf; your work is
+        delivered as working-tree state, and ${minor-secrets.shortName} applies it with
+        `git accept` (a worktree-only `git apply` of your delta) and stages and commits
+        it under their own identity.
+
+        **Receiving work (start of a task, or when asked to sync):**
+        1. ${minor-secrets.shortName} pushes their working tree — dirty state, untracked
+           files and all — to the local ref `from-user` (via `git send` or `claude-do`
+           on their side).
+        2. Run `git catchup` — shows what changed vs your current state, then
+           `git reset --hard from-user`. Read the entire output rather than
+           `| head -n *`-ing it, so you build on top of what was accepted or changed.
+           Note: `reset --hard` doesn't delete untracked files, so stray files you
+           created earlier may survive a catchup — remove them if they're not part
+           of the task.
 
         **Delivering changes:**
-        1. Do your work. No commit is required.
-        2. When you finish your work, `mkpatch` runs automatically — it fetches upstream
-           and writes your full working-tree diff (tracked changes AND new untracked files,
-           with binary content) versus fresh upstream to `~/claude.patch`. It mutates nothing:
-           `git fetch` only moves remote-tracking refs, and the diff is computed in a throwaway
-           index, so your branch, index, and working tree are untouched.
-        3. Say in your reply that the patch is ready. It gets applied with:
-           `ssh claude@glabrata 'cat ~/claude.patch' | git apply -`
-        4. From there it is modified as needed, committed, and pushed to `origin`.
+        1. Do your work. No commit is required — and per the rule above, don't make one.
+        2. When you finish a turn, the Stop hook automatically publishes your working
+           tree (tracked changes AND untracked files, honoring .gitignore) as a snapshot
+           commit on the local ref `for-user`, parented on HEAD — so `for-user^..for-user`
+           is always exactly your delta. It mutates nothing else (throwaway index; your
+           branch, index, and working tree are untouched). The legacy `~/claude.patch`
+           is refreshed too, as a fallback.
+        3. Say in your reply that the changes are ready. On the other side they arrive
+           via `git receive` (fetch + summary) and are applied with `git accept`.
 
-        `mkpatch` is generic (works in any clone with an upstream). In directories that are not
-        repos, or do not have an upstream, just say in your reply that the
-        changes are ready to be fetched from `glabrata` manually.
+        In directories that are not repos, just say in your reply that the changes are
+        ready to be fetched from `glabrata` manually.
 
-        **Continuing after the changes are pushed:**
-        1. Run `git syncup` — fetches origin, shows what changed upstream vs your last
-           state, then resets to upstream. Read the entire output rather than
-           `| head -n *`-ing it, so you see the upstream changes in full and your next
-           `mkpatch` builds on top of what was accepted.
-        2. Continue working from the clean upstream state.
+        **Review comments:** ${minor-secrets.shortName} may drop an annotated diff at
+        `~/review.diff`: a unified diff of your delta with review comments inserted as
+        `#|` lines directly under the lines they refer to. When asked to address review
+        comments, read that file — each `#|` block is a comment anchored to the diff
+        line(s) above it. Address every comment, or explain why not.
+
+        **After ${minor-secrets.shortName} pushes to origin:** run `git syncup` — fetches
+        origin, shows what changed upstream vs your last state, then resets to upstream.
+        Same full-output rule as `git catchup`.
 
         Commands (defined in the mollusca config, available globally):
-        - `mkpatch` — diff working tree vs freshly-fetched upstream → `~/claude.patch`
-        - `git syncup` — `git fetch && { git log --oneline HEAD..@{u} || true; } && { git diff -R @{u} || true; } && git reset --hard @{u}` (the `git diff -R @{u}` compares upstream against your working tree, so it's empty when your on-disk files already match what was pushed; `git log` still lists the new commits)
+        - `git catchup` — `{ git log --oneline HEAD..from-user || true; } && { git diff -R from-user || true; } && git reset --hard from-user` (the `git diff -R from-user` compares the incoming snapshot against your working tree, so it's empty when your on-disk files already match)
+        - `git syncup` — same shape, but against `@{u}` after a `git fetch` from origin
+        - `git-snapshot [--ref NAME] [-m MSG]` — what the Stop hook runs; builds a snapshot commit of the working tree in a throwaway index and prints its sha
+        - `mkpatch` — legacy fallback: diff working tree vs freshly-fetched upstream → `~/claude.patch`
       '';
     };
 

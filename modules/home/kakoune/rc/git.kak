@@ -1,6 +1,13 @@
 map global user g ': enter-user-mode git<ret>' -docstring 'Git mode'
 declare-user-mode git
-map global git D ': git diff<ret>' -docstring 'git diff'
-map global git d ': git show-diff<ret>' -docstring 'show diff'
 map global git s ': git status<ret>' -docstring 'git status'
-
+map global git d ': git show-diff<ret>' -docstring 'show diff'
+map global git D ': git diff<ret>' -docstring 'git diff'
+map global git l ': git log --oneline<ret>' -docstring 'git log'
+map global git n ': git next-hunk<ret>' -docstring 'next hunk'
+map global git p ': git prev-hunk<ret>' -docstring 'previous hunk'
+map global git b ': git blame<ret>' -docstring 'toggle blame (also on diff/log buffers)'
+map global git B ': git blame-jump<ret>' -docstring 'show commit that added this line'
+map global git a ': git apply --cached<ret>' -docstring 'stage selected lines'
+map global git u ': git apply --cached --reverse<ret>' -docstring 'unstage selected lines'
+map global git x ': git apply --reverse<ret>' -docstring 'revert selected lines'

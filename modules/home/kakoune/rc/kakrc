@@ -36,6 +36,7 @@ hook global WinSetOption filetype=(markdown) %{
 
 source "%val{config}/powerline-config.kak"
 source "%val{config}/git.kak"
+source "%val{config}/claude.kak"
 
 yac-enable
 set-option global yac_push_command "wl-copy &> /dev/null"
