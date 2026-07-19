@@ -30,7 +30,7 @@
 
       "rtc_cmos.use_acpi_alarm=1" # RTC wake alarm that fires to move suspend -> hibernate (suspend-then-hibernate).
 
-      # These may or may not improve the chances of AMD's GPU unhibernating succesfully.
+      # These may or may not improve the chances of AMD's GPU unhibernating successfully.
       # 50% chance of successful unhibernation sure beats losing your data 100% of the time,
       # but it is very annoying. Don't buy AMD Ryzen AI 300.
       "amdgpu.cwsr_enable=0"
@@ -76,8 +76,8 @@
   };
 
   services = {
-    resolved.enable = true;
     power-profiles-daemon.enable = true;
+    resolved.enable = true;
     thermald.enable = true;
     upower.percentageCritical = 10;
     avahi = {
@@ -117,21 +117,21 @@
     ];
   };
 
-  security.rtkit.enable = true;
-  security.polkit.extraConfig = ''
-    polkit.addRule(function(action, subject) {
-      if (action.id === "org.freedesktop.NetworkManager.settings.modify.system" &&
-          subject.user === "akiiino") {
-        return polkit.Result.YES;
-      }
-    });
-  ''; # allow ProtonVPN et al. to change settings without pestering
+  security = {
+    rtkit.enable = true;
+    polkit.extraConfig = ''
+      polkit.addRule(function(action, subject) {
+        if (action.id === "org.freedesktop.NetworkManager.settings.modify.system" &&
+            subject.user === "akiiino") {
+          return polkit.Result.YES;
+        }
+      });
+    ''; # allow ProtonVPN et al. to change settings without pestering
+  };
 
   environment.localBinInPath = true;
 
-  programs = {
-    steam.enable = true;
-  };
+  programs.steam.enable = true;
 
   hardware = {
     framework.laptop13.audioEnhancement = {

@@ -57,10 +57,16 @@ let
       final.git
       final.openssh
       final.coreutils
+      final.jq
       git-snapshot
     ];
     # SC2029: expanding $remote_cmd client-side is the whole point.
-    excludeShellChecks = [ "SC2029" ];
+    # SC2016: the jq formatter program is single-quoted on purpose ($m/$e/$d
+    # are jq variables, not shell ones).
+    excludeShellChecks = [
+      "SC2029"
+      "SC2016"
+    ];
     text = ''
       usage() {
         cat >&2 <<'EOF'
@@ -118,17 +124,55 @@ let
       if [ "$interactive" = 1 ]; then
         args="$cont $qprompt"
       else
-        args="-p $cont --permission-mode bypassPermissions $qprompt"
+        # stream-json + partial messages so the reply arrives progressively;
+        # --verbose is required for stream-json under -p. fmt_stream renders it.
+        args="-p $cont --permission-mode bypassPermissions --output-format stream-json --include-partial-messages --verbose $qprompt"
       fi
+
+      # Bound SSH hangs: probe every 15s, give up after 4 missed probes (~1min),
+      # and cap the initial connect at 10s.
+      ssh_opts=(-o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o ConnectTimeout=10)
+
+      # Render claude's stream-json events into readable text as they arrive:
+      # streamed prose, [thinking] blocks, and ⏺ tool-use markers (with args
+      # streamed via input_json_delta). Stateless per line so it stays live;
+      # fromjson? tolerates any stray non-JSON line.
+      fmt_stream() {
+        jq -Rj --unbuffered '
+          fromjson? as $m
+          | if   $m == null then empty
+            elif $m.type == "stream_event" then
+              $m.event as $e
+              | if   $e.type == "content_block_start" then
+                  ( $e.content_block.type ) as $t
+                  | if   $t == "thinking" then "\n\n[thinking] "
+                    elif $t == "tool_use" then "\n⏺ " + ( $e.content_block.name // "tool" ) + " "
+                    else "\n\n" end
+                elif $e.type == "content_block_delta" then
+                  ( $e.delta ) as $d
+                  | if   $d.type == "text_delta"       then $d.text
+                    elif $d.type == "thinking_delta"   then $d.thinking
+                    elif $d.type == "input_json_delta" then $d.partial_json
+                    else "" end
+                else "" end
+            elif $m.type == "result" then
+              ( if $m.is_error then "\n[error] " + ( $m.result // "" ) else "" end ) + "\n"
+            else "" end
+        '
+      }
       # Run claude through the repo's direnv devshell when there is one (hooks
       # on glabrata expect its env, e.g. NIX_CONFIG); non-interactive ssh does
-      # not trigger direnv on its own.
-      remote_cmd="cd 'git/$name' && $sync && if [ -e .envrc ]; then exec direnv exec . claude $args; else exec claude $args; fi"
+      # not trigger direnv on its own. Keep the stream that reaches the caller
+      # (e.g. the *claude* buffer in Kakoune) quiet: the automated catchup's
+      # stdout is silenced (errors still surface on stderr and abort the &&
+      # chain) and DIRENV_LOG_FORMAT= mutes direnv's loading chatter, so
+      # Claude's reply isn't buried under setup noise.
+      remote_cmd="cd 'git/$name' && { $sync; } >/dev/null && if [ -e .envrc ]; then exec env DIRENV_LOG_FORMAT= direnv exec . claude $args; else exec claude $args; fi"
 
       if [ "$interactive" = 1 ]; then
-        ssh -t "$host" "$remote_cmd" || echo ">> claude-do: remote claude exited nonzero" >&2
+        ssh -t "''${ssh_opts[@]}" "$host" "$remote_cmd" || echo ">> claude-do: remote claude exited nonzero" >&2
       else
-        ssh "$host" "$remote_cmd" || echo ">> claude-do: remote claude exited nonzero" >&2
+        { ssh "''${ssh_opts[@]}" "$host" "$remote_cmd" | fmt_stream; } || echo ">> claude-do: remote claude exited nonzero" >&2
       fi
 
       echo ">> claude-do: fetching result (for-user)" >&2
