@@ -3,6 +3,24 @@
   self,
   ...
 }:
+let
+  inherit (self.inputs.firefox-addons.lib.${pkgs.stdenv.hostPlatform.system})
+    buildFirefoxXpiAddon
+    ;
+
+  hacker-smacker = buildFirefoxXpiAddon {
+    pname = "hacker-smacker";
+    version = "2.2";
+    addonId = "jid1-eo0mcXLTqCkaWA@jetpack";
+    url = "https://addons.mozilla.org/firefox/downloads/file/4715262/hacker_smacker-2.2.xpi";
+    sha256 = "d28f0597d5c4bae5db712b4875f4104120f7e55e5ea769c44d70996be31cc0d1";
+    meta = {
+      homepage = "https://www.hackersmacker.org";
+      description = "Friend/foe individual writers on Hacker News.";
+      platforms = pkgs.lib.platforms.all;
+    };
+  };
+in
 {
   imports = [
     self.inputs.arkenfox.hmModules.arkenfox
@@ -33,13 +51,14 @@
       name = "akiiino";
       isDefault = true;
       extensions.packages =
-        with self.inputs.firefox-addons.packages."${pkgs.stdenv.hostPlatform.system}"; [
+        (with self.inputs.firefox-addons.packages."${pkgs.stdenv.hostPlatform.system}"; [
           # TODO: save extension configs
           keepass-helper
           sidebery
           ublock-origin
           vimium
-        ];
+        ])
+        ++ [ hacker-smacker ];
       userChrome = ''
         #main-window[tabsintitlebar="true"]:not([extradragspace="true"]) #TabsToolbar > .toolbar-items {
           opacity: 0;
