@@ -4,6 +4,7 @@
   self',
   inputs,
   config,
+  secretFile,
   ...
 }:
 {
@@ -17,7 +18,7 @@
     "${self}/users/akiiino/personal.nix"
   ];
 
-  age.secrets.akiiino-password.file = "${self}/secrets/akiiino-password.age";
+  age.secrets.akiiino-password.file = secretFile "akiiino-password.age";
   users.users.akiiino.hashedPasswordFile = config.age.secrets.akiiino-password.path;
 
   boot = {

@@ -2,6 +2,7 @@
   self,
   pkgs,
   minor-secrets,
+  secretFile,
   ...
 }:
 let
@@ -496,7 +497,7 @@ in
   };
 
   age.secrets.ds = {
-    file = "${self}/secrets/ds.age";
+    file = secretFile "ds.age";
     owner = "claude";
     group = "users";
     mode = "0400";

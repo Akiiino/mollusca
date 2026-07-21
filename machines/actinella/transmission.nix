@@ -4,15 +4,15 @@
 # into /mnt/media/Staging so it can be reorganised while seeding continues.
 
 {
-  self,
   pkgs,
   lib,
   config,
+  secretFile,
   ...
 }:
 
 {
-  age.secrets.proton-wireguard.file = "${self}/secrets/proton-wireguard.age";
+  age.secrets.proton-wireguard.file = secretFile "proton-wireguard.age";
 
   services.transmissionConfined = {
     enable = true;

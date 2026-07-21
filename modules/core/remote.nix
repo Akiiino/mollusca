@@ -1,6 +1,7 @@
 {
   self,
   config,
+  secretFile,
   lib,
   ...
 }:
@@ -57,7 +58,7 @@
     })
 
     (lib.mkIf config.mollusca.useTailscale {
-      age.secrets.tailscaleKey.file = "${self}/secrets/tailscale.age";
+      age.secrets.tailscaleKey.file = secretFile "tailscale.age";
       services.tailscale = {
         enable = true;
         openFirewall = true;

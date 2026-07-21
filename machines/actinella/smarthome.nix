@@ -2,8 +2,8 @@
   config,
   pkgs,
   lib,
-  self,
   minor-secrets,
+  secretFile,
   ...
 }:
 let
@@ -18,9 +18,9 @@ in
 {
 
   age.secrets = {
-    mosquitto-zigbee2mqtt-password.file = "${self}/secrets/mosquitto-zigbee2mqtt-password.age";
-    mosquitto-openhab-password.file = "${self}/secrets/mosquitto-openhab-password.age";
-    mosquitto-valetudo-password.file = "${self}/secrets/mosquitto-valetudo-password.age";
+    mosquitto-zigbee2mqtt-password.file = secretFile "mosquitto-zigbee2mqtt-password.age";
+    mosquitto-openhab-password.file = secretFile "mosquitto-openhab-password.age";
+    mosquitto-valetudo-password.file = secretFile "mosquitto-valetudo-password.age";
   };
 
   services.mosquitto = {
@@ -60,7 +60,7 @@ in
   networking.firewall.allowedTCPPorts = [ 8883 ]; # mosquitto
 
   age.secrets.zigbee2mqtt-secrets = {
-    file = "${self}/secrets/zigbee2mqtt.age";
+    file = secretFile "zigbee2mqtt.age";
     owner = "zigbee2mqtt";
     group = "zigbee2mqtt";
     mode = "0400";

@@ -4,6 +4,7 @@
   pkgs,
   inputs,
   minor-secrets,
+  secretFile,
   ...
 }:
 {
@@ -57,7 +58,7 @@
     };
   };
 
-  age.secrets.actinella-backup.file = "${self}/secrets/actinella-backup.age";
+  age.secrets.actinella-backup.file = secretFile "actinella-backup.age";
 
   services = {
     traveller = {

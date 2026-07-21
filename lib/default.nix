@@ -30,6 +30,10 @@ rec {
             inputs'
             ;
 
+          # replaces old "${self}/secrets/..." that made every drv using it depend on the
+          # whole flake source and rebuild on every commit
+          secretFile = name: ../secrets + "/${name}";
+
           # minor-secrets are age-encrypted (secrets/minor-secrets.age), decrypted
           # at eval time via mini-agenix's importAge. On a machine without an age
           # identity importAge raises an error, so we fall back to the stub

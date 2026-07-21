@@ -1,8 +1,8 @@
 {
-  self,
   config,
   lib,
   minor-secrets,
+  secretFile,
   ...
 }:
 {
@@ -10,7 +10,7 @@
     useDefaultDomain = lib.mkEnableOption "default domain configuration";
   };
   config = lib.mkIf config.mollusca.useDefaultDomain {
-    age.secrets.acmeDns.file = "${self}/secrets/acme-dns.age";
+    age.secrets.acmeDns.file = secretFile "acme-dns.age";
 
     security.acme = {
       acceptTerms = true;

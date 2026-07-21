@@ -3,6 +3,7 @@
   config,
   self,
   minor-secrets,
+  secretFile,
   ...
 }:
 {
@@ -24,7 +25,7 @@
     tokenFile = config.age.secrets.eunomia-telegram.path;
     chatId = minor-secrets.telegramId;
   };
-  age.secrets.eunomia-telegram.file = "${self}/secrets/eunomia-telegram.age";
+  age.secrets.eunomia-telegram.file = secretFile "eunomia-telegram.age";
 
   networking = {
     hostName = "pecten";
