@@ -18,8 +18,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    WG-jail = {
-      url = "github:Akiiino/WG-Jail";
+    transmission-confined = {
+      url = "github:Akiiino/transmission-confined";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

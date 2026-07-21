@@ -3,6 +3,7 @@
     "WG-jail": {
       "inputs": {
         "nixpkgs": [
+          "transmission-confined",
           "nixpkgs"
         ]
       },
@@ -676,7 +677,6 @@
     },
     "root": {
       "inputs": {
-        "WG-jail": "WG-jail",
         "agenix": "agenix",
         "arkenfox": "arkenfox",
         "disko": "disko",
@@ -697,6 +697,7 @@
         "nixpkgs": "nixpkgs",
         "parinfer-rust": "parinfer-rust",
         "stevenBlackHosts": "stevenBlackHosts",
+        "transmission-confined": "transmission-confined",
         "traveller": "traveller",
         "wrapper-manager": "wrapper-manager"
       }
@@ -744,6 +745,27 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "transmission-confined": {
+      "inputs": {
+        "WG-jail": "WG-jail",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784648026,
+        "narHash": "sha256-a4jrNK4jVLAyGjBhogg1oNoVNNsP7R/8QbgAlE/73AE=",
+        "owner": "Akiiino",
+        "repo": "transmission-confined",
+        "rev": "20886eee8060fa8349b4a5c334107a40620151df",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Akiiino",
+        "repo": "transmission-confined",
         "type": "github"
       }
     },

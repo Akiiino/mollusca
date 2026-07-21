@@ -10,7 +10,7 @@
   imports = [
     "${self}/profiles/headless.nix"
     inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
-    inputs.WG-jail.nixosModules.default
+    inputs.transmission-confined.nixosModules.default
     ./transmission.nix
     ./smarthome.nix
     ./photos.nix
