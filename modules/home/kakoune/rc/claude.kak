@@ -1,7 +1,13 @@
 # Kakoune side of the Claude collaboration workflow (overlays/git-collab.nix +
-# modules/home/git.nix): delegate tasks to Claude Code on glabrata and review
-# its results without leaving the editor. Like the :git commands, everything
-# here runs relative to the session's cwd, so start kak inside the repo.
+# modules/home/git.nix): delegate tasks to Claude Code on glabrata and send it
+# prr-style reviews without leaving the editor. Like the :git commands,
+# everything here runs relative to the session's cwd, so start kak inside the
+# repo.
+#
+# Reading and navigating Claude's branches is stock git.kak territory —
+# :git diff main...add-x (<ret> jumps to source), :git blame, :git apply
+# --cached on selections. This file only adds the chat buffer and the
+# review-comment round-trip.
 #
 # *claude* is a persistent, editable chat buffer — a best-effort reconstruction
 # of the conversation. Send a message (:claude with cursor context, or
@@ -13,9 +19,8 @@ map global user c ': enter-user-mode claude<ret>' -docstring 'Claude mode'
 map global claude d ': claude ' -docstring 'delegate task with cursor context (claude-do)'
 map global claude m ': claude-send<ret>' -docstring 'send selection as a chat message'
 map global claude b ': buffer *claude*<ret>' -docstring 'jump to the *claude* chat buffer'
-map global claude r ': claude-review<ret>' -docstring 'fetch + review latest result'
-map global claude c 'o#|<space>' -docstring 'insert review comment below cursor'
-map global claude s ': claude-review-send<ret>' -docstring 'send review comments to Claude'
+map global claude r ': claude-review<ret>' -docstring 'open quoted diff for prr-style review'
+map global claude s ': claude-review-send<ret>' -docstring 'send review to Claude'
 
 # Path of the fifo backing the current *claude* buffer (set by claude-open).
 declare-option -hidden str claude_fifo
@@ -45,7 +50,7 @@ define-command -hidden claude-open %{
 
 # claude-run <flags> <promptfile>: append one turn to the *claude* chat buffer
 # and stream claude-do's reply into it. <flags> is passed verbatim to claude-do
-# (e.g. "--keep --new" or ""); <promptfile> is a temp file holding the message
+# (e.g. "--new" or ""); <promptfile> is a temp file holding the message
 # (a file sidesteps re-quoting multi-line prompts back through Kakoune).
 define-command -hidden claude-run -params 2 %{
     claude-open
@@ -58,14 +63,13 @@ define-command -hidden claude-run -params 2 %{
 }
 
 define-command claude -params 1.. -docstring %{
-    claude [-k|--keep] [-n|--new] <prompt>: delegate a task to Claude on glabrata
+    claude [-n|--new] <prompt>: delegate a task to Claude on glabrata
     (claude-do), prepending cursor context; reply streams into the *claude* buffer
 } %{
     evaluate-commands %sh{
         flags=""
         while [ $# -gt 0 ]; do
             case "$1" in
-                -k|--keep) flags="$flags --keep"; shift ;;
                 -n|--new)  flags="$flags --new";  shift ;;
                 --) shift; break ;;
                 *) break ;;
@@ -82,14 +86,13 @@ define-command claude -params 1.. -docstring %{
 }
 
 define-command claude-send -params 0.. -docstring %{
-    claude-send [-k|--keep] [-n|--new]: send the current selection to Claude as a
+    claude-send [-n|--new]: send the current selection to Claude as a
     chat message; reply streams into the *claude* chat buffer
 } %{
     evaluate-commands %sh{
         flags=""
         while [ $# -gt 0 ]; do
             case "$1" in
-                -k|--keep) flags="$flags --keep"; shift ;;
                 -n|--new)  flags="$flags --new";  shift ;;
                 *) break ;;
             esac
@@ -107,30 +110,33 @@ define-command claude-send -params 0.. -docstring %{
     }
 }
 
-define-command claude-review -docstring %{
-    claude-review: fetch Claude's latest turn (for-user) and open its diff for review
+define-command claude-review -params .. -docstring %{
+    claude-review [<git diff args>]: open the diff (default main...HEAD) in a
+    *review* buffer, quoted prr-style, ready for inline comments
 } %{
+    edit! -scratch *review*
     evaluate-commands %sh{
-        git fetch "$(git claude-url)" "+for-user:for-user" >/dev/null 2>&1 ||
-            echo "fail %{claude-review: fetching for-user failed}"
+        args="$*"
+        [ -n "$args" ] || args="main...HEAD"
+        printf "execute-keys '%%|git --no-pager diff %s | sed \"s/^/> /\"<ret>gk'" "$args"
     }
-    edit! -scratch *claude-review*
-    execute-keys '%|git --no-pager diff for-user^ for-user<ret>gk'
-    set-option buffer filetype diff
-    echo -markup "{Information}<ret> jumps to source; comment with 'c' in claude mode; :claude-review-send when done"
+    echo -markup "{Information}unquoted line(s) under a quoted line = comment; blank line before a quote block = spanned; :claude-review-send when done"
 }
 
 define-command claude-review-send -docstring %{
-    claude-review-send: upload the annotated review to glabrata (~/review.diff) and have Claude address it
+    claude-review-send: upload the review to glabrata (~/reviews/) and have Claude address it
 } %{
     evaluate-commands %sh{
-        [ "$kak_bufname" = "*claude-review*" ] ||
-            echo "fail %{claude-review-send: run this from the *claude-review* buffer}"
+        [ "$kak_bufname" = "*review*" ] ||
+            echo "fail %{claude-review-send: run this from the *review* buffer}"
     }
-    execute-keys -draft '%<a-|>ssh claude@glabrata "cat > review.diff"<ret>'
     evaluate-commands %sh{
+        name=$(basename "$(git rev-parse --show-toplevel)")
+        branch=$(git branch --show-current | tr / -)
+        path="reviews/$name--${branch:-detached}.prr"
+        printf "execute-keys -draft '%%<a-|>ssh claude@glabrata \"cat > %s\"<ret>'\n" "$path"
         pf=$(mktemp)
-        printf '%s' "Address the review comments in ~/review.diff: every #| line is a review comment about the diff line(s) directly above it. Address each comment, or push back with reasons." > "$pf"
-        printf "claude-run '--keep' '%s'" "$pf"
+        printf '%s' "Address the review in ~/$path. It is in prr format: the diff is quoted with \"> \"; unquoted lines are comments on the quoted line(s) directly above; a blank line before a quote block widens the comment to span that whole block; [...] lines are snips of elided context. Commit fixes on the current branch. Address every comment, or push back with reasons." > "$pf"
+        printf "claude-run \"\" '%s'\n" "$pf"
     }
 }

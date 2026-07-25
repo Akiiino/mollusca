@@ -30,41 +30,6 @@ let
     inherit (pkgs.claude-code) meta;
   };
 
-  # Generic "diff working tree against freshly-fetched upstream" patch builder.
-  # Not git- or repo-specific: works in any clone with an upstream. Captures
-  # tracked AND untracked changes (with binary content), requires no commit, and
-  # mutates nothing — `git fetch` only moves remote-tracking refs, and the diff
-  # is computed in a throwaway index so the real index/worktree are untouched.
-  mkpatch = pkgs.writeShellApplication {
-    name = "mkpatch";
-    runtimeInputs = [
-      pkgs.git
-      pkgs.coreutils
-    ];
-    text = ''
-      if ! git rev-parse --git-dir >/dev/null 2>&1; then
-        echo "mkpatch: not inside a git repository" >&2
-        exit 1
-      fi
-      git fetch --quiet || echo "mkpatch: warning: fetch failed; using cached refs" >&2
-      upstream=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)
-      if [ -z "$upstream" ]; then
-        upstream=$(git rev-parse --abbrev-ref origin/HEAD 2>/dev/null || true)
-      fi
-      if [ -z "$upstream" ]; then
-        echo "mkpatch: no upstream branch found (set one or add an 'origin' remote)" >&2
-        exit 1
-      fi
-      out="$HOME/claude.patch"
-      tmpindex=$(mktemp)
-      trap 'rm -f "$tmpindex"' EXIT
-      GIT_INDEX_FILE="$tmpindex" git read-tree "$upstream"
-      GIT_INDEX_FILE="$tmpindex" git add -A
-      GIT_INDEX_FILE="$tmpindex" git diff --cached --binary "$upstream" >"$out"
-      echo "mkpatch: wrote $out ($(grep -c '^' "$out") lines, vs $upstream)"
-    '';
-  };
-
   # PostToolUse hook (Write|Edit|Bash): after Claude touches the filesystem,
   # `git add -N` every untracked `.nix` in the enclosing flake repo, so flakes
   # (which ignore untracked files) can see brand-new modules. Write/Edit carry a
@@ -97,20 +62,15 @@ let
   };
 
   # Stop hook: fires when Claude finishes a turn. Auto-formats and validates any
-  # flake in the cwd (surfacing failures back to Claude so it fixes them before
-  # finishing), then publishes the turn's working tree as the `for-user`
-  # snapshot ref (fetched from aspersum by `git receive`/`claude-do`) and
-  # refreshes the legacy ~/claude.patch. `nix` is inherited from the
-  # direnv-activated devshell env (which sets NIX_CONFIG for the agenix plugin).
+  # flake in the cwd, surfacing failures back to Claude so it fixes them before
+  # finishing. `nix` is inherited from the direnv-activated devshell env (which
+  # sets NIX_CONFIG for the agenix plugin).
   claude-stop-hook = pkgs.writeShellApplication {
     name = "claude-stop-hook";
     runtimeInputs = [
-      pkgs.git
       pkgs.jq
       pkgs.coreutils
       pkgs.nix
-      pkgs.mollusca.git-snapshot
-      mkpatch
     ];
     text = ''
       input=$(cat)
@@ -135,11 +95,6 @@ let
           surface "nix flake check failed; fix before finishing:
       $out"
         fi
-      fi
-
-      if git rev-parse --git-dir >/dev/null 2>&1; then
-        git-snapshot --ref for-user >/dev/null 2>&1 || true
-        mkpatch >/dev/null 2>&1 || true
       fi
       exit 0
     '';
@@ -247,8 +202,6 @@ in
       pkgs.diffutils
       pkgs.patch
       pkgs.which
-      mkpatch
-      pkgs.mollusca.git-snapshot
     ];
 
     etc."claude-code/managed-settings.json".text = builtins.toJSON {
@@ -325,10 +278,12 @@ in
           };
           alias = {
             syncup = "!git fetch && { git log --oneline HEAD..@{u} || true; } && { git diff -R @{u} || true; } && git reset --hard @{u}";
-            # Mirror of syncup against the `from-user` snapshot ref that
-            # the user pushes directly over SSH (no GitHub round-trip).
-            catchup = "!{ git log --oneline HEAD..from-user || true; } && { git diff -R from-user || true; } && git reset --hard from-user";
           };
+          # The user pushes commits directly into these clones over SSH;
+          # updateInstead lets a push to the checked-out branch land (and
+          # fast-forward the worktree) when the tree is clean, bounce when
+          # dirty.
+          receive.denyCurrentBranch = "updateInstead";
           init.defaultBranch = "main";
           pull.rebase = true;
           push.autoSetupRemote = true;
@@ -343,6 +298,7 @@ in
 
     home.file = {
       "git/.keep".text = "";
+      "reviews/.keep".text = "";
 
       ".claude/CLAUDE.md".text = ''
         # Glabrata — Claude Code Sandbox
@@ -351,7 +307,7 @@ in
         No human uses this machine directly — you are the primary operator.
         The human operator (and the person interacting with you) is ${minor-secrets.shortName},
         who manages this machine remotely. ${minor-secrets.shortName} is not a separate
-        reviewer downstream of your work — the person who applies your patches and pushes
+        reviewer downstream of your work — the person who merges your branches and pushes
         them is the same person prompting you right now. Address them directly in the second
         person ("you"), or by name as ${minor-secrets.shortName}; never refer to
         ${minor-secrets.shortName} in the third person (e.g. "I'll let them know" or "they
@@ -384,8 +340,7 @@ in
         ## Permissions and safety
 
         You have passwordless sudo. This is an isolated sandbox — there is nothing
-        here you can break that matters. The machine can be wiped and reinstalled
-        at any time via `nixos-anywhere`.
+        here you can break that matters.
 
         However: `nixos-rebuild` is **disabled**. You cannot change the system
         configuration from this machine.
@@ -400,8 +355,8 @@ in
         declaratively by home-manager in the mollusca repo. Editing files like
         `~/.gitconfig` or `~/.bashrc` directly won't survive a rebuild — they are
         overwritten on each deployment. **To change any persistent system setting,
-        modify the mollusca Nix config** (`machines/glabrata/default.nix`) and
-        produce a patch and deliver it via the collaboration workflow for deployment.
+        modify the mollusca Nix config** (`machines/glabrata/default.nix`) on a
+        topic branch and hand it off via the collaboration workflow for deployment.
 
         ## Machine configuration
 
@@ -415,25 +370,13 @@ in
         machine; `desktop/`, `hardware/`, `services/`, `home/` are opt-in) —
         see the repo README for the full layout.
 
-        ## Persistence across reinstalls
-
-        The machine may be wiped and rebuilt at any time. What survives:
-        - **Persistent volume**: `/mnt/persist` mirrors the real filesystem layout.
-          Paths on the volume are bind-mounted to their real locations at boot.
-          Currently persisted: Claude project folder (`~/.claude/projects`) and
-          OAuth credentials (`~/.claude/.credentials.json`).
-        - **System config**: Everything in the mollusca repo
-        - **Nothing else**: Treat local state as ephemeral
-
         ## Working with projects
 
         - **Repo location**: Always clone and work on repos in `~/git/`.
-          Changes are pulled from glabrata over Tailscale SSH, so repos must
-          be at a stable, predictable path (e.g., `~/git/<repo-name>`).
         - direnv + nix-direnv are installed — entering a directory with a `flake.nix`
           and `.envrc` will automatically activate the devshell
         - Git is configured as "Claude (glabrata)" <noreply@anthropic.com>
-        - You can clone repos, create branches, and produce patches
+        - You can clone repos, create branches, and make commits
         - You do not currently have push access to any remote repos
         - Remember to pull upstream changes before starting or continuing your work
         - If you need to look at another repo's contents, clone it into /tmp/ instead
@@ -441,55 +384,52 @@ in
 
         ## Collaboration workflow
 
-        Working trees travel between ${minor-secrets.shortName}'s machine and glabrata as
-        disposable *snapshot commits* pushed/fetched directly over SSH. Snapshot commits
-        are transport vehicles only: **${minor-secrets.shortName} authors, signs, and
-        pushes all real commits.**
-        Never create real commits on ${minor-secrets.shortName}'s behalf; your work is
-        delivered as working-tree state, and ${minor-secrets.shortName} applies it with
-        `git accept` (a worktree-only `git apply` of your delta) and stages and commits
-        it under their own identity.
+        Code travels between ${minor-secrets.shortName}'s machine and glabrata as
+        ordinary git commits on a shared topic branch, pushed/fetched directly
+        over SSH (no GitHub round-trip). You are a normal contributor: make real
+        commits under your own identity ("Claude (glabrata)") on the task's
+        topic branch.
 
-        **Receiving work (start of a task, or when asked to sync):**
-        1. ${minor-secrets.shortName} pushes their working tree — dirty state, untracked
-           files and all — to the local ref `from-user` (via `git send` or `claude-do`
-           on their side).
-        2. Run `git catchup` — shows what changed vs your current state, then
-           `git reset --hard from-user`. Read the entire output rather than
-           `| head -n *`-ing it, so you build on top of what was accepted or changed.
-           Note: `reset --hard` doesn't delete untracked files, so stray files you
-           created earlier may survive a catchup — remove them if they're not part
-           of the task.
+        **Branches:**
+        - One topic branch per task (e.g. `add-x`), branched from `main`.
+        - If the branch for a fresh task does not exist yet — create it.
+        - Never commit to `main` — only ${minor-secrets.shortName} pushes to origin, and
+          your `main` just tracks it (`git switch main && git pull` to update
+          before branching off).
+        - Both sides commit to the topic branch. ${minor-secrets.shortName} pushes commits —
+          including WIP handovers for you to build on — directly into this
+          clone (`git push glabrata` on their side), so the branch is already
+          here when a task starts or resumes; there is nothing to fetch.
 
-        **Delivering changes:**
-        1. Do your work. No commit is required — and per the rule above, don't make one.
-        2. When you finish a turn, the Stop hook automatically publishes your working
-           tree (tracked changes AND untracked files, honoring .gitignore) as a snapshot
-           commit on the local ref `for-user`, parented on HEAD — so `for-user^..for-user`
-           is always exactly your delta. It mutates nothing else (throwaway index; your
-           branch, index, and working tree are untouched). The legacy `~/claude.patch`
-           is refreshed too, as a fallback.
-        3. Say in your reply that the changes are ready. On the other side they arrive
-           via `git receive` (fetch + summary) and are applied with `git accept`.
+        **Pushes into your checkout** (`receive.denyCurrentBranch = updateInstead`):
+        - Clean worktree and index: a push to your checked-out branch lands and
+          fast-forwards your worktree automatically.
+        - Dirty tree: the push bounces. So commit before finishing a turn or
+          pausing — WIP commits are fine, they get cleaned up at integration.
+          If ${minor-secrets.shortName} says a push bounced, commit (or stash) and ask for a
+          re-push.
+
+        **Delivering changes:** commit on the topic branch and say in your
+        reply which branch is ready. There is no separate publishing mechanism —
+        your commits are the delivery, fetched with `git fetch glabrata` on the
+        other side. Keep commits small, with imperative messages matching the
+        repo's style.
+
+        **Review comments** arrive as a file at `~/reviews/<repo>--<branch>.prr`
+        in prr markup (https://github.com/danobi/prr): the diff is quoted with
+        `> `; unquoted lines are comments on the quoted line(s) directly above;
+        a blank line before a quote block widens the comment to span that whole
+        block; `[...]` lines are snips of elided context. Address every comment
+        with commits on the same branch, or push back with reasons.
+
+        **Integration:** ${minor-secrets.shortName} merges or rebases your branch
+        or squashes trivial work into single commits, signs, and pushes to origin.
+        Afterwards sync with plain git: `git switch main && git pull`, then
+        `git branch -d <topic>` (`-D` if the history was rewritten upstream — normal
+        maintainer flow, not an error).
 
         In directories that are not repos, just say in your reply that the changes are
         ready to be fetched from `glabrata` manually.
-
-        **Review comments:** ${minor-secrets.shortName} may drop an annotated diff at
-        `~/review.diff`: a unified diff of your delta with review comments inserted as
-        `#|` lines directly under the lines they refer to. When asked to address review
-        comments, read that file — each `#|` block is a comment anchored to the diff
-        line(s) above it. Address every comment, or explain why not.
-
-        **After ${minor-secrets.shortName} pushes to origin:** run `git syncup` — fetches
-        origin, shows what changed upstream vs your last state, then resets to upstream.
-        Same full-output rule as `git catchup`.
-
-        Commands (defined in the mollusca config, available globally):
-        - `git catchup` — `{ git log --oneline HEAD..from-user || true; } && { git diff -R from-user || true; } && git reset --hard from-user` (the `git diff -R from-user` compares the incoming snapshot against your working tree, so it's empty when your on-disk files already match)
-        - `git syncup` — same shape, but against `@{u}` after a `git fetch` from origin
-        - `git-snapshot [--ref NAME] [-m MSG]` — what the Stop hook runs; builds a snapshot commit of the working tree in a throwaway index and prints its sha
-        - `mkpatch` — legacy fallback: diff working tree vs freshly-fetched upstream → `~/claude.patch`
       '';
     };
 
