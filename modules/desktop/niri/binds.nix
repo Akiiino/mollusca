@@ -10,7 +10,7 @@ let
     runtimeInputs = [
       pkgs.swaylock-effects
       pkgs.systemd
-      pkgs.niri
+      config.programs.niri.package
       pkgs.fuzzel
     ];
     text = ''
@@ -24,6 +24,20 @@ let
         Reboot)    systemctl reboot ;;
         Shutdown)  systemctl poweroff ;;
       esac
+    '';
+  };
+
+  # One line per keypress. `1<>` opens the FIFO read-write, which never blocks
+  # even with no reader, so a wedged daemon cannot hang a keybind. The -p guard
+  # means a stopped socket unit makes the keys a silent no-op rather than
+  # creating a regular file where the FIFO belongs.
+  brightness = pkgs.writeShellApplication {
+    name = "brightness";
+    text = ''
+      step=''${1:?usage: brightness <+/-N>}
+      fifo=''${XDG_RUNTIME_DIR:-/tmp}/brightness.fifo
+      [[ -p $fifo ]] || exit 0
+      printf '%s\n' "$step" 1<>"$fifo"
     '';
   };
 in
@@ -137,32 +151,28 @@ in
     "XF86MonBrightnessUp" = {
       allow-when-locked = true;
       action.spawn = [
-        (lib.getExe' pkgs.swayosd "swayosd-client")
-        "--brightness"
-        "raise"
+        (lib.getExe brightness)
+        "+10"
       ];
     };
     "XF86MonBrightnessDown" = {
       allow-when-locked = true;
       action.spawn = [
-        (lib.getExe' pkgs.swayosd "swayosd-client")
-        "--brightness"
-        "lower"
+        (lib.getExe brightness)
+        "-10"
       ];
     };
     "Shift+XF86MonBrightnessUp" = {
       allow-when-locked = true;
       action.spawn = [
-        (lib.getExe' pkgs.swayosd "swayosd-client")
-        "--brightness"
+        (lib.getExe brightness)
         "+1"
       ];
     };
     "Shift+XF86MonBrightnessDown" = {
       allow-when-locked = true;
       action.spawn = [
-        (lib.getExe' pkgs.swayosd "swayosd-client")
-        "--brightness"
+        (lib.getExe brightness)
         "-1"
       ];
     };

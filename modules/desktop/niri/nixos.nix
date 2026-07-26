@@ -24,6 +24,10 @@
     NIXOS_OZONE_WL = "1";
   };
 
+  # for controlling external displays over DDC
+  hardware.i2c.enable = true;
+  services.dbus.packages = [ pkgs.ddcutil-service ];
+
   services = {
     displayManager = {
       sddm.enable = true;
