@@ -5,9 +5,6 @@
   ...
 }:
 {
-  # for controlling external displays over DDC
-  users.users.akiiino.extraGroups = [ "i2c" ];
-
   home-manager.users.akiiino =
     { config, ... }:
     {

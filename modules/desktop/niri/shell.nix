@@ -27,19 +27,6 @@ let
     ];
     text = builtins.readFile ./idle.sh;
   };
-  brightnessd = pkgs.writers.writePython3Bin "brightnessd" {
-    # makeWrapperArgs is passed straight through to makeScriptWriter, which
-    # saves wrapping the result in a symlinkJoin by hand.
-    makeWrapperArgs = [
-      "--prefix"
-      "PATH"
-      ":"
-      (lib.makeBinPath [
-        pkgs.systemd # busctl
-        pkgs.swayosd # swayosd-client
-      ])
-    ];
-  } (builtins.readFile ./brightnessd.py);
 in
 {
   home.packages = with pkgs; [
@@ -313,94 +300,56 @@ in
     };
   };
 
-  systemd.user = {
-    # systemd owns the FIFO: it does the mkfifo, opens it O_RDWR | O_NONBLOCK
-    # and validates S_ISFIFO before the daemon ever runs, so the FIFO exists
-    # from login and no keypress hits a missing path. %t is $XDG_RUNTIME_DIR.
-    sockets.brightnessd = {
-      Unit.Description = "Brightness control FIFO";
-      Socket = {
-        ListenFIFO = "%t/brightness.fifo";
-        SocketMode = "0600";
+  systemd.user.services = {
+    elephant = {
+      Unit = {
+        Description = "Elephant - Data provider for application launchers";
+        # By default elephant tries to start before niri and dies due to no Wayland socket.
+        # TODO: suggest upstream?
+        After = [ "niri.service" ];
+        PartOf = [ "graphical-session.target" ];
       };
-      Install.WantedBy = [ "sockets.target" ];
+      Install.WantedBy = [ "graphical-session.target" ];
+      Service = {
+        ExecStart = lib.getExe pkgs.mollusca.elephant;
+        Restart = "on-failure";
+      };
     };
 
-    services = {
-      brightnessd = {
-        Unit = {
-          Description = "Coalescing brightness daemon";
-          Requires = [ "brightnessd.socket" ];
-          # Socket-activated, so the first keypress starts it -- by which point
-          # niri has already run `systemctl --user import-environment NIRI_SOCKET`
-          # (it waits for that before signalling READY). PartOf means it stops
-          # with the session and is re-activated with a fresh NIRI_SOCKET if niri
-          # restarts, rather than holding a stale socket path forever.
-          After = [
-            "brightnessd.socket"
-            "graphical-session.target"
-          ];
-          PartOf = [ "graphical-session.target" ];
-        };
-        Service = {
-          ExecStart = builtins.trace (lib.getExe brightnessd) (lib.getExe brightnessd);
-          Restart = "always";
-          RestartSec = 1;
-          Slice = "session.slice";
-        };
+    # swaylock bound to lock.target (systemd-lock-handler). This is the single
+    # lock path for manual, idle, lid, and pre-sleep locking; sleep.target is
+    # ordered after lock.target, so the machine is provably locked before it
+    # sleeps. Canonical unit from the nixpkgs systemd-lock-handler module docs.
+    swaylock = {
+      Unit = {
+        Description = "Screen locker for Wayland";
+        Documentation = [ "man:swaylock(1)" ];
+        PartOf = [ "lock.target" ]; # stop when lock.target stops
+        Before = [ "lock.target" ]; # delay lock.target until locked
+        OnSuccess = [ "unlock.target" ]; # clean exit (unlock) -> unlock.target
       };
-
-      elephant = {
-        Unit = {
-          Description = "Elephant - Data provider for application launchers";
-          # By default elephant tries to start before niri and dies due to no Wayland socket.
-          # TODO: suggest upstream?
-          After = [ "niri.service" ];
-          PartOf = [ "graphical-session.target" ];
-        };
-        Install.WantedBy = [ "graphical-session.target" ];
-        Service = {
-          ExecStart = lib.getExe pkgs.mollusca.elephant;
-          Restart = "on-failure";
-        };
+      Install.WantedBy = [ "lock.target" ];
+      Service = {
+        Type = "forking"; # swaylock -f forks only after locking
+        ExecStart = "${lib.getExe swaylockPackage} -f";
+        Restart = "on-failure";
+        RestartSec = 0;
       };
+    };
 
-      # swaylock bound to lock.target (systemd-lock-handler). This is the single
-      # lock path for manual, idle, lid, and pre-sleep locking; sleep.target is
-      # ordered after lock.target, so the machine is provably locked before it
-      # sleeps. Canonical unit from the nixpkgs systemd-lock-handler module docs.
-      swaylock = {
-        Unit = {
-          Description = "Screen locker for Wayland";
-          Documentation = [ "man:swaylock(1)" ];
-          PartOf = [ "lock.target" ]; # stop when lock.target stops
-          Before = [ "lock.target" ]; # delay lock.target until locked
-          OnSuccess = [ "unlock.target" ]; # clean exit (unlock) -> unlock.target
-        };
-        Install.WantedBy = [ "lock.target" ];
-        Service = {
-          Type = "forking"; # swaylock -f forks only after locking
-          ExecStart = "${lib.getExe swaylockPackage} -f";
-          Restart = "on-failure";
-          RestartSec = 0;
-        };
+    # Idle timeouts only (warn -> lock, monitors-off, AC-guarded suspend). Policy
+    # lives in ./idle.sh; lock/unlock/lock-before-sleep are handled by the targets.
+    swayidle = {
+      Unit = {
+        Description = "Idle timeouts (warn, blank, suspend-then-hibernate)";
+        PartOf = [ "graphical-session.target" ];
+        After = [ "graphical-session.target" ];
       };
-
-      # Idle timeouts only (warn -> lock, monitors-off, AC-guarded suspend). Policy
-      # lives in ./idle.sh; lock/unlock/lock-before-sleep are handled by the targets.
-      swayidle = {
-        Unit = {
-          Description = "Idle timeouts (warn, blank, suspend-then-hibernate)";
-          PartOf = [ "graphical-session.target" ];
-          After = [ "graphical-session.target" ];
-        };
-        Install.WantedBy = [ "graphical-session.target" ];
-        Service = {
-          ExecStart = lib.getExe idle;
-          Restart = "on-failure";
-        };
+      Install.WantedBy = [ "graphical-session.target" ];
+      Service = {
+        ExecStart = lib.getExe idle;
+        Restart = "on-failure";
       };
     };
   };
-  systemd.user.services = { };
 }
