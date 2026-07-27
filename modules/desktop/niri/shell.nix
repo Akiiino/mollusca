@@ -52,10 +52,6 @@ in
         modules-center = [ ];
         modules-right = [
           "idle_inhibitor"
-          "cpu"
-          "memory"
-          "temperature"
-          "backlight"
           "pulseaudio"
           "network"
           "power-profiles-daemon"
