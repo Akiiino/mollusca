@@ -24,6 +24,7 @@
       systemd-boot.enable = lib.mkDefault true;
       efi.canTouchEfiVariables = lib.mkDefault true;
     };
+    kernel.sysctl."kernel.sysrq" = 1;
   };
 
   documentation.nixos.enable = false;
