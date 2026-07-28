@@ -40,6 +40,7 @@
         pkgs.yubikey-manager
         pkgs.yubico-piv-tool
         pkgs.obsidian
+        pkgs.tor-browser
         inputs'.filewatcher123d.packages.filewatcher123d
 
         (pkgs.kdePackages.skanpage.override {
