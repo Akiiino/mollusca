@@ -17,7 +17,10 @@
       url = "github:nix-community/impermanence";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     transmission-confined = {
       url = "github:Akiiino/transmission-confined";
       inputs.nixpkgs.follows = "nixpkgs";
