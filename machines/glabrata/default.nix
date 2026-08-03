@@ -436,6 +436,10 @@ in
     home.stateVersion = "23.11";
   };
 
+  age.identityPaths = [
+    "/mnt/persist/etc/ssh/ssh_host_ed25519_key"
+    "/mnt/persist/etc/ssh/ssh_host_rsa_key"
+  ];
   age.secrets.ds = {
     file = secretFile "ds.age";
     owner = "claude";
