@@ -179,7 +179,7 @@ in
 
   environment = {
     systemPackages = [
-      claude-code-wrapped
+      pkgs.claude-code
       pkgs.mcp-nixos
       pkgs.uv
       pkgs.tmux
