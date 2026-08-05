@@ -20,12 +20,14 @@
   mollusca = {
     isExitNode = true;
   };
+
   services.eunomia = {
     enable = true;
-    tokenFile = config.age.secrets.eunomia-telegram.path;
-    chatId = minor-secrets.telegramId;
+    caldavUrl = "http://localhost:${builtins.toString config.services.rustical.settings.http.port}/caldav/";
+    caldavUser = "akiiino";
+    passwordFile = config.age.secrets.horai-rustical.path;
   };
-  age.secrets.eunomia-telegram.file = secretFile "eunomia-telegram.age";
+  age.secrets.horai-rustical.file = secretFile "horai-rustical.age";
 
   networking = {
     hostName = "pecten";

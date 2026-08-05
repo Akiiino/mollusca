@@ -306,11 +306,11 @@
         "pyproject-nix": "pyproject-nix_2"
       },
       "locked": {
-        "lastModified": 1781794298,
-        "narHash": "sha256-AjX8bMW6qubmqh4AqKOL34esvuxZDFyiJYpYEdp3WLo=",
+        "lastModified": 1785877438,
+        "narHash": "sha256-z9nljqwJycojZ4KoyyPY7W2cGB1njDDK89P2U5hz8X4=",
         "owner": "Akiiino",
         "repo": "horai",
-        "rev": "951f68f8b060f3ad733850d37fec3dd865eb418f",
+        "rev": "e1d990930922c4b3050229dba9f0ac3f461e3999",
         "type": "github"
       },
       "original": {
