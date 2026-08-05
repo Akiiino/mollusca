@@ -16,6 +16,7 @@
     self.inputs.nixos-hardware.nixosModules.common-pc
     self.inputs.nixos-hardware.nixosModules.common-pc-ssd
     "${self}/users/akiiino/base.nix"
+    "${self}/users/akiiino/desktop.nix"
     "${self}/users/rinkaru"
   ];
 
@@ -40,22 +41,13 @@
         (builtins.readFile "${self}/secrets/keys/rinkaru.pub")
       ];
     };
-    akiiino = {
-      # intentionally modified from users/akiiino
-      isNormalUser = true;
-      password = "";
-      extraGroups = [
-        "audio"
-        "input"
-      ];
-      openssh.authorizedKeys.keys = [
-        (builtins.readFile "${self}/secrets/keys/akiiino.pub")
-      ];
-    };
+    akiiino.extraGroups = [
+      "audio"
+      "input"
+    ];
   };
 
   networking = {
-    hostName = "nautilus";
     firewall = {
       allowedTCPPorts = [ ];
       allowedUDPPorts = [ ];
@@ -64,7 +56,6 @@
 
   hardware = {
     graphics = {
-      enable = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
         libva-vdpau-driver
@@ -88,16 +79,12 @@
       enable = true;
       videoDrivers = [ "nvidia" ];
     };
-    pulseaudio = {
-      enable = false;
-      support32Bit = true;
-    };
+    pulseaudio.enable = false;
     displayManager.autoLogin.user = "nautilus";
   };
 
   programs = {
     steam = {
-      enable = true;
       remotePlay.openFirewall = true;
       # gamescopeSession = {
       #   enable = true;

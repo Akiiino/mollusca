@@ -103,15 +103,11 @@ in
 {
   imports = [
     "${self}/profiles/headless.nix"
+    "${self}/users/akiiino/base.nix"
     ./hardware-configuration.nix
     ./disko.nix
     self.inputs.impermanence.nixosModules.impermanence
   ];
-
-  system.tools = {
-    nixos-rebuild.enable = false;
-    nixos-install.enable = false;
-  };
 
   zramSwap = {
     enable = true;
@@ -446,6 +442,4 @@ in
     group = "users";
     mode = "0400";
   };
-
-  networking.hostName = "glabrata";
 }

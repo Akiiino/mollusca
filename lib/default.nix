@@ -19,7 +19,10 @@ rec {
         modules = [
           "${self}/modules/core"
           "${self}/machines/${name}"
-          { inherit disabledModules; }
+          {
+            inherit disabledModules;
+            networking.hostName = inputs.nixpkgs.lib.mkDefault name;
+          }
         ]
         ++ extraModules;
         specialArgs = {

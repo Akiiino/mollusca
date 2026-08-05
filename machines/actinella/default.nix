@@ -10,6 +10,7 @@
 {
   imports = [
     "${self}/profiles/headless.nix"
+    "${self}/users/akiiino/base.nix"
     inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
     inputs.transmission-confined.nixosModules.default
     ./transmission.nix
@@ -147,10 +148,6 @@
   };
 
   systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD"; # Jellyfin hardware transcoding
-
-  networking = {
-    hostName = "actinella";
-  };
 
   mollusca.nasMounts = {
     "/mnt/media" = {

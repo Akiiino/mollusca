@@ -35,6 +35,7 @@
     {
       services.openssh.settings = {
         PasswordAuthentication = lib.mkForce false;
+        KbdInteractiveAuthentication = false;
         PermitRootLogin = lib.mkForce "no";
       };
     }

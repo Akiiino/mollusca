@@ -50,10 +50,12 @@ else on top.
   GVFS, and everything else needed for a usable desktop machine.
 
 ### User layers
-Similarly, my user config is split into layers:
-- `base.nix` is for all machines with that user and defines the shell environment:
-  ZSH, Git, Kakoune, etc.
-- `desktop.nix` is for the GUI machines: installs a bunch of graphical apps.
+Similarly, my user config is split into layers, mirroring the profiles:
+- `base.nix` defines the shell environment (ZSH, Git, Kakoune, etc.) and the account
+  itself. Imported on every machine, so all of them feel the same to log into.
+- `desktop.nix` is for the GUI machines, whatever the compositor: graphical apps,
+  MIME associations, XDG dirs, etc.
+- `desktop-niri.nix` is for the Niri-specific stuff.
 - `personal.nix` is for the main daily driver(s?): stuff I need to log into to use,
   basically.
 

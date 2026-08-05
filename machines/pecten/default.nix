@@ -9,6 +9,7 @@
 {
   imports = [
     "${self}/profiles/headless.nix"
+    "${self}/users/akiiino/base.nix"
     ./hardware-configuration.nix
     ./disko.nix
     "${modulesPath}/profiles/perlless.nix" # not necessary, but it's neat
@@ -28,8 +29,4 @@
     passwordFile = config.age.secrets.horai-rustical.path;
   };
   age.secrets.horai-rustical.file = secretFile "horai-rustical.age";
-
-  networking = {
-    hostName = "pecten";
-  };
 }

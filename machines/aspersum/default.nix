@@ -1,10 +1,7 @@
 {
   pkgs,
   self,
-  self',
   inputs,
-  config,
-  secretFile,
   ...
 }:
 {
@@ -15,11 +12,9 @@
     ./disko.nix
     "${self}/users/akiiino/base.nix"
     "${self}/users/akiiino/desktop.nix"
+    "${self}/users/akiiino/desktop-niri.nix"
     "${self}/users/akiiino/personal.nix"
   ];
-
-  age.secrets.akiiino-password.file = secretFile "akiiino-password.age";
-  users.users.akiiino.hashedPasswordFile = config.age.secrets.akiiino-password.path;
 
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
@@ -70,7 +65,6 @@
   };
 
   networking = {
-    hostName = "aspersum";
     firewall = {
       allowedTCPPorts = [
         53317 # Localsend
@@ -86,33 +80,14 @@
     };
   };
 
-  mollusca = {
-    useTailscale = true;
-    tailscaleRoutingFeatures = "client";
-  };
+  mollusca.tailscaleRoutingFeatures = "client";
 
   services = {
     power-profiles-daemon.enable = true;
     resolved.enable = true;
     thermald.enable = true;
     upower.percentageCritical = 10;
-    avahi = {
-      enable = true;
-      nssmdns4 = true;
-      openFirewall = true;
-    };
-    printing = {
-      enable = true;
-      drivers = [ self'.packages.cups-brother-dcpl3520cdw ];
-    };
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
     xserver.wacom.enable = true;
-    fwupd.enable = true;
 
     beesd.filesystems."crypted" = {
       spec = "/dev/mapper/crypted";
@@ -134,7 +109,6 @@
   };
 
   security = {
-    rtkit.enable = true;
     polkit.extraConfig = ''
       polkit.addRule(function(action, subject) {
         if (action.id === "org.freedesktop.NetworkManager.settings.modify.system" &&
@@ -146,8 +120,6 @@
   };
 
   environment.localBinInPath = true;
-
-  programs.steam.enable = true;
 
   hardware = {
     framework.laptop13.audioEnhancement = {

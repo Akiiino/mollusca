@@ -5,6 +5,10 @@
   ...
 }:
 {
+  users.users.akiiino.extraGroups = [
+    "scanner"
+    "lp"
+  ];
   home-manager.users.akiiino =
     { config, ... }:
     {
@@ -12,7 +16,6 @@
         "${self}/modules/home/firefox.nix"
         "${self}/modules/home/kitty.nix"
         "${self}/modules/home/mpv.nix"
-        "${self}/modules/desktop/niri/home.nix"
         "${self}/modules/desktop/theming/home.nix"
       ];
 
@@ -20,6 +23,7 @@
 
       home.packages = [
         pkgs.gimp
+        pkgs.wl-clipboard
         pkgs.dolphin-emu
         pkgs.vlc
         pkgs.shotwell

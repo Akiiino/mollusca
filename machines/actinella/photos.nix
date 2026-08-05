@@ -17,5 +17,5 @@
     "d /var/lib/photoview/media 2770 photoview photoview -"
   ];
 
-  users.users.builder.extraGroups = [ "photoview" ];
+  users.users.akiiino.extraGroups = [ "photoview" ];
 }

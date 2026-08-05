@@ -1,17 +1,18 @@
 {
   self,
+  config,
   pkgs,
+  secretFile,
   ...
 }:
 {
+  age.secrets.akiiino-password.file = secretFile "akiiino-password.age";
+
   users.users.akiiino = {
     isNormalUser = true;
-    extraGroups = [
-      "wheel"
-      "scanner"
-      "lp"
-    ];
+    extraGroups = [ "wheel" ];
     shell = pkgs.zsh;
+    hashedPasswordFile = config.age.secrets.akiiino-password.path;
     openssh.authorizedKeys.keys = [
       (builtins.readFile "${self}/secrets/keys/akiiino.pub")
     ];
@@ -34,7 +35,6 @@
           gdu
           htop
           fdupes
-          wl-clipboard
         ];
         language.base = "en_US.UTF-8";
 

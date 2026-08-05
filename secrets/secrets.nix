@@ -49,7 +49,11 @@ in
   ];
   "akiiino-password.age".publicKeys = [
     akiiino
+    nautilus
+    pecten
+    actinella
     aspersum
+    glabrata
   ];
   "ds.age".publicKeys = [
     akiiino
