@@ -149,7 +149,7 @@ index 154d6739256f..c8eb2040cb69 100644
  #include <drm/drm_print.h>
  #include <drm/drm_util.h>
  
--/* Detach the cursor from the bulk move list*/
+-/* Detach the cursor from the bulk move list */
 -static void
 -ttm_resource_cursor_clear_bulk(struct ttm_resource_cursor *cursor)
 -{

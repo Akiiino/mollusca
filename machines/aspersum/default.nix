@@ -23,9 +23,8 @@
     # machine on GPU BO swap-in after (un)hibernation or under memory pressure.
     # Upstream: https://gitlab.freedesktop.org/drm/amd/-/issues/5387
     # Patch: "drm/ttm: Represent LRU bulk moves as nested sublists" [CI,v2]
-    # https://patchwork.freedesktop.org/series/170311/ — adapted to v7.0.12
-    # (one whitespace byte in a ttm_resource.c comment). Drop once the series
-    # lands in a released kernel.
+    # https://patchwork.freedesktop.org/series/170311/
+    # Drop once the series lands in a released kernel.
     kernelPatches = [
       {
         name = "ttm-lru-bulk-anchor-v2";
