@@ -23,7 +23,7 @@
       script-torrent-done-enabled = true;
       script-torrent-done-filename = pkgs.writeShellScript "transmission-hardlink" ''
         set -euo pipefail
-        cp -al "$TR_TORRENT_DIR/$TR_TORRENT_NAME" "/mnt/media/Staging/$TR_TORRENT_NAME"
+        cp -al --no-preserve=ownership "$TR_TORRENT_DIR/$TR_TORRENT_NAME" "/mnt/media/Staging/$TR_TORRENT_NAME"
       '';
     };
   };
