@@ -32,8 +32,8 @@ let
     "nfsvers=3"
     (if m.hard then "hard" else "soft")
     # Fail fast — the NAS isn't always up; don't let apps hang on a dead mount.
-    "timeo=50" # 5 second timeout
-    "retrans=4" # 4 retries before giving up
+    "timeo=600" # 60 second timeout
+    "retrans=4" # 2 retries before giving up
     "_netdev" # Wait for network
   ];
 in
