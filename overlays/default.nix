@@ -10,4 +10,5 @@
   (import ./kakoune.nix { inherit self inputs; })
   (import ./tremotesf)
   (import ./git-collab.nix)
+  (import ./photoview.nix)
 ]
