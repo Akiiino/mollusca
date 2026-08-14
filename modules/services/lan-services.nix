@@ -39,6 +39,9 @@ let
 
   corefile = ''
     .:53 {
+      errors
+      log
+      health
       ${blocklistDirective} {
     ${allLanHostsLines}
         ttl 30
