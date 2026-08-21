@@ -150,6 +150,16 @@ in
     ];
     neededForBoot = true;
   };
+  fileSystems."/mnt/scratchpad" = {
+    device = "/dev/disk/by-id/scsi-0HC_Volume_106634854";
+    fsType = "btrfs";
+    options = [
+      "discard"
+      "nofail"
+      "compress=zstd"
+    ];
+    neededForBoot = true;
+  };
 
   # impermanence bind-mounts paths from /mnt/persist into their real locations.
   environment.persistence."/mnt/persist" = {
